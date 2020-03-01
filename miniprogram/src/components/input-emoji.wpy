@@ -1,0 +1,99 @@
+<style lang="less" scoped>
+.emoji {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  transition: all 0.3s;
+  z-index: 10005;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 1px;
+    border-top: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .icons {
+    display: flex;
+    flex-wrap: wrap;
+    .img {
+      flex-grow: 1;
+      padding: 20rpx;
+      text-align: left;
+      justify-items: flex-start;
+      .icon-image {
+        width: 48rpx;
+        height: 48rpx;
+      }
+    }
+  }
+  scroll-view {
+    background: #f8f8f8;
+  }
+  .btn-box {
+    right: 0rpx;
+    bottom: 0rpx;
+    position: fixed;
+    background: #f8f8f8;
+    padding: 30rpx;
+    .btn-del {
+      background: #ffffff;
+      padding: 20rpx 30rpx;
+      border-radius: 10rpx;
+      .icon {
+        font-size: 48rpx;
+      }
+    }
+  }
+  .icon-loading {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+</style>
+<template>
+  <div class="emoji" style="height:{{height}}px;" :hidden="hide">
+    <scroll-view :scroll-y="true" style="height:{{height}}px;">
+      <div class="icons">
+        <div class="img" v-for="img in emojis" :key="img.id" @tap.stop="onTap(img.value)">
+          <img class="icon-image" :src="img.url" :lazy-load="true" />
+        </div>
+      </div>
+      <div style="height:148rpx;"></div>
+    </scroll-view>
+    <div class="btn-box">
+      <div class="btn-del" @tap.stop="onDel">
+        <div class="icon icon-input-del" />
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { weibo_emojis } from '../common/api';
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    height: Number,
+    hide: Boolean
+  },
+  data: {
+    emojis: weibo_emojis,
+  },
+  methods: {
+    onTap(val) {
+      this.$emit('emoji', val);
+    },
+    onDel() {
+      this.$emit('del');
+    }
+  }
+});
+</script>

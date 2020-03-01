@@ -1,0 +1,325 @@
+<style lang="less" scoped>
+.tracks {
+  background: #ffffff;
+  margin-bottom: 16rpx;
+  .top {
+    display: flex;
+    align-items: center;
+    .title {
+      font-size: 30rpx;
+      font-weight: bold;
+      flex-grow: 1;
+      text-align: left;
+      padding-left: 30rpx;
+    }
+    .btn-clean {
+      padding: 30rpx;
+      color: #b2b2b2;
+    }
+  }
+  .list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding-bottom: 30rpx;
+    .item {
+      margin-left: 30rpx;
+      padding: 5rpx;
+      flex-shrink: 0;
+      &::after {
+        content: ' ';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 1px;
+        border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+        color: rgba(235, 237, 245, 0.8);
+      }
+      image {
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: 10rpx;
+      }
+      .item-title {
+        font-size: 22rpx;
+        font-weight: bold;
+        text-align: center;
+        max-width: 140rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+      &.item-more {
+        .ic {
+          width: 120rpx;
+          height: 120rpx;
+          background: #f1f1f1;
+          border-radius: 10rpx;
+          text-align: center;
+          line-height: 120rpx;
+          margin-bottom: 10rpx;
+          margin-right: 35rpx;
+        }
+        .item-title {
+          margin-right: 35rpx;
+        }
+        color: #409eff;
+      }
+    }
+  }
+}
+.empty {
+  padding: 20rpx;
+  background: rgba(255, 209, 0, 0.1);
+  .empty-content {
+    background: url(http://img.wutuobangxinyougou.com/topic_empty.svg) no-repeat;
+    background-size: 30% 100%;
+    background-position: 100% 100%;
+    font-size: 28rpx;
+    padding: 30rpx;
+    text-align: left;
+    color: #7a8299;
+    line-height: 45rpx;
+  }
+}
+.recommends {
+  background: #ffffff;
+  .title {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0rpx;
+    .left {
+      padding: 30rpx;
+      font-size: 32rpx;
+      font-weight: bold;
+      flex-grow: 1;
+      text-align: left;
+    }
+    .right {
+      padding: 30rpx;
+      display: flex;
+      align-items: center;
+      font-size: 28rpx;
+      color: #409eff;
+      .icon {
+        font-size: 32rpx;
+        font-weight: bold;
+      }
+    }
+  }
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #409eff;
+    padding: 50rpx 0rpx;
+    text-align: center;
+    font-size: 28rpx;
+    .icon {
+      font-size: 34rpx;
+      margin-right: 6rpx;
+      font-weight: bold;
+    }
+  }
+}
+</style>
+<template>
+  <mp-page
+    :state="state"
+    :triggered="triggered"
+    :num="num"
+    @scrolltolower="onScrolltolower"
+    @refresherrefresh="onRefresherrefresh"
+    @refresherrestore="onRefresherrestore"
+    @refresherpulling="onRefresherpulling"
+  >
+    <div class="tracks" v-if="tracks.length">
+      <div class="top">
+        <div class="title">最近访问的话题</div>
+        <div class="btn-clean" @tap="onClean">
+          <div class="icon icon-del-line"></div>
+        </div>
+      </div>
+      <scroll-view :scroll-x="true">
+        <div class="list">
+          <div class="item" v-for="item in tracks" :key="item.id" @tap="goTopic(item.id)">
+            <img :src="item.iconSrc" />
+            <div class="item-title">{{item.title}}</div>
+          </div>
+          <div class="item item-more" @tap="goMaidan">
+            <div class="ic">
+              <text class="icon icon-more-line" />
+            </div>
+            <div class="item-title">发现话题</div>
+          </div>
+        </div>
+      </scroll-view>
+    </div>
+    <div class="follow recommends" v-if="items.length">
+      <div class="title">
+        <div class="left">关注话题</div>
+        <div class="right" @tap="goMaidan">
+          <div>话题广场</div>
+          <div class="icon icon-arrow-right" />
+        </div>
+      </div>
+      <div class="list">
+        <item-topic v-for="item in items" :item="item" :key="item.id" />
+      </div>
+      <div class="footer" @tap="goMaidan">
+        <div class="icon icon-add" />
+        <div>关注更多话题</div>
+      </div>
+    </div>
+    <div v-else>
+      <div class="empty">
+        <div class="empty-content">
+          <div>你还没有关注的话题,</div>
+          <div>先关注一下吧!</div>
+        </div>
+      </div>
+      <div class="recommends">
+        <div class="title">
+          <div class="left">推荐话题</div>
+          <div class="right" @tap="goMaidan">
+            <text>话题广场</text>
+            <text class="icon icon-arrow-right" />
+          </div>
+        </div>
+        <div class="list">
+          <item-topic
+            v-for="(item, index) in recommends"
+            :item="item"
+            :index="index"
+            :key="item.id"
+            :showBtn="true"
+            @follow="onFollow"
+          />
+        </div>
+      </div>
+    </div>
+  </mp-page>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Topic } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    isInit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: {
+    state: 2,
+    tracks: [],
+    items: [],
+    recommends: [],
+    hasMore: true,
+    isLoading: false,
+    pageIndex: 1,
+    pageSize: 15
+  },
+  watch: {
+    async isInit(val) {
+      if (val) {
+        this.tracks = Topic.getTopicTrack();
+        if (await this.loadData()) {
+          if (this.items.length) {
+            this.state = 2;
+          } else {
+            const items = await Topic.searchTopic({
+              keyword: null,
+              pageIndex: 1,
+              pageSize: 10
+            });
+            if (items) {
+              if (items.length) {
+                this.recommends = items;
+                this.state = 2;
+              } else {
+                this.state = 3;
+              }
+            } else {
+              this.state = 1;
+            }
+          }
+        } else {
+          this.state = 1;
+        }
+      }
+    }
+  },
+  methods: {
+    async loadData(isRefresh) {
+      if (!this.hasMore || this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      const items = await Topic.getListForUser({
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      });
+      if (items) {
+        for (const item of items) {
+          this.items.push(item);
+        }
+        this.pageIndex++;
+        this.hasMore = items.length === this.pageSize;
+      }
+      this.isLoading = false;
+      return items;
+    },
+    async onScrolltolower() {
+      await this.loadData();
+    },
+    async onRefresherpulling() {
+      this.triggered = true;
+    },
+    async onRefresherrefresh() {
+      await this.loadData(true);
+      setTimeout(() => {
+        this.num = -1;
+      }, 2000);
+      this.triggered = false;
+    },
+    onRefresherrestore() {
+      this.triggered = false;
+    },
+    onClean() {
+      if (Topic.cleanTopicTrack()) {
+        this.tracks = [];
+      }
+    },
+    async onFollow({ topic, index }) {
+      if (topic.hasFollow) {
+        if (await Topic.cancel(topic.id)) {
+          this.recommends[index].hasFollow = false;
+        }
+      } else {
+        this.recommends[index].hasFollow = await Topic.follow(topic.id);
+      }
+    },
+    goMaidan() {
+      wx.navigateTo({
+        url: `/pages/topic-maidan`
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    usingComponents: {
+        "mp-page": "./mp-page",
+        "item-topic": "./item-topic",
+    }
+}
+</config>

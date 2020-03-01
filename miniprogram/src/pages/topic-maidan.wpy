@@ -1,0 +1,82 @@
+<style lang="less" scoped>
+.container {
+  position: relative;
+  height: calc(100vh);
+  .btn-add {
+    position: fixed;
+    left: 200rpx;
+    bottom: 50rpx;
+    background: #fae37c;
+    color: #13100e;
+    border: none;
+    box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.3);
+    padding: 20rpx;
+    display: flex;
+    align-items: center;
+    font-size: 30rpx;
+    border-radius: 80rpx;
+    width: 350rpx;
+    box-sizing: border-box;
+    justify-content: center;
+    .icon {
+      font-size: 34rpx;
+      font-weight: bold;
+      margin-right: 10rpx;
+    }
+    &.btn-hover {
+      background: rgba(250, 227, 124, 0.9);
+    }
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <list
+      ref="list"
+      controller="topic"
+      action="searchTopic"
+      :enableTips="false"
+      :refresherEnabled="false"
+      :isInit="true"
+      :scrollY="true"
+      :pageSize="20"
+    >
+      <searchbar placeholder="输入话题" @input="onSearch" @cancel="onCancel"></searchbar>
+    </list>
+    <div class="btn-add" hover-class="btn-hover" @tap="goAdd">
+      <div class="icon icon-add" />
+      <div>创建话题</div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    init: false
+  },
+  methods: {
+    async onSearch(e) {
+      const { value } = e.$wx.detail;
+      this.$refs.list.loadData(true, value);
+    },
+    async onCancel() {
+      this.$refs.list.loadData(true);
+    },
+    goAdd() {
+      wx.navigateTo({
+        url: `/pages/topic-add`
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '话题广场',
+    "usingComponents": {
+      "list": "../components/page-list",
+      "searchbar": "../components/searchbar/searchbar",
+    }
+}
+</config>

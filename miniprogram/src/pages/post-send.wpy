@@ -1,0 +1,1029 @@
+<style lang="less" scoped>
+page {
+  background: #ffffff;
+}
+.box {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  opacity: 1;
+  transition: all 0.3s;
+  .box-mask {
+    background: #000;
+    opacity: 0.3;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    z-index: 999;
+  }
+  .box-main {
+    position: absolute;
+    top: 0px;
+    width: 300rpx;
+    left: 100px;
+    border-radius: 20rpx;
+    background: #ffffff;
+    box-shadow: 10rpx 0rpx 20rpx rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 20rpx 0rpx;
+    transition: all 0.3s;
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20rpx 0rpx;
+      font-size: 32rpx;
+      .icon {
+        font-size: 48rpx;
+        margin-right: 20rpx;
+      }
+      .title {
+        width: 160rpx;
+      }
+    }
+  }
+}
+.navigation {
+  .weui-navigation-bar__left {
+    padding-left: 16px;
+  }
+}
+.user-back {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  .icon {
+    padding: 20rpx 0rpx;
+    padding-right: 30rpx;
+    font-size: 42rpx;
+    font-weight: bold;
+  }
+  .title {
+    flex-grow: 1;
+    font-size: 32rpx;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .icon {
+      padding: 0rpx;
+      transition: all 0.3s;
+    }
+  }
+}
+.send-content {
+  textarea {
+    padding: 30rpx;
+    font-size: 32rpx;
+    width: 100%;
+    height: 240rpx;
+    line-height: 46rpx;
+    box-sizing: border-box;
+    color: var(--txt-content);
+  }
+  .textarea-main {
+    position: relative;
+    margin-bottom: 20rpx;
+    .word-count {
+      font-size: 24rpx;
+      color: #b2b2b2;
+      background: #f1f1f1;
+      border-radius: 60rpx;
+      position: absolute;
+      padding: 8rpx 20rpx;
+      bottom: 0rpx;
+      right: 30rpx;
+    }
+  }
+  .placeholder {
+    color: #b2b2b2;
+  }
+  .imags {
+    padding: 30rpx;
+    padding-top: 0rpx;
+    .ext .weui-uploader__overview {
+      display: none;
+    }
+  }
+  .topic-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30rpx;
+    position: relative;
+    &::after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      height: 1px;
+      border-top: 0.4px solid rgba(235, 237, 245, 0.8);
+      color: rgba(235, 237, 245, 0.8);
+    }
+    .title {
+      flex-grow: 1;
+      font-size: 30rpx;
+      color: #409eff;
+    }
+    .icon-topic-line {
+      font-size: 34rpx;
+      color: #409eff;
+      margin-right: 8rpx;
+    }
+    .des {
+      color: #b2b2b2;
+      font-size: 26rpx;
+    }
+    .icon {
+      font-size: 34rpx;
+      font-weight: bold;
+    }
+    .icon-arrow-right {
+      color: #b2b2b2;
+    }
+  }
+}
+.tool {
+  position: fixed;
+  width: 100%;
+  left: 0rpx;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  transition: all 0.3s;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 1px;
+    border-top: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .check {
+    flex-grow: 1;
+    padding: 30rpx 0rpx;
+    padding-left: 32rpx;
+    .title {
+      font-size: 26rpx;
+      color: #8a8a8a;
+      margin-bottom: 8rpx;
+    }
+    .des {
+      font-size: 22rpx;
+      color: #b2b2b2;
+    }
+  }
+  .item {
+    flex-grow: 1;
+    padding: 30rpx 0rpx;
+    text-align: center;
+    position: relative;
+    .icon {
+      display: inline-block;
+      font-size: 48rpx;
+    }
+    &.lock {
+      .icon {
+        color: #b2b2b2;
+      }
+    }
+    &.icon-lock {
+      font-size: 26rpx;
+      color: #b2b2b2;
+    }
+    &.icon-lock::before {
+      position: absolute;
+      right: 22%;
+      top: 8rpx;
+    }
+  }
+  .btn-mini {
+    flex-basis: 200rpx;
+    text-align: center;
+    .btn-send {
+      display: inline-block;
+      background: #fae37c;
+      color: #000;
+      font-size: 30rpx;
+      font-weight: bold;
+      padding: 15rpx 30rpx;
+      border-radius: 10rpx;
+      line-height: normal;
+      &::after {
+        border: none;
+      }
+    }
+    button[disabled] {
+      background: #f1f1f1;
+      color: #b2b2b2;
+    }
+  }
+  .line {
+    position: absolute;
+    top: -70rpx;
+    left: 0rpx;
+    width: 100%;
+    background: #ffffff;
+    box-sizing: border-box;
+    display: flex;
+    padding: 10rpx 30rpx;
+    justify-content: space-between;
+    .location {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: 24rpx;
+      padding: 10rpx 0rpx;
+      color: #409eff;
+      // border-radius: 20rpx;
+      // border: #409eff solid 1px;
+      .icon {
+        font-size: 24rpx;
+        padding: 4rpx 15rpx;
+        &.icon-location,
+        &.icon-topic-line {
+          padding: 0rpx;
+          padding-right: 6rpx;
+        }
+      }
+      .txt {
+        height: 32rpx;
+        line-height: 32rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 260rpx;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+    }
+  }
+}
+.imags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  .item {
+    flex-shrink: 0;
+    position: relative;
+    margin-right: 30rpx;
+    margin-bottom: 30rpx;
+    image {
+      width: 200rpx;
+      height: 200rpx;
+      border-radius: 10rpx;
+    }
+    .btn-close {
+      position: absolute;
+      font-size: 56rpx;
+      top: -20rpx;
+      right: -20rpx;
+      color: #fae37c;
+    }
+    .num {
+      position: absolute;
+      bottom: 10rpx;
+      right: 0rpx;
+      padding: 6rpx 12rpx;
+      font-size: 22rpx;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+      border-top-left-radius: 10rpx;
+      border-bottom-right-radius: 10rpx;
+    }
+  }
+  .item-add {
+    width: 200rpx;
+    height: 200rpx;
+    border-radius: 10rpx;
+    background: #f1f1f1;
+    text-align: center;
+    line-height: 200rpx;
+    .icon {
+      font-size: 64rpx;
+      color: #b2b2b2;
+    }
+  }
+}
+.article-title {
+  padding: 20rpx 30rpx;
+  border-bottom: #f1f1f1 solid 1px;
+}
+.post-article {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background: #f4f4f4;
+  border-radius: 10rpx;
+  margin: 0rpx 40rpx;
+  margin-top: 50rpx;
+  position: relative;
+  .btn-close {
+    position: absolute;
+    width: 56rpx;
+    height: 56rpx;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    top: -20rpx;
+    right: -20rpx;
+    text-align: center;
+    line-height: 56rpx;
+    border-radius: 56rpx;
+    .icon {
+      font-weight: bold;
+      font-size: 30rpx;
+    }
+  }
+  image {
+    width: 115rpx;
+    height: 115rpx;
+    border-radius: 8rpx;
+    flex-shrink: 0;
+  }
+  .img-empty {
+    width: 115rpx;
+    height: 115rpx;
+    border-radius: 8rpx;
+    flex-shrink: 0;
+    color: #fff;
+    text-align: center;
+    line-height: 115rpx;
+    background: #dadada;
+    .icon {
+      font-size: 76rpx;
+    }
+  }
+  .post-article-title {
+    flex-grow: 1;
+    font-size: 32rpx;
+    margin-right: 20rpx;
+    &.des {
+      color: #b2b2b2;
+    }
+    &.error {
+      color: red;
+    }
+  }
+}
+</style>
+<template>
+  <div class="container" style="height: calc(100vh);position: relative;">
+    <navigation-bar ext-class="navigation" :back="false" :show="show" background="#ffffff">
+      <div slot="left" class="user-back" style="{{innerWidth}}">
+        <div class="icon icon-close" @tap="onClose"></div>
+        <div class="title" @tap="showAction">
+          <div>{{title}}</div>
+          <div class="icon icon-arr-right" style="transform: rotate({{showBox ? 0 : 90}}deg);"></div>
+        </div>
+      </div>
+    </navigation-bar>
+    <div class="send-content">
+      <div class="topic-input" @tap.stop="onTopic">
+        <div class="icon icon-topic-line"></div>
+        <div class="title">{{topic ? topic.title : '选择话题'}}</div>
+        <div class="des">{{topic ? '' : '选择合适的话题会有更多赞哦~'}}</div>
+        <div class="icon icon-arrow-right"></div>
+      </div>
+      <block v-if="posType !== 2">
+        <div class="textarea-main">
+          <textarea
+            auto-height
+            placeholder-class="placeholder"
+            :show-confirm-bar="false"
+            v-model="content"
+            :placeholder="placeholder"
+            :auto-focus="false"
+            :focus="focus"
+            :cursor="cursor"
+            :hold-keyboard="true"
+            @keyboardheightchange="onkeyboardheightchange"
+            @blur="onBlur"
+            @input="onInput"
+            @focus="onFocus"
+            :hidden="!show || showLink || showBox"
+            maxlength="{{posType === 3 ? 30 : 140}}"
+          />
+          <div class="word-count">{{content.length}}/{{(posType === 3 ? 30 : 140)}}</div>
+        </div>
+        <div class="post-article" v-if="link" v-show="posType === 1">
+          <div
+            class="post-article-title {{article ? '' : 'des'}} {{analyseState === 1 ? 'error' : ''}}"
+          >{{article ? article.title : analyseState === 1 ? '解析链接失败(目前支持(公众号|掘金|简书)文章)' : '正在解析链接···'}}</div>
+          <img :src="article.imageSrc" mode="aspectFill" v-if="article" />
+          <div class="img-empty" v-else>
+            <text class="icon icon-link-fill" />
+          </div>
+        </div>
+        <div class="imags" v-show="posType === 0">
+          <div class="item" v-for="(img,index) in images">
+            <img :src="img.path" mode="aspectFill" @tap.stop="onPreview(images, index)" />
+            <div class="btn-close icon icon-del-full" @tap.stop="onRemove(index)"></div>
+            <div class="num">{{index + 1}}</div>
+          </div>
+          <div class="item-add" @tap="chooseImage" v-if="images.length < 9">
+            <div class="icon icon-add" />
+          </div>
+        </div>
+      </block>
+      <block v-else>
+        <input
+          placeholder="标题"
+          v-model="articleTitle"
+          @input="disabled = articleTitle.length < 5"
+          maxlength="30"
+          class="article-title"
+        />
+        <input-editor :offset="180" :loading="loading" :disabled="disabled" @submit="submit" />
+      </block>
+    </div>
+    <emoji-input
+      :height="boardheight"
+      @emoji="onInputEmoji"
+      @del="onDelEmoji"
+      :hide="bottom === 0"
+    />
+    <div class="tool" style="bottom: {{bottom}}px;" v-if="posType !== 2">
+      <div class="line" v-if="location">
+        <div class="location" v-if="location">
+          <text class="icon icon-location" />
+          <text class="txt">{{location.name}}</text>
+          <text class="icon icon-del-line" @tap.stop="onDelLocation(0)" />
+        </div>
+      </div>
+      <block v-if="isAuth">
+        <div class="item {{posType === 1 || posType === 3 ? 'lock' : ''}}" @tap.stop="chooseImage">
+          <div class="icon icon-tupian"></div>
+        </div>
+        <div
+          class="item {{posType === 3 ? 'lock' : ''}}"
+          @tap.stop="onEmoji(0)"
+          v-if="inputType === 0"
+        >
+          <div class="icon icon-emoji"></div>
+        </div>
+        <div class="item" @tap.stop="onEmoji(1)" v-else>
+          <div class="icon icon-jianpan"></div>
+        </div>
+        <div
+          class="item {{posType === 1 || posType === 3 ? 'lock' : ''}}"
+          @tap.stop="onMap"
+          v-if="showMap"
+        >
+          <div class="icon icon-dingwei"></div>
+        </div>
+        <div class="item" @tap.stop="onTopic">
+          <div class="icon icon-topic-line"></div>
+        </div>
+        <div
+          class="item {{posType !== 1 ? 'lock' : ''}}"
+          @tap.stop="posType !== 1 ? showLink = false : showLink = true"
+        >
+          <div class="icon icon-link-fill"></div>
+        </div>
+        <!-- <div class="item lock icon icon-lock">
+          <div class="icon icon-vote"></div>
+        </div>-->
+        <div class="btn-mini">
+          <button class="btn-send" :loading="loading" :disabled="disabled" @tap="submit">{{btntext}}</button>
+        </div>
+      </block>
+      <block v-else>
+        <div class="item icon icon-help" style="font-size: 26rpx;color: #b2b2b2;">学生认证后才可以发布动态</div>
+        <div class="btn">
+          <button class="btn-send" @tap="goAuth">去认证</button>
+        </div>
+      </block>
+    </div>
+    <div class="box" v-show="showBox">
+      <div class="box-mask" @tap="hideBox"></div>
+      <div class="box-main" style="top:200rpx;opacity:{{opacity}};">
+        <div class="cell" v-for="item in types" :key="item.type" @tap="onChoicePostType(item)">
+          <div class="icon icon-{{item.icon}}" />
+          <div class="title">{{item.title}}</div>
+        </div>
+      </div>
+    </div>
+    <topic-input :show="showTopic" @result="onSelect" @close="onTopicClose" />
+    <link-input :show="showLink" @close="showLink = false" @add="onLinkAdd" />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post } from '../common/api';
+wepy.page({
+  data: {
+    innerWidth: '',
+    content: '',
+    show: true,
+    showBox: false,
+    analyseState: 0,
+    opacity: 0,
+    showMap: false,
+    showLink: false,
+    isPrivate: false,
+    uplaodFile: null,
+    loading: false,
+    disabled: true,
+    hasChoose: false,
+    focus: true,
+    cursor: -1,
+    topic: null,
+    placeholder: '记录真实的校园生活...',
+    title: '写动弹',
+    tips: null,
+    btntext: '发布',
+    types: [
+      {
+        title: '写问题',
+        type: 3,
+        icon: 'questions'
+      },
+      {
+        title: '写动弹',
+        type: 0,
+        icon: 'xiezuo'
+      },
+      {
+        title: '写文章',
+        type: 2,
+        icon: 'write'
+      },
+      {
+        title: '分享文章',
+        type: 1,
+        icon: 'share-article'
+      }
+    ],
+    posType: 0, // 0:动弹,1:文章-分享链接,2:文章-富文本,3:问答-问题,
+    bottom: 0,
+    articleTitle: null,
+    article: null,
+    articleHtml: '',
+    link: null,
+    isGet: false,
+    showTopic: false,
+    images: [],
+    choiceType: 0,
+    inputType: 0, // 输入类型0文字1表情
+    userId: null,
+    user: null,
+    hasUpload: false,
+    isAuth: true,
+    boardheight: 0,
+    location: null
+  },
+  async onLoad(q) {
+    const { type, id, topicId, title } = q;
+    const index = parseInt(type) || 0;
+    this.onChoicePostType(this.types[index - 1]);
+    this.userId = q.id;
+    if (topicId) {
+      this.topic = {
+        id: parseInt(topicId),
+        title: decodeURI(title)
+      };
+    }
+    let rect = wx.getMenuButtonBoundingClientRect
+      ? wx.getMenuButtonBoundingClientRect()
+      : null;
+    this.innerWidth = rect ? 'width:' + rect.left + 'px' : '';
+    const sys = wx.getSystemInfoSync();
+    this.showMap = !sys.AppPlatform || sys.AppPlatform !== 'qq';
+  },
+  methods: {
+    showAction() {
+      this.showBox = true;
+      setTimeout(() => {
+        this.opacity = 1;
+      }, 100);
+    },
+    hideBox() {
+      this.opacity = 0;
+      setTimeout(() => {
+        this.showBox = false;
+      }, 300);
+    },
+    onClose() {
+      wx.navigateBack();
+    },
+    onChoicePostType(item) {
+      this.posType = item.type;
+      this.title = item.title;
+      this.hideBox();
+      if (this.posType === 3) {
+        this.placeholder = '请输入问题(5-30个字)问号结尾';
+      } else if (this.posType === 1) {
+        this.placeholder = '此时对文章的看法...';
+        this.showLink = true;
+      } else if (this.posType === 0) {
+        this.placeholder = '记录真实的校园生活...';
+      }
+    },
+    async submit(res) {
+      wx.hideKeyboard();
+      if (!this.topic) {
+        this.onTopic();
+        return;
+      }
+      wx.showLoading({
+        title: '发布中...',
+        mask: true
+      });
+      this.btntext = '发布中';
+      if (this.posType === 2) {
+        this.articleHtml = res.delta.ops;
+      }
+      if (
+        this.posType === 0 &&
+        this.content.length < 5 && !this.images.length
+      ) {
+        Post.showToast('动弹内容太少');
+        return;
+      } else if (this.posType === 3 && this.content.length < 5) {
+        Post.showToast('问题标题太短');
+        return;
+      } else if (this.posType === 1 && !this.article) {
+        this.showLink = true;
+        return;
+      } else if (this.posType === 2 && this.articleTitle.length < 5) {
+        Post.showToast('文章标题太短或内容太少');
+        return;
+      }
+      this.loading = true;
+      this.disabled = true;
+      let _post = null;
+      if (this.posType === 0) {
+        if (!this.hasUpload) {
+          this.images = await Post.uploadFile(this.images, 2);
+        }
+        this.hasUpload = true;
+        _post = {
+          content: this.content,
+          imgs: this.images.filter(img => {
+            return img.path != null;
+          }),
+          posType: this.posType,
+          topicId: this.topic.id,
+          topicTitle: this.topic.title,
+          latitude: this.latitude,
+          longitude: this.longitude,
+          address: this.address
+        };
+      } else if (this.posType === 1) {
+        _post = {
+          content: this.content,
+          link: this.link,
+          articleTitle: this.article.title,
+          articleImg: this.article.imageSrc,
+          posType: this.posType,
+          topicId: this.topic.id,
+          topicTitle: this.topic.title
+        };
+      } else if (this.posType === 2) {
+        const imgs = [];
+        const images = [];
+        wx.showLoading({
+          title: '上传图片...',
+          mask: true
+        });
+        for (const item of res.delta.ops) {
+          const path = item.insert.image;
+          if (path && path.indexOf(Post.getQiniuUrl()) === -1) {
+            const { height, width, type } = await wepy.wx.getImageInfo({
+              src: path
+            });
+            const _res = await Post.uploadFile(
+              [
+                {
+                  height,
+                  width,
+                  type,
+                  path
+                }
+              ],
+              2
+            );
+            const url = Post.getQiniuUrl() + _res[0].path;
+            item.insert.image = url;
+            res.html = res.html.replace(path, url);
+            if (_res[0].path) {
+              images.push({
+                height,
+                width,
+                type,
+                isQiniu: true,
+                path: _res[0].path
+              });
+            }
+          }
+        }
+        wx.hideLoading();
+        _post = {
+          articleTitle: this.articleTitle,
+          articleHtml: res.html,
+          articleDelta: res.delta.ops,
+          introduction: res.text.substring(0, 140),
+          imgs: images.length ? images : null,
+          posType: this.posType,
+          topicId: this.topic.id,
+          topicTitle: this.topic.title
+        };
+      } else if (this.posType === 3) {
+        _post = {
+          content: this.content,
+          posType: this.posType,
+          topicId: this.topic.id,
+          topicTitle: this.topic.title
+        };
+      }
+      if (await Post.release(_post)) {
+        try {
+          wx.removeStorageSync('editor');
+        } catch (e) {
+          console.log(e);
+        }
+        wx.navigateBack();
+      }
+      this.loading = false;
+      this.disabled = false;
+    },
+    async onLinkAdd(url) {
+      this.showLink = false;
+      this.link = url;
+      const res = await Post.analyse(url);
+      if (res) {
+        this.article = res;
+      } else {
+        this.analyseState = 1;
+      }
+    },
+    onInput() {
+      this.canSend();
+    },
+    async chooseImage() {
+      if (this.posType === 1 || this.posType === 3) {
+        return;
+      }
+      const res = await wepy.wx.chooseImage({
+        count: 9 - this.images.length,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
+      const { tempFilePaths } = res;
+      for (const file of tempFilePaths) {
+        const info = await wepy.wx.getImageInfo({
+          src: file
+        });
+        const { height, width, type } = info;
+        this.images.push({
+          height,
+          width,
+          type,
+          isQiniu: true,
+          path: file
+        });
+      }
+      this.focus = true;
+      this.canSend();
+    },
+    onPreview(imgs, index) {
+      const urls = imgs.map(img => {
+        return img.path;
+      });
+      wx.previewImage({
+        urls,
+        current: urls[index]
+      });
+    },
+    onRemove(index) {
+      this.images.splice(index, 1);
+    },
+    canSend() {
+      if (this.images.length > 0 || this.content.length >= 5) {
+        this.disabled = false;
+      } else {
+        this.disabled = true;
+      }
+    },
+    onkeyboardheightchange(e) {
+      const { height } = e.$wx.detail;
+      if (!this.isGet && height > 0) {
+        this.inputType = 0;
+        this.bottom = height;
+        this.boardheight = height;
+        this.isGet = true;
+      }
+    },
+    onFocus(res) {
+      const { height } = res.$wx.detail;
+      if (height) {
+        this.inputType = 0;
+        this.bottom = height;
+        this.boardheight = height;
+        this.isGet = true;
+      }
+    },
+    onBlur(res) {
+      const { cursor } = res.$wx.detail;
+      this.cursor = cursor;
+      if (this.inputType === 0) {
+        this.bottom = 0;
+      }
+      this.isGet = false;
+      this.focus = false;
+    },
+    onEmoji(type) {
+      if (this.posType === 3) {
+        return;
+      }
+      if (type === 0) {
+        wx.hideKeyboard();
+        this.bottom = this.boardheight;
+      } else {
+        this.focus = true;
+      }
+      this.inputType = type === 0 ? 1 : 0;
+    },
+    onInputEmoji(val) {
+      let str = this.content.split('');
+      str.splice(this.cursor, 0, val);
+      this.content = str.join('');
+      if (this.cursor === -1) {
+        this.cursor += val.length + 1;
+      } else {
+        this.cursor += val.length;
+      }
+      this.canSend();
+    },
+    onDelEmoji() {
+      let str = this.content.split('');
+      const leftStr = this.content.substring(0, this.cursor);
+      const leftLen = leftStr.length;
+      const rightStr = this.content.substring(this.cursor);
+      const left_left_Index = leftStr.lastIndexOf('[');
+      const left_right_Index = leftStr.lastIndexOf(']');
+      const right_right_Index = rightStr.indexOf(']');
+      const right_left_Index = rightStr.indexOf('[');
+      if (
+        left_right_Index === leftLen - 1 &&
+        leftLen - left_left_Index <= 8 &&
+        left_left_Index > -1
+      ) {
+        // "111[不简单]|23[33]"left_left_Index=3,left_right_Index=7,leftLen=8
+        const len = left_right_Index - left_left_Index + 1;
+        str.splice(this.cursor - len, len);
+        this.cursor -= len;
+      } else if (
+        left_left_Index > -1 &&
+        right_right_Index > -1 &&
+        left_right_Index < left_left_Index &&
+        right_right_Index <= 6
+      ) {
+        // left_left_Index:4,left_right_Index:3,right_right_Index:1,right_left_Index:2
+        // "111[666][不简|单]"right_right_Index=1,left_left_Index=3,leftLen=6
+        let len = right_right_Index + 1 + (leftLen - left_left_Index);
+        if (len <= 10) {
+          str.splice(this.cursor - (leftLen - left_left_Index), len);
+          this.cursor -= leftLen - left_left_Index;
+        } else {
+          str.splice(this.cursor, 1);
+          this.cursor -= 1;
+        }
+      } else {
+        str.splice(this.cursor, 1);
+        this.cursor -= 1;
+      }
+      this.content = str.join('');
+    },
+    goAuth() {
+      wx.navigateTo({
+        url: '/pages/user-school'
+      });
+    },
+    onDelLocation(type) {
+      if (type === 0) {
+        this.location = null;
+      } else {
+        this.topic = null;
+      }
+    },
+    onMap() {
+      if (this.posType === 1 || this.posType === 3) {
+        return;
+      }
+      this.bottom = 0;
+      this.inputType = 0;
+      wx.hideKeyboard();
+      wx.getSetting({
+        success: res => {
+          if (res.authSetting['scope.userLocation']) {
+            this._openMap();
+          } else {
+            const auth = res.authSetting['scope.userLocation'];
+            if (auth === undefined) {
+              wx.authorize({
+                scope: 'scope.userLocation',
+                success: () => {
+                  this._openMap();
+                },
+                fail() {
+                  wx.showToast({
+                    title: '授权后才可以打开地图',
+                    icon: 'none'
+                  });
+                }
+              });
+            } else {
+              wx.openSetting({
+                success: res => {
+                  if (res.authSetting['scope.userLocation']) {
+                    this._openMap();
+                  } else {
+                    wx.showToast({
+                      title: '授权后才可以打开地图',
+                      icon: 'none'
+                    });
+                  }
+                },
+                fail: () => {
+                  wx.showToast({
+                    title: '授权后才可以打开地图',
+                    icon: 'none'
+                  });
+                }
+              });
+            }
+          }
+        }
+      });
+    },
+    _openMap() {
+      wx.showLoading({
+        title: '加载中'
+      });
+      wx.getLocation({
+        altitude: true,
+        isHighAccuracy: true,
+        success: res => {
+          const { latitude, longitude } = res;
+          wx.chooseLocation({
+            latitude,
+            longitude,
+            success: obj => {
+              wx.hideLoading();
+              this.location = obj;
+            },
+            fail: err => {
+              wx.hideLoading();
+            }
+          });
+        },
+        fail: err => {
+          wx.hideLoading();
+          console.log(err);
+        }
+      });
+    },
+    onTopic() {
+      this.show = false;
+      this.bottom = 0;
+      this.focus = false;
+      this.showTopic = true;
+    },
+    onSelect(topic) {
+      this.topic = topic;
+      this.onTopicClose();
+    },
+    onTopicClose() {
+      this.showTopic = false;
+      this.show = true;
+      this.inputType = 0;
+      const time = setTimeout(() => {
+        this.focus = true;
+        clearTimeout(time);
+      }, 300);
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationStyle: 'custom',
+    "usingComponents": {
+      "navigation-bar": "../components/navigation-bar/navigation-bar",
+      "emoji-input": "../components/input-emoji",
+      "link-input": "../components/input-link",
+      "input-editor": "../components/input-editor",
+      "topic-input": "../components/input-topic",
+    }
+}
+</config>

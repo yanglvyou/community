@@ -1,0 +1,496 @@
+<style lang="less" scoped>
+.cells {
+  background: #ffffff;
+  margin-bottom: 30rpx;
+  .cell {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 40rpx 30rpx;
+    font-size: 36rpx;
+    .left {
+      flex-basis: 240rpx;
+    }
+    .right {
+      align-content: flex-end;
+      display: flex;
+      align-items: center;
+      color: #b2b2b2;
+      font-size: 30rpx;
+      .icon {
+        font-size: 34rpx;
+      }
+    }
+    &.btn-cell {
+      justify-content: center;
+      align-items: center;
+      color: #409eff;
+      .icon {
+        font-size: 38rpx;
+        font-weight: bold;
+        margin-right: 20rpx;
+      }
+    }
+  }
+  .cell-hover {
+    background: #f8f8f8;
+  }
+}
+.des {
+  padding: 20rpx 30rpx;
+  color: #888888;
+  font-weight: lighter;
+  font-size: 26rpx;
+  margin-top: -30rpx;
+}
+.avtater {
+  text-align: center;
+  padding: 30rpx;
+  position: relative;
+  image {
+    width: 200rpx;
+    height: 200rpx;
+    border-radius: 200rpx;
+    border: #ffffff solid 8rpx;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+  }
+  .btn-edit {
+    background: #ffffff;
+    border: #ffffff solid 8rpx;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+    width: 64rpx;
+    height: 64rpx;
+    text-align: center;
+    line-height: 64rpx;
+    position: absolute;
+    bottom: 30rpx;
+    left: 395rpx;
+    border-radius: 64rpx;
+    &.icon {
+      font-size: 48rpx;
+    }
+  }
+}
+.input-bg {
+  background: #f8f8f8;
+  border-radius: 8rpx;
+  padding: 30rpx;
+  textarea {
+    width: 550rpx;
+    font-size: 32rpx;
+    text-align: left;
+  }
+}
+.nick-input {
+  font-size: 34rpx;
+  text-align: left;
+}
+.picker-col {
+  line-height: 50px;
+  text-align: center;
+}
+.dialog {
+  .title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40rpx;
+    .center {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 32rpx;
+    }
+    .btn-mini {
+      padding: 30rpx 40rpx;
+      font-size: 34rpx;
+      font-weight: bold;
+      &.btn-confirm {
+        color: #09bb07;
+      }
+    }
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="avtater" @tap="onUpload">
+      <img :src="user.avtater" />
+      <div class="btn-edit icon icon-camera-full"></div>
+    </div>
+    <div class="cells">
+      <div
+        class="cell"
+        hover-class="cell-hover"
+        v-for="(item, filed) in info"
+        :key="filed"
+        @tap="onTap(item, filed)"
+      >
+        <div class="left">{{item.title}}</div>
+        <div class="right">
+          <div class="value">{{item.value || item.des}}</div>
+          <div class="icon icon-arrow-right"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cells">
+      <div class="cell" hover-class="cell-hover" @tap="showSchool = true">
+        <div class="left">就读学校</div>
+        <div class="right">
+          <div class="value">{{user.school}}</div>
+          <div class="icon icon-arrow-right"></div>
+        </div>
+      </div>
+    </div>
+    <div class="cells" v-if="!user.isAuth">
+      <div class="cell btn-cell" hover-class="cell-hover" @tap="goAuth">
+        <div class="icon icon-auth-1"></div>
+        <div>去学生认证</div>
+      </div>
+    </div>
+    <dialog
+      title="修改昵称"
+      @close="onDialogClose"
+      show="{{dialogShow}}"
+      buttons="{{buttons}}"
+      @buttontap="onNickTap"
+    >
+      <div class="input-bg">
+        <input
+          class="nick-input"
+          v-model.trim="info.nick.value"
+          maxlength="10"
+          auto-focus
+          placeholder="将会获取焦点"
+        />
+      </div>
+    </dialog>
+    <dialog
+      title="个性签名"
+      @close="onDialogSignClose"
+      show="{{dialogSignShow}}"
+      buttons="{{buttons}}"
+      @buttontap="onSignButtontap"
+    >
+      <div class="input-bg">
+        <textarea
+          style="height: 120rpx;"
+          v-model.trim="info.signature.value"
+          :maxlength="30"
+          placeholder="一句话让别人注意你"
+        />
+      </div>
+    </dialog>
+    <screen-dialog :show="screenBirthDayDialog" :closabled="false" @close="onBirthDayCancel">
+      <div slot="desc" class="dialog">
+        <div class="title">
+          <div class="left btn-mini" @tap="onBirthDayCancel">取消</div>
+          <div class="center">选择生日</div>
+          <div class="right btn-mini btn-confirm" @tap="onBirthDayConfirm">确认</div>
+        </div>
+        <picker-view
+          :value="birthday"
+          @change="onBirthDayChange"
+          indicator-style="height: 50px;"
+          style="height: 260rpx;"
+        >
+          <picker-view-column>
+            <div v-for="y in years" class="picker-col">{{y}}年</div>
+          </picker-view-column>
+          <picker-view-column>
+            <div v-for="m in months" class="picker-col">{{m}}月</div>
+          </picker-view-column>
+          <picker-view-column>
+            <div v-for="d in days" class="picker-col">{{d}}日</div>
+          </picker-view-column>
+        </picker-view>
+      </div>
+    </screen-dialog>
+    <screen-dialog :show="homeTownDialog" :closabled="false" @close="onHomeTownCancel">
+      <div slot="desc" class="dialog">
+        <div class="title">
+          <div class="left btn-mini" @tap="onHomeTownCancel">取消</div>
+          <div class="center">选择故乡</div>
+          <div class="right btn-mini btn-confirm" @tap="onHomeTownConfirm">确认</div>
+        </div>
+        <picker-view
+          :value="hometown"
+          @change="onHomeTownChange"
+          indicator-style="height: 50px;"
+          style="height: 260rpx;"
+        >
+          <picker-view-column>
+            <div v-for="p in provinces" class="picker-col">{{p}}</div>
+          </picker-view-column>
+          <picker-view-column>
+            <div v-for="c in citys" class="picker-col">{{c}}</div>
+          </picker-view-column>
+        </picker-view>
+      </div>
+    </screen-dialog>
+    <screen-dialog :show="showDialog" :closabled="false" @close="onCancel">
+      <div slot="desc" class="dialog">
+        <div class="title">
+          <div class="left btn" @tap="onCancel">取消</div>
+          <div class="center">{{title}}</div>
+          <div class="right btn btn-confirm" @tap="onConfirm">确认</div>
+        </div>
+        <picker-view
+          :value="value"
+          @change="onChange"
+          indicator-style="height: 50px;"
+          style="height: 260rpx;"
+        >
+          <picker-view-column>
+            <div v-for="item in dataSoure[index]" class="picker-col">{{item}}</div>
+          </picker-view-column>
+        </picker-view>
+      </div>
+    </screen-dialog>
+    <school-input :show="showSchool" @result="onSchoolSelect" @close="onSchoolClose" />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import province from '../common/province';
+import { User, qiniuUrl } from '../common/api';
+const provinces = [];
+const citys = province['北京'];
+for (const p in province) {
+  if (province.hasOwnProperty(p)) {
+    provinces.push(p);
+  }
+}
+const years = [];
+const months = [];
+const days = [];
+for (let i = 1; i <= 31; i++) {
+  days.push(i);
+}
+for (let i = 1; i <= 12; i++) {
+  months.push(i);
+}
+for (let i = 1980; i <= new Date().getFullYear(); i++) {
+  years.push(i);
+}
+wepy.page({
+  data: {
+    showSchool: false,
+    dialogShow: false,
+    dialogSignShow: false,
+    screenBirthDayDialog: false,
+    homeTownDialog: false,
+    buttons: [{ text: '取消' }, { text: '确定' }],
+    showActionsheet: false,
+    years: years,
+    months: months,
+    days: days,
+    provinces: provinces,
+    citys: citys,
+    birthday: [16, 6, 2],
+    hometown: [0, 0],
+    user: null,
+    groups: [
+      { text: '单身', value: 0 },
+      { text: '热恋', value: 1 },
+      { text: '保密', value: 2 }
+    ],
+    info: {
+      nick: {
+        title: '昵称',
+        des: '填写昵称',
+        value: '一叶知秋'
+      },
+      signature: {
+        title: '个性签名',
+        des: '一句话让别人记住你',
+        value: ''
+      },
+      birthday: {
+        title: '生日',
+        des: '选择日期',
+        value: ''
+      },
+      hometown: {
+        title: '城市',
+        des: '选择所在城市',
+        value: ''
+      }
+    }
+  },
+  async onLoad() {
+    this.user = await User.details(User.getUserId());
+    if (this.user) {
+      const user = this.user;
+      for (const key in this.info) {
+        if (this.info.hasOwnProperty(key)) {
+          switch (key) {
+            case 'feeling':
+              this.info[key].value = this.groups[user[key]].text;
+              break;
+            case 'birthday':
+              if (user[key]) {
+                let date = new Date(user[key]);
+                this.birthday = [
+                  date.getFullYear() - 1980,
+                  date.getMonth(),
+                  date.getDate() - 1
+                ];
+                this.info[key].value = user[key];
+              }
+              break;
+            case 'hometown':
+              this.citys = province[user.province];
+              this.hometown = [
+                this.provinces.indexOf(user.province),
+                province[user.province].indexOf(user.city)
+              ];
+              this.info[key].value = `${user.province} ${user.city}`;
+              break;
+            default:
+              this.info[key].value = user[key];
+              break;
+          }
+        }
+      }
+    }
+  },
+  methods: {
+    goAuth() {
+      wx.navigateTo({
+        url: '/pages/user-auth'
+      });
+    },
+    onClose() {
+      this.showActionsheet = false;
+    },
+    onDialogClose() {
+      this.dialogShow = false;
+    },
+    onDialogSignClose() {
+      this.dialogSignShow = false;
+    },
+    async onActiontap(res) {
+      const { value, index } = res.$wx.detail;
+      this.info.feeling.value = this.groups[index].text;
+      this.onClose();
+      await User.change('feeling', this.groups[index].value);
+    },
+    async onNickTap(res) {
+      this.dialogShow = false;
+      const { index } = res.$wx.detail;
+      if (index === 1) {
+        if (this.info.nick.value) {
+          await User.change('nick', this.info.nick.value);
+        }
+      }
+    },
+    async onSignButtontap(res) {
+      this.dialogSignShow = false;
+      const { index } = res.$wx.detail;
+      if (index === 1) {
+        await User.change('signature', this.info.signature.value);
+      }
+    },
+    onBirthDayChange(e) {
+      const res = e.$wx.detail.value;
+      this.birthday[0] = res[0];
+      this.birthday[1] = res[1];
+      this.birthday[2] = res[2];
+    },
+    onBirthDayCancel() {
+      this.screenBirthDayDialog = false;
+    },
+    async onBirthDayConfirm() {
+      this.onBirthDayCancel();
+      this.info.birthday.value = `${this.years[this.birthday[0]]}-${
+        this.months[this.birthday[1]]
+      }-${this.days[this.birthday[2]]}`;
+      await User.change('birthday', this.info.birthday.value);
+    },
+    onHomeTownChange(e) {
+      const res = e.$wx.detail.value;
+      if (this.hometown[0] !== res[0]) {
+        this.hometown[0] = res[0];
+        this.citys = province[provinces[res[0]]];
+        this.hometown[1] = 0;
+      } else {
+        this.hometown[1] = res[1];
+      }
+    },
+    onHomeTownCancel() {
+      this.homeTownDialog = false;
+    },
+    async onHomeTownConfirm() {
+      this.onHomeTownCancel();
+      this.info.hometown.value = `${provinces[this.hometown[0]]} ${
+        this.citys[this.hometown[1]]
+      }`;
+      await User.change('hometown', this.info.hometown.value);
+    },
+    onTap(item, filed) {
+      switch (filed) {
+        case 'nick':
+          this.dialogShow = true;
+          break;
+        case 'feeling':
+          this.showActionsheet = true;
+          break;
+        case 'signature':
+          this.dialogSignShow = true;
+          break;
+        case 'birthday':
+          this.screenBirthDayDialog = true;
+          break;
+        case 'hometown':
+          this.homeTownDialog = true;
+          break;
+        default:
+          break;
+      }
+    },
+    async onSchoolSelect(school) {
+      this.showSchool = false;
+      if (await User.change('school', school.name)) {
+        this.user.school = school.name;
+      }
+    },
+    onSchoolClose() {
+      this.showSchool = false;
+    },
+    async onUpload() {
+      const res = await wepy.wx.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
+      const { tempFilePaths } = res;
+      wx.showLoading({
+        title: '上传头像...',
+        mask: true
+      });
+      const imgUrl = await User.uploadFile(
+        [
+          {
+            path: tempFilePaths[0]
+          }
+        ],
+        0
+      );
+      wx.hideLoading();
+      const avtater = qiniuUrl + imgUrl;
+      if (await User.change('avtater', avtater)) {
+        this.user.avtater = avtater;
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '编辑个人资料',
+    "usingComponents": {
+      "dialog": "../components/dialog/dialog",
+      "school-input": "../components/input-school",
+      "screen-dialog": "../components/half-screen-dialog/half-screen-dialog"
+    }
+}
+</config>

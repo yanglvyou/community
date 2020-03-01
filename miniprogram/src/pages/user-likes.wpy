@@ -1,0 +1,26 @@
+<style lang="less" scoped>
+.container {
+  height: calc(100vh);
+}
+</style>
+<template>
+  <div class="container">
+    <mp-list action="likesForUser" :refresherEnabled="false" :isInit="init" />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    init: true
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '我赞过的',
+    "usingComponents": {
+      "mp-list": "../components/page-list",
+    }
+}
+</config>

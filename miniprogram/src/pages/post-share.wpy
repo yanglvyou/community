@@ -1,0 +1,318 @@
+<style lang="less" scoped>
+page {
+  background: #b2b2b2;
+}
+.share {
+  position: relative;
+  .footer {
+    position: fixed;
+    bottom: 0rpx;
+    left: 0rpx;
+    padding: 30rpx 0rpx;
+    width: 100%;
+    background: #fff;
+    text-align: center;
+    .title {
+      font-size: 34rpx;
+    }
+    .des {
+      font-size: 26rpx;
+      color: #b2b2b2;
+      margin-top: 8rpx;
+    }
+  }
+}
+</style>
+<template>
+  <div class="share">
+    <painter palette="{{template}}" :scale="0.7" customStyle="margin-top: 30rpx;margin-left: 15%;width: calc(75%);height: calc(100vh - 100rpx);" />
+    <painter
+      palette="{{template}}"
+      bind:imgOK="onImgOK"
+      bind:imgErr="onImgErr"
+      widthPixels="1080"
+      customStyle="position: absolute; left: -9999rpx;"
+    />
+    <div class="footer" @tap="onClose">
+      <div class="title">完成</div>
+      <div class="des">「分享图片至朋友圈,与小伙伴一起分享」</div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post, baseUrl, qiniuUrl } from '../common/api';
+wepy.page({
+  data: {
+    template: null
+  },
+  async onLoad(q) {
+    wx.setNavigationBarTitle({
+      title: ''
+    });
+    const { id } = q;
+    this.id = id;
+    wx.showLoading({
+      title: '海报生成中...',
+      mask: true
+    });
+    this.post = await Post.details(id);
+    if (this.post) {
+      this.creatPoster(this.post);
+    }
+  },
+  methods: {
+    getUrl(path) {
+      return `${baseUrl}/api/public/image/${encodeURIComponent(path)}`;
+    },
+    creatPoster(post) {
+      const self = this
+      if (post) {
+        const _user = this.post.user;
+        const _post = this.post.post;
+        const template = {
+          background: '#ffffff',
+          width: '750rpx',
+          height: '1080rpx',
+          views: []
+        };
+        function drawUser() {
+          template.views.push(
+            {
+              type: 'image',
+              url: self.getUrl(_user.avtater),
+              css: {
+                top: '56rpx',
+                left: '56rpx',
+                width: '96rpx',
+                height: '96rpx',
+                borderRadius: '96rpx'
+              }
+            },
+            {
+              type: 'text',
+              text: _user.nick,
+              css: {
+                fontSize: '32rpx',
+                fontWeight: 'bold',
+                top: '64rpx',
+                left: '172rpx'
+              }
+            },
+            {
+              type: 'text',
+              text: _user.title || _user.school || '记录真实的校园生活',
+              css: {
+                fontSize: '28rpx',
+                color: '#b2b2b2',
+                top: '114rpx',
+                left: '172rpx'
+              }
+            }
+          );
+          return 180;
+        }
+        function drawTitle(top, title) {
+          const height = computeHeight(title, 34) * 50;
+          template.views.push({
+            type: 'text',
+            text: title,
+            css: {
+              fontSize: '34rpx',
+              lineHeight: '50rpx',
+              fontWeight: 'bold',
+              color: '#353535',
+              width: '600rpx',
+              height: height,
+              top: `${top}rpx`,
+              left: '75rpx'
+            }
+          });
+          return top + height + 20;
+        }
+        function drawContent(content, top, isDes = false) {
+          const lines = computeHeight(content, isDes ? 26 : 34);
+          const lineHeight = isDes ? 40 : 50;
+          height = lines > 3 ? 150 : lines * 50;
+          template.views.push({
+            type: 'text',
+            text: content,
+            css: {
+              fontSize: `${isDes ? 26 : 34}rpx`,
+              lineHeight: `${lineHeight}rpx`,
+              maxLines: 3,
+              color: `#${isDes ? 'b2b2b2' : '353535'}`,
+              width: '600rpx',
+              height: height,
+              top: `${top}rpx`,
+              left: '75rpx'
+            }
+          });
+          return top + height + 20;
+        }
+        function drawContentImg(img, top) {
+          template.views.push({
+            type: 'image',
+            url: self.getUrl(img.path),
+            css: {
+              top: `${top}rpx`,
+              left: '65rpx',
+              width: `600rpx`,
+              height: `${(600 / img.height) * img.height}rpx`
+            }
+          });
+          return top + (600 / img.height) * img.height;
+        }
+        function dreawArticle(top, title, imgPath) {
+          template.views.push(
+            {
+              type: 'rect',
+              css: {
+                width: '640rpx',
+                height: '120rpx',
+                color: '#f4f4f4',
+                borderRadius: '8rpx',
+                top: `${top}rpx`,
+                left: '65rpx'
+              }
+            },
+            {
+              type: 'text',
+              text: title,
+              css: {
+                fontSize: '32rpx',
+                color: '#353535',
+                width: '500rpx',
+                lineHeight: '50rpx',
+                top: `${top + 20}rpx`,
+                left: '85rpx'
+              }
+            },
+            {
+              type: 'image',
+              url: self.getUrl(imgPath),
+              css: {
+                top: `${top + 20}rpx`,
+                left: '600rpx',
+                width: '84rpx',
+                height: '84rpx',
+                borderRadius: '8rpx'
+              }
+            }
+          );
+          return top + 120;
+        }
+        function drawQR(top, postId) {
+          template.views.push(
+            {
+              type: 'rect',
+              css: {
+                width: '750rpx',
+                height: '400rpx',
+                color: '#f8f8f8',
+                top: `${top + 30}rpx`,
+                left: '0rpx'
+              }
+            },
+            {
+              type: 'image',
+              url: `${baseUrl}/api/public/user/qrcode/${Post.getUserId()}/${postId}/0`,
+              css: {
+                top: `${top + 70}rpx`,
+                left: '275rpx',
+                width: '200rpx',
+                height: '200rpx',
+                borderRadius: '200rpx'
+              }
+            },
+            {
+              type: 'text',
+              text: '长按识别小程序码，查看更多内容',
+              css: {
+                fontSize: '26rpx',
+                color: '#b2b2b2',
+                align: 'center',
+                width: '750rpx',
+                top: `${top + 300}rpx`,
+                right: '200rpx'
+              }
+            }
+          );
+          return top + 400;
+        }
+        function computeHeight(content, fontSize) {
+          if (content) {
+            return Math.ceil((content.length * fontSize) / 600);
+          }
+          return 0;
+        }
+        let height = 800;
+        const { posType } = _post;
+        if (posType === 1) {
+          height = drawQR(
+            dreawArticle(
+              drawContent(_post.baseTxt, drawUser()),
+              _post.articleTitle,
+              _post.articleImg
+            ),
+            this.post.post.id
+          );
+        } else {
+          let top = drawUser();
+          if (posType === 2 || posType === 4) {
+            top = drawTitle(top, _post.articleTitle);
+          }
+          top = drawContent(
+            _post.baseTxt || _post.introduction || _post.content,
+            top,
+            posType === 2 || posType === 4
+          );
+          if (_post.imgs && _post.imgs.length) {
+            top = drawContentImg(_post.imgs[0], top);
+          }
+          height = drawQR(top, this.post.post.id);
+        }
+        console.log(height);
+        
+        template.height = `${height}rpx`;
+        this.template = template;
+      }
+    },
+    onClose() {
+      wx.navigateBack();
+    },
+    onImgErr() {
+      wx.hideLoading();
+      wx.showToast({
+        title: '海报生成失败'
+      });
+    },
+    onImgOK(res) {
+      wx.hideLoading();
+      const { path } = res.$wx.detail;
+      wx.saveImageToPhotosAlbum({
+        filePath: path,
+        success: () => {
+          wx.showToast({
+            title: '已保存海报',
+            icon: 'success'
+          });
+        },
+        fail: () => {
+          wx.showToast({
+            title: '保存失败'
+          });
+        }
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarBackgroundColor: '#b2b2b2',
+    "usingComponents": {
+      "painter": "../components/painter/painter"
+    }
+}
+</config>

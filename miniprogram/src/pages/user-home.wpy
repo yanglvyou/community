@@ -1,0 +1,419 @@
+<style lang="less" scoped>
+.bar-back {
+  .weui-navigation-bar__left {
+    padding-left: 16px;
+  }
+  .weui-navigation-bar__buttons {
+    background: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: 72rpx;
+  }
+  .weui-navigation-bar__inner
+    .weui-navigation-bar__left
+    .weui-navigation-bar__btn_goback {
+    height: 72rpx;
+    padding: 16rpx;
+    box-sizing: border-box;
+    width: 34rpx;
+    margin-left: 19rpx;
+    background-size: 80%;
+    background-repeat: no-repeat;
+  }
+}
+.container {
+  background-image: url(http://img.wutuobangxinyougou.com/bg_2.jpg);
+  background-size: 800rpx 1200rpx;
+  background-repeat: no-repeat;
+  position: relative;
+  height: calc(100vh);
+  .head {
+    color: #ffffff;
+    .avtater {
+      text-align: left;
+      margin-left: 32rpx;
+      margin-top: 100rpx;
+      position: relative;
+      & > image {
+        width: 200rpx;
+        height: 200rpx;
+        border-radius: 200rpx;
+        border: #ffffff solid 8rpx;
+        box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+      }
+      .feeling {
+        position: absolute;
+        left: 160rpx;
+        bottom: 20rpx;
+        image {
+          width: 48rpx;
+          height: 48rpx;
+        }
+      }
+      .btn-follow {
+        position: absolute;
+        right: 60rpx;
+        top: 60rpx;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 14rpx 38rpx;
+        font-size: 30rpx;
+        border-radius: 80rpx;
+        display: flex;
+        align-items: center;
+        &.has {
+          color: #c2c2c2;
+        }
+        .icon {
+          margin-right: 8rpx;
+          font-weight: bold;
+        }
+      }
+    }
+    .info {
+      text-align: left;
+      position: relative;
+      padding: 30rpx 0rpx;
+      .name {
+        margin-top: 20rpx;
+        display: flex;
+        height: 60rpx;
+        flex-direction: row;
+        align-items: center;
+        margin-left: 60rpx;
+        justify-content: flex-start;
+        .nick {
+          font-size: 42rpx;
+          font-weight: bold;
+        }
+        .gender {
+          font-size: 18rpx;
+          background: #ff68a2;
+          color: #ffffff;
+          margin-left: 8rpx;
+          border-radius: 22rpx;
+          padding: 4rpx 8rpx;
+        }
+      }
+      .sign {
+        font-size: 30rpx;
+        padding-left: 60rpx;
+        padding-right: 100rpx;
+        padding-bottom: 60rpx;
+        margin-top: 20rpx;
+        .icon {
+          color: #888888;
+          font-size: 30rpx;
+        }
+      }
+      .des {
+        padding: 10rpx 0rpx;
+        margin-left: 60rpx;
+        height: 40rpx;
+        view {
+          display: inline-block;
+          font-size: 24rpx;
+          &::after {
+            content: '·';
+          }
+          &:last-child::after {
+            content: '';
+          }
+        }
+      }
+      .action {
+        margin: 40rpx 0rpx;
+        padding-bottom: 40rpx;
+      }
+    }
+    .tool {
+      display: flex;
+      align-items: center;
+      margin-left: 60rpx;
+      .item {
+        display: inline-block;
+        padding: 12rpx 0rpx;
+        padding-right: 60rpx;
+        .value {
+          font-size: 30rpx;
+          font-weight: bold;
+          margin-right: 8rpx;
+        }
+        .label {
+          font-size: 24rpx;
+        }
+      }
+    }
+  }
+  .content {
+    width: 100%;
+    left: 0rpx;
+    background: #ffffff;
+    border-top-right-radius: 30rpx;
+    border-top-left-radius: 30rpx;
+    transition: all 0.3s;
+    swiper {
+      background: #f8f8f8;
+      scroll-view {
+        background: #f8f8f8;
+        .empty {
+          height: 80rpx;
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+  <div class="container" @touchmove="touchmove" @touchend="touchend">
+    <navigation-bar ext-class="bar-back" :back="true" show="false" :background="background"></navigation-bar>
+    <div class="head">
+      <div class="avtater">
+        <img :src="user.avtater" />
+        <!-- <div class="feeling">
+          <img src="../images/icon_dan.svg" />
+        </div>-->
+        <div class="btn-follow" v-if="user.isSelf" @tap="goEdit">
+          <div class="icon icon-edit"></div>
+          <div>编辑资料</div>
+        </div>
+        <div class="btn-follow {{user.hasFollow ? 'has' : ''}}" @tap.stop="onFollow" v-else>
+          <div class="icon icon-add" v-if="!user.hasFollow"></div>
+          <div>{{user.hasFollow ? '已关注' : '关注'}}</div>
+        </div>
+      </div>
+      <div class="info">
+        <div class="name">
+          <div class="nick">{{user.nick}}</div>
+        </div>
+        <div class="des">
+          <div>{{user.gender}}</div>
+          <div v-if="user.school">{{user.school}}</div>
+          <div v-if="user.province">{{user.province}} {{user.city}}</div>
+        </div>
+        <div class="tool">
+          <div class="item">
+            <text class="value">{{user.thumbsNum}}</text>
+            <text class="label">获赞</text>
+          </div>
+          <div class="item" @tap="goFans(0)">
+            <text class="value">{{user.followNum}}</text>
+            <text class="label">关注</text>
+          </div>
+          <div class="item" @tap="goFans(1)">
+            <text class="value">{{user.fansNum}}</text>
+            <text class="label">粉丝</text>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="content"
+      id="content"
+      style="top: {{top}}px;{{position}};transition: {{transition}};"
+    >
+      <tabs :labels="tabs" :selectedIndex="tabIndex" id="tab" @change="onTabChange" :auto="true" />
+      <swiper
+        :current="current"
+        @change="onChange"
+        style="height: calc(100vh - {{top}}px - 90rpx);"
+      >
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="userId"
+            :dataType="0"
+            :isInit="init0"
+            :refresherEnabled="false"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="userId"
+            :dataType="1"
+            :isInit="init1"
+            :refresherEnabled="false"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="userId"
+            :dataType="2"
+            :isInit="init2"
+            :refresherEnabled="false"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+        <swiper-item>
+          <topic-list
+            controller="topic"
+            action="getListForUser"
+            :objId="userId"
+            :isInit="init3"
+            :refresherEnabled="false"
+            :scrollY="scrollY"
+            :pageSize="10"
+          />
+        </swiper-item>
+      </swiper>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { User } from '../common/api';
+import Share from '../mixins/share'
+wepy.page({
+  mixins: [Share],
+  data: {
+    tabIndex: 0,
+    current: 0,
+    action: 'listForUser',
+    tabs: [
+      {
+        title: '动弹',
+        showDot: false
+      },
+      {
+        title: '文章',
+        showDot: false
+      },
+      {
+        title: '问答',
+        showDot: false
+      },
+      {
+        title: '话题',
+        showDot: false
+      }
+    ],
+    startY: 0,
+    top: 400,
+    baseTop: 0,
+    position: 'position:fixed',
+    bottom: 0,
+    scrollY: false,
+    transition: 'none',
+    isSelf: false,
+    loadPhotos: false,
+    loadTag: false,
+    isgz: false,
+    user: null,
+    userId: 0,
+    init0: false,
+    init1: false,
+    init2: false,
+    init3: false
+  },
+  async onLoad(q) {
+    const { id } = q;
+    this.userId = id;
+    const { bottom, top, height } = wx.getMenuButtonBoundingClientRect();
+    this.bottom = this.$app.$options.navigationHeight();
+    this.$wx
+      .createSelectorQuery()
+      .select('.head')
+      .boundingClientRect(res => {
+        let _top = res.top + res.height;
+        this.top = _top;
+        this.baseTop = _top;
+        this.position = 'position:fixed';
+      })
+      .exec();
+    this.user = await User.details(id);
+    this.init0 = true;
+  },
+  methods: {
+    onTabChange(index) {
+      this.current = index;
+    },
+    onChange(res) {
+      const { current, source } = res.$wx.detail;
+      this.tabIndex = current;
+      if (!this[`init${current}`]) {
+        this[`init${current}`] = true;
+      }
+    },
+    touchmove(res) {
+      let _pageY = res.$wx.changedTouches[0].pageY;
+      if (this.startY === 0) {
+        this.startY = _pageY;
+      }
+      let offset = _pageY - this.startY;
+      if (offset < 0) {
+        if (this.top > this.bottom) {
+          this.startY = _pageY;
+          let _top = this.top + offset;
+          this.top = _top < this.bottom ? this.bottom : _top;
+        }
+      } else {
+        if (this.top < this.baseTop) {
+          this.startY = _pageY;
+          let _top = this.top + offset;
+          this.top = _top > this.baseTop ? this.baseTop : _top;
+        }
+      }
+    },
+    touchend(res) {
+      this.startY = 0;
+      this.$wx
+        .createSelectorQuery()
+        .select('.content')
+        .boundingClientRect(res => {
+          const { top } = wx.getMenuButtonBoundingClientRect();
+          if (res.top > (this.baseTop - top) / 2 + top) {
+            this.top = this.baseTop;
+            this.scrollY = false;
+          } else {
+            this.top = this.bottom;
+            this.scrollY = true;
+          }
+          this.transition = 'all 0.3s';
+          setTimeout(() => {
+            this.transition = 'none';
+          }, 300);
+        })
+        .exec();
+    },
+    async onFollow() {
+      if (this.user.hasFollow) {
+        if (await User.cancel(this.user.id)) {
+          this.user.hasFollow = false;
+        }
+      } else {
+        this.user.hasFollow = await User.follow(this.user.id);
+      }
+    },
+    goEdit() {
+      wx.navigateTo({
+        url: `/pages/user-seting`
+      });
+    },
+    goFans(type) {
+      wx.navigateTo({
+        url: `/pages/user-fans?id=${this.user.id}&type=${type}`
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationStyle: 'custom',
+    disableScroll: true,
+    "usingComponents": {
+      "tabs": "../components/tab-bar",
+      "mp-list": "../components/page-list",
+      "topic-list": "../components/page-list",
+      "item-topic": "../components/item-topic",
+      "navigation-bar": "../components/navigation-bar/navigation-bar"
+    }
+}
+</config>

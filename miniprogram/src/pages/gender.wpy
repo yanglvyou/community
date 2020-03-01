@@ -1,0 +1,195 @@
+<style lang="less">
+page {
+  background: #ffffff;
+}
+.container {
+  align-items: center;
+  text-align: center;
+  .title {
+    color: var(--txt-primary);
+    font-weight: bold;
+    font-size: 40rpx;
+    margin-top: 100rpx;
+  }
+
+  .action-des {
+    color: var(--txt-second);
+    font-size: 34rpx;
+    margin-top: 16rpx;
+  }
+
+  .gender {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    margin: 0px auto;
+    justify-content: center;
+    margin-top: 180rpx;
+
+    .gender-item {
+      flex-grow: 1;
+      text-align: center;
+
+      image {
+        width: 168rpx;
+        height: 240rpx;
+      }
+
+      .radio {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-top: 40rpx;
+        color: var(--txt-second);
+
+        .radio-txt {
+          margin-left: 8rpx;
+          font-weight: bold;
+        }
+
+        .icon {
+          font-size: 56rpx;
+        }
+      }
+
+      &.action .radio {
+        color: var(--txt-primary);
+      }
+    }
+  }
+}
+.footer {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  left: 0px;
+  text-align: center;
+  padding: 50rpx 0rpx;
+  button {
+    height: 94rpx;
+    line-height: 94rpx;
+    border-radius: 94rpx;
+    padding: 0rpx 120rpx;
+    display: inline-block;
+    background: #ffd100;
+    color: #13100e;
+    border: none;
+    box-shadow: 4rpx 8rpx 12rpx rgba(255, 209, 0, 0.3);
+    font-size: 34rpx;
+    font-weight: bold;
+    &::after {
+      border: none;
+    }
+    &.btn-login {
+      background: #fae37c;
+    }
+  }
+  .btn-hover {
+    background: #fae37c;
+  }
+  .des {
+    padding: 16rpx 0rpx;
+    color: #888888;
+    font-size: 24rpx;
+    font-weight: lighter;
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="title">你的性别是?</div>
+    <div class="action-des">性别选择后无法修改</div>
+    <div class="gender">
+      <div class="gender-item {{gender === 1 ? 'action' : ''}}" @tap="choice(1)">
+        <img v-if="gender === 1" src="../images/boy_select.svg" alt />
+        <img v-else src="../images/boy.svg" alt />
+        <div class="radio">
+          <div class="icon {{gender === 1 ? 'icon-radio-select' : 'icon-radio'}}"></div>
+          <div class="radio-txt">大帅哥</div>
+        </div>
+      </div>
+      <div class="gender-item {{gender === 2 ? 'action' : ''}}" @tap="choice(2)">
+        <img v-if="gender === 2" src="../images/girl_select.svg" alt />
+        <img v-else src="../images/girl.svg" alt />
+        <div class="radio">
+          <div class="icon {{gender === 2 ? 'icon-radio-select' : 'icon-radio'}}"></div>
+          <div class="radio-txt">小仙女</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <button
+        @getuserinfo="getuserinfo"
+        :loading="loading"
+        :disabled="disabled"
+        class="btn-login"
+        hover-class="btn-hover"
+        lang="zh_CN"
+        open-type="getUserInfo"
+      >{{btntext}}</button>
+      <div class="des" @tap.stop="desTap">此刻开启不一样的校园生活吧</div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { User, eventHub } from '../common/api'
+wepy.page({
+  data: {
+    gender: -1,
+    btntext: '微信授权',
+    loading: false,
+    disabled: false
+  },
+  onLoad() {
+    this.btntext = true ? 'QQ授权' : '微信授权';
+  },
+  methods: {
+    choice(gender) {
+      this.gender = gender;
+    },
+    async getuserinfo(res) {
+      const info = res.$wx.detail.userInfo
+      if (this.gender === -1) {
+        wx.showToast({
+          title: '请选择性别',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      if (info) {
+        this.loading = true;
+        this.disabled = true;
+        this.btntext = '绑定中..';
+        const res = await User.bindInfo(info);
+        if (!res) {
+          this.btntext = '重试';
+        } else {
+          eventHub.$emit('binding')
+          setTimeout(() => {
+            wx.navigateBack();
+          }, 1000);
+        }
+        this.loading = false;
+        this.disabled = false;
+      } else {
+        wx.showToast({
+          title: '已取消授权',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    }
+  }
+});
+</script>
+<config>
+  {
+  navigationBarTitleText: '选择性别',
+  navigationBarBackgroundColor: '#ffffff',
+  "usingComponents": {
+  }
+  }
+</config>

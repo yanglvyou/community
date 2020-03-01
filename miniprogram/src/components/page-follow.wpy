@@ -1,0 +1,178 @@
+<style lang="less" scoped>
+.follow-empty {
+  padding: 20rpx;
+  background: rgba(255, 209, 0, 0.1);
+  .title {
+    font-weight: bold;
+    color: #474747;
+    font-size: 30rpx;
+  }
+  .empty-content {
+    background: url(http://img.wutuobangxinyougou.com/topic_empty.svg) no-repeat;
+    background-size: 30% 100%;
+    background-position: 100% 100%;
+    font-size: 28rpx;
+    padding: 30rpx;
+    text-align: left;
+    color: #7a8299;
+    line-height: 45rpx;
+  }
+}
+.list {
+  .title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    text-align: center;
+    color: #b2b2b2;
+    padding: 30rpx;
+    font-size: 28rpx;
+    .des {
+      margin: 0rpx 10rpx;
+    }
+    .line {
+      height: 1px;
+      background: #f1f1f1;
+      width: 100rpx;
+    }
+  }
+}
+</style>
+<template>
+  <mp-page
+    :state="state"
+    :triggered="triggered"
+    :num="num"
+    @scrolltolower="onScrolltolower"
+    @refresherrefresh="onRefresherrefresh"
+    @refresherrestore="onRefresherrestore"
+    @refresherpulling="onRefresherpulling"
+  >
+    <block v-if="items.length">
+      <!-- <user-recommend /> -->
+      <post-item v-for="item in items" :key="item.id" :item="item" :showBtnFollow="false" />
+    </block>
+    <block v-else>
+      <scroll-view :scroll-y="true" slot="empty" style="height:100%;">
+        <div class="follow-empty">
+          <div class="empty-content">
+            <div class="title">你还没有关注的人哦,</div>
+            <div>已经关注了？别着急，他们也许最近忙考试呢</div>
+          </div>
+        </div>
+        <div class="list">
+          <div class="title">
+            <div class="line"></div>
+            <div class="des">为你推荐了10条动弹</div>
+            <div class="line"></div>
+          </div>
+          <post-item v-for="item in recommentds" :key="item.id" :item="item" />
+        </div>
+      </scroll-view>
+    </block>
+  </mp-page>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post } from '../common/api';
+wepy.component({
+  props: {
+    isInit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: {
+    count: 0,
+    state: 0,
+    pageIndex: 1,
+    pageSize: 5,
+    items: [],
+    triggered: false,
+    num: -1,
+    recommentds: [],
+    isLoading: false,
+    hasMore: true,
+    begin: new Date()
+  },
+  watch: {
+    async isInit(val) {
+      if (val) {
+        if (await this.loadData()) {
+          if (this.items.length) {
+            this.state = 2;
+          } else {
+            const items = await Post.recommendForNew();
+            if (items) {
+              if (items.length) {
+                this.recommentds = items;
+                this.state = 2;
+              } else {
+                this.state = 3;
+              }
+            } else {
+              this.state = 1;
+            }
+          }
+        } else {
+          this.state = 1;
+        }
+      }
+    }
+  },
+  methods: {
+    async loadData(isRefresh) {
+      if ((!this.hasMore && !isRefresh) || this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      const items = await Post.follow({
+        isRefresh,
+        begin: isRefresh ? this.begin : null,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      });
+      if (items) {
+        for (const item of items) {
+          this.items[isRefresh ? 'unshift' : 'push'](item);
+        }
+        if (isRefresh) {
+          this.begin = new Date();
+          this.num = items.length;
+        } else {
+          this.pageIndex++;
+        }
+        this.hasMore = items.length === this.pageSize;
+      }
+      this.isLoading = false;
+      return items;
+    },
+    async onScrolltolower() {
+      await this.loadData();
+    },
+    async onRefresherpulling() {
+      this.triggered = true;
+    },
+    async onRefresherrefresh() {
+      await this.loadData(true);
+      setTimeout(() => {
+        this.num = -1;
+      }, 2000);
+      this.triggered = false;
+    },
+    onRefresherrestore() {
+      this.triggered = false;
+    }
+  }
+});
+</script>
+<config>
+{
+    usingComponents: {
+        "mp-page": "./mp-page",
+        "post-item": "./item-post",
+        "user-recommend": "./user-recommend"
+    }
+}
+</config>

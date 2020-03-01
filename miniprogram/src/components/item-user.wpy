@@ -1,0 +1,144 @@
+<style lang="less" scoped>
+.user {
+  display: flex;
+  align-items: center;
+  .user-avtater {
+    flex-shrink: 0;
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 8rpx;
+  }
+  .user-info {
+    flex-grow: 1;
+    margin-left: 20rpx;
+    .user-info-top {
+      display: flex;
+      align-items: center;
+      .user-info-nick {
+        font-size: 26rpx;
+        color: #606266;
+        max-width: 260rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+        &.vip {
+          color: #d81e06;
+        }
+      }
+      .ic-img {
+        width: 28rpx;
+        height: 28rpx;
+        margin-left: 8rpx;
+      }
+    }
+    .user-info-bottom {
+      display: flex;
+      align-items: center;
+      margin-top: 6rpx;
+      color: #b2b2b2;
+      font-size: 22rpx;
+    }
+  }
+  .user-num {
+    margin-top: 8rpx;
+    .label {
+      color: #b2b2b2;
+      font-size: 24rpx;
+      margin-right: 12rpx;
+    }
+    .value {
+      color: #000;
+      font-size: 28rpx;
+      margin-right: 30rpx;
+    }
+  }
+  .user-action {
+    height: 64rpx;
+    line-height: 64rpx;
+  }
+}
+</style>
+<template>
+  <div class="user" @tap.stop="goUser">
+    <img
+      class="user-avtater"
+      :src="item.avtater"
+      style="width: {{width}}rpx;height: {{width}}rpx;border-radius: {{radius}}rpx;"
+    />
+    <div class="user-info">
+      <div class="user-info-top">
+        <div class="user-info-nick {{item.grade === 3 ? 'vip' : ''}}">{{item.nick}}</div>
+        <img
+          class="ic-img"
+          src="https://www.wutuobangxinyougou.com/public/ic/ic_auth.svg"
+          v-if="item.isAuth"
+        />
+        <img
+          class="ic-img"
+          src="https://www.wutuobangxinyougou.com/public/ic/ic_writer.svg"
+          v-if="item.grade > 1"
+        />
+        <img
+          class="ic-img"
+          src="https://www.wutuobangxinyougou.com/public/ic/ic_sys.svg"
+          v-if="item.userType === 1"
+        />
+      </div>
+      <div class="user-info-bottom">
+        <div>{{item.gender}}</div>
+        <div>·</div>
+        <div>{{item.title || item.school || '未填写学校'}}</div>
+      </div>
+      <div class="user-num" v-if="showNum">
+        <text>
+          <text class="label">获赞</text>
+          <text class="value">{{item.thumbsNum}}</text>
+        </text>
+        <text>
+          <text class="label">关注</text>
+          <text class="value">{{item.followNum}}</text>
+        </text>
+        <text>
+          <text class="label">粉丝</text>
+          <text class="value">{{item.fansNum}}</text>
+        </text>
+      </div>
+    </div>
+    <div class="user-action">
+      <slot name="action" />
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    multipleSlots: true,
+    addGlobalClass: true
+  },
+  props: {
+    item: Object,
+    width: {
+      type: Number,
+      default: 64
+    },
+    radius: {
+      type: Number,
+      default: 8
+    },
+    showNum: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    goUser() {
+      wx.navigateTo({
+        url: `/pages/user-home?id=${this.item.id}`
+      });
+    }
+  }
+});
+</script>

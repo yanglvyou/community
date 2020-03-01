@@ -1,0 +1,195 @@
+<style lang="less" scoped>
+.comments {
+  background: #ffffff;
+  margin-top: 30rpx;
+  .comments-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0rpx 20rpx;
+    .title {
+      font-size: 32rpx;
+    }
+    .zan {
+      display: flex;
+      align-items: center;
+      font-size: 24rpx;
+      color: #b2b2b2;
+      margin: 30rpx 0rpx;
+      image {
+        width: 36rpx;
+        height: 36rpx;
+        border-radius: 36rpx;
+        border: #ffffff solid 4rpx;
+        margin-right: -14rpx;
+      }
+      .zan-des {
+        margin-left: 24rpx;
+      }
+    }
+  }
+}
+.post-share {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  padding: 40rpx 20rpx;
+  button {
+    flex-grow: 1;
+    margin-right: 30rpx;
+    font-size: 32rpx;
+    display: flex;
+    align-items: center;
+    color: #13100e;
+    .icon {
+      margin-right: 10rpx;
+      font-size: 36rpx;
+    }
+    &::after {
+      border: none;
+    }
+    &.btn-hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    &:last-child {
+      margin-right: 0rpx;
+    }
+  }
+}
+</style>
+<template>
+  <div style="height: calc(100vh - 100rpx);">
+    <mp-page :state="state">
+      <comment-item :showAction="false" :item="comment" />
+      <!-- <div class="post-share">
+        <button open-type="share" hover-class="btn-hover">
+          <div class="icon icon-{{isqq ? 'QQ' : 'weixin'}}" />
+          <div>{{isqq ? '分享至QQ' : '分享至微信'}}</div>
+        </button>
+        <button @tap="onShare" hover-class="btn-hover">
+          <div class="icon icon-{{isqq ? 'zone' : 'circle'}}" />
+          <div>{{isqq ? '发表到说说' : '分享至朋友圈'}}</div>
+        </button>
+      </div> -->
+      <div class="comments">
+        <div class="comments-top">
+          <div class="title">回复({{comment.replyCount}})</div>
+          <div class="zan">
+            <img v-for="(img, index) in likers" :src="img" :key="index" />
+            <div class="zan-des">{{comment.thumbsCount}}人赞了</div>
+          </div>
+        </div>
+        <list-comments ref="list" :likeType="1" @showInput="onShowInput" />
+      </div>
+    </mp-page>
+    <comment-action
+      @showInput="showInput = true"
+      @like="onLike"
+      :thumbsCount="comment.thumbsCount"
+      :commentCount="comment.replyCount"
+      :toId="comment.fromId"
+      :postId="comment.postId"
+      :commentId="comment.id"
+      :likeType="1"
+      :isLike="comment.hasLike"
+      :showShare="false"
+      v-if="comment"
+      :des="placeholder"
+    />
+    <comment-input
+      :show="showInput"
+      @hide="onInputHide"
+      :placeholder="placeholder"
+      @comment="onComment"
+      :commenType="commenType"
+      :commentId="comment.id"
+      :postId="comment.postId"
+      :toId="toId"
+    />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post, eventHub } from '../common/api';
+wepy.page({
+  data: {
+    state: 0,
+    commenType: 1,
+    toId: null,
+    comment: null,
+    placeholder: '',
+    showInput: false
+  },
+  async onLoad(q) {
+    const { id } = q;
+    if (id) {
+      this.comment = await Post.getCommentDetail(id);
+      if (this.comment) {
+        this.placeholder = `回复${this.comment.from.nick}`;
+        this.toId = this.comment.from.id;
+        await this.$refs.list.loadData(this.comment.id);
+      }
+      this.state = this.comment ? 2 : 1;
+    }
+    eventHub.$on('showInput', user => {
+      this.placeholder = `回复${user.nick}`;
+      this.commenType = 2;
+      this.toId = user.id;
+      this.showInput = true;
+    });
+  },
+  methods: {
+    async loadData() {
+      if (!this.hasMore || this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      const res = await Post.getComments({
+        likeType: 1,
+        id: this.comment.id,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      });
+      if (res) {
+        for (const item of res) {
+          this.items.push(item);
+        }
+        this.pageIndex++;
+        this.hasMore = this.pageSize === res.length;
+      }
+      this.isLoading = false;
+    },
+    onComment(comment) {
+      this.$refs.list.addComment(comment);
+      this.showInput = false;
+      this.comment.replyCount++;
+    },
+    onInputHide() {
+      this.commenType = 1
+      this.toId = this.comment.from.id
+      this.showInput = false
+    },
+    onLike(isLike) {
+      this.comment.hasLike = isLike
+      if (isLike) {
+        this.comment.thumbsCount++
+      } else {
+        this.comment.thumbsCount--
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '评论详情',
+    navigationBarBackgroundColor: '#ffffff',
+    usingComponents: {
+        "mp-page": "../components/mp-page",
+        "list-comments": "../components/list-comments",
+        "comment-action": "../components/comment-action",
+        "comment-item": "../components/item-comment",
+        "comment-input": "../components/input-comment"
+    }
+}
+</config>

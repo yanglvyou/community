@@ -1,0 +1,110 @@
+<style lang="less" scoped>
+.topics {
+  .item-num {
+    font-size: 26rpx;
+    color: #b2b2b2;
+  }
+}
+</style>
+<template>
+  <screen-dialog :show="show" title="选择话题" @close="onClose">
+    <div slot="footer">
+      <searchbar placeholder="输入话题" @input="onSearch" @cancel="onCancel"></searchbar>
+      <scroll-view
+        :scroll-y="true"
+        @scrolltolower="onScrolltolower"
+        style="height:calc(65vh - 96rpx);"
+      >
+        <div class="topics" v-if="items.length">
+          <item-topic v-for="item in items" :item="item" :key="item.id" :isLink="false" @tap.stop="onSelect(item)">
+            <div class="item-num">{{item.followCount}}{{item.nickName}}</div>
+          </item-topic>
+        </div>
+        <empty des="打开方式不对，换个关键词试试～" btnTxt="去创建一个新话题" v-else />
+      </scroll-view>
+    </div>
+  </screen-dialog>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Topic } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: {
+    items: [],
+    pageIndex: 1,
+    pageSize: 20,
+    isCanLoad: true
+  },
+  watch: {
+    async show(val) {
+      if (val && !this.items.length) {
+        await this.loadData();
+      }
+    }
+  },
+  methods: {
+    async loadData() {
+      if (this.isCanLoad) {
+        const items = await Topic.searchTopic({
+          keyword: null,
+          pageIndex: this.pageIndex,
+          pageSize: this.pageSize
+        });
+        for (const item of items) {
+          this.items.push(item);
+        }
+        this.pageIndex++;
+        this.isCanLoad = items.length === this.pageSize;
+      }
+    },
+    onSelect(topic) {
+      this.$emit('result', {
+        id: topic.id,
+        title: topic.title
+      });
+    },
+    async onSearch(e) {
+      const { value } = e.$wx.detail;
+      this.pageIndex = 1;
+      this.isCanLoad = true;
+      const items = await Topic.searchTopic({
+        keyword: value,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      });
+      this.items = items;
+    },
+    async onCancel() {
+      this.items = [];
+      this.isCanLoad = true;
+      this.pageIndex = 1;
+      await this.loadData();
+    },
+    onClose() {
+      this.$emit('close');
+    },
+    async onScrolltolower() {
+      await this.loadData();
+    }
+  }
+});
+</script>
+<config>
+{
+    "usingComponents": {
+        "screen-dialog": "./half-screen-dialog/half-screen-dialog",
+        "searchbar": "./searchbar/searchbar",
+        "item-topic": "./item-topic",
+        "empty": "./empty",
+    }
+}
+</config>
