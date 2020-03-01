@@ -16,6 +16,11 @@
 > + 【点赞】用户可以点赞帖子,评论,回复
 > + 【分享】用户可以分享帖子到微信,生成海报分享到朋友圈
 
+> 如何运行
+> wepy build -w
+> 用微信开发工具直接选择跟目录
+> ok
+
 # 玉帛书小程序码(线上版本比较老)
 
 ![小程序码](https://www.wutuobangxinyougou.com/public/images/qr_1.jpg)
