@@ -43,6 +43,24 @@ wepy.app({
   globalData: {
     userInfo: null
   },
+  onLaunch() {
+    wx.setStorageSync('user', {
+      userId: 14614,
+      subscribe: 1,
+      nick: '玉帛书',
+      avtater: 'http://img.wutuobangxinyougou.com/u_14614_1582983801804.jpge',
+      isBinding: 1,
+      isAuth: 1,
+      userType: 1,
+      grade: 3,
+      sysMsgCount: 0,
+      noticeCount: 0
+    });
+    wx.setStorageSync(
+      'token',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVHlwZSI6MSwidXNlcklkIjoxNDYxNCwiaWF0IjoxNTgzMDY3OTUyfQ.NLLUTuROQxxfw8APFB8eyXX2n6zE6tu-foabllZ36cU'
+    );
+  },
   navigationHeight: function() {
     const { statusBarHeight } = wx.getSystemInfoSync();
     const { top, bottom } = wx.getMenuButtonBoundingClientRect();
