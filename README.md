@@ -27,6 +27,6 @@
 
 # 小程序内部截图
 
-![截图](https://www.wutuobangxinyougou.com/public/images/screenshot.jpg)
+![截图](https://www.wutuobangxinyougou.com/public/images/screenshot_2.jpg)
 
 ![截图](https://www.wutuobangxinyougou.com/public/images/screenshot_1.jpg)
