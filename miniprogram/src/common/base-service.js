@@ -228,7 +228,7 @@ export default class BaseService {
             switch (type) {
                 case 0: // 头像
                     fileName = `u_${userId}_${new Date().getTime()}.jpge`
-                    token = await this.getQiniuToken(fileName, 132, true)
+                    token = await this.getQiniuToken(fileName, 132)
                     break;
                 case 1: // 话题
                     fileName = `t_${userId}_${new Date().getTime()}.jpge`
@@ -236,11 +236,11 @@ export default class BaseService {
                     break;
                 case 2: // 帖子
                     fileName = `p_${userId}_${new Date().getTime()}.${img.type}`
-                    token = await this.getQiniuToken(fileName, 300)
+                    token = await this.getQiniuToken(fileName, 300, true)
                     break;
                 case 3: // 认证
                     fileName = `a_${userId}_${new Date().getTime()}.jpge`
-                    token = await this.getQiniuToken(fileName, 500, true)
+                    token = await this.getQiniuToken(fileName, 500)
                     break;
                 default:
                     break;
