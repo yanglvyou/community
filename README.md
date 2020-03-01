@@ -18,9 +18,8 @@
 
 # 玉帛书小程序码(线上版本比较老)
 
-![小程序码](https://www.wutuobangxinyougou.com/public/images/qr.jpg)
+![小程序码](https://www.wutuobangxinyougou.com/public/images/qr_1.jpg)
 
-![小程序码](https://www.wutuobangxinyougou.com/public/images/1583069393976.jpg)
 
 # 玉帛书交流群(加我拉群)
 
