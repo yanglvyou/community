@@ -1,7 +1,8 @@
 import wepy from '@wepy/core'
-export const baseUrl = 'https://www.wutuobangxinyougou.com'
+const prefix = ''
+export const baseUrl = 'https://www.wutuobangxinyougou.com' + prefix
 export const baseImgUrl = 'https://www.wutuobangxinyougou.com'
-// export const baseUrl = 'http://127.0.0.1:7001'
+// export const baseUrl = 'http://127.0.0.1:7001' + prefix
 export const qiniuUrl = 'http://img.wutuobangxinyougou.com/'
 export const imgUrl = baseImgUrl + '/public/images'
 const genders = ['未知', '男', '女']

@@ -8,7 +8,7 @@
   }
   .editor-tool {
     background: #fff;
-    position:fixed;
+    position: fixed;
     left: 0rpx;
     bottom: 0rpx;
     width: 100%;
@@ -120,7 +120,7 @@
       @statuschange="onStatuschange"
       style="height: calc(100vh - {{navigationHeight}}px - 100rpx - {{offset}}rpx);"
     />
-    <div class="editor-tool" style="bottom: {{boardHeight}}px;">
+    <div class="editor-tool" style="bottom: {{isIOS ? boardHeight : 0}}px;">
       <scroll-view
         :scroll-x="true"
         :scroll-with-animation="true"
@@ -268,10 +268,14 @@ wepy.component({
     navigationHeight: 0,
     boardHeight: 0,
     timer: null,
+    isIOS: false,
     h: [1, 2, 3, 4, 5, 6]
   },
   attached() {
-    const { SDKVersion } = wx.getSystemInfoSync();
+    console.log(wx.getSystemInfoSync());
+
+    const { SDKVersion, system } = wx.getSystemInfoSync();
+    this.isIOS = !!(system.toLowerCase().search('ios') + 1);
     this.navigationHeight = this.$app.$options.navigationHeight();
     if (this.compareVersion(SDKVersion, '2.7.0') >= 0) {
       //
@@ -284,12 +288,12 @@ wepy.component({
           '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
       });
     }
-    wx.onKeyboardHeightChange((res) => {
-      const { height } = res
+    wx.onKeyboardHeightChange(res => {
+      const { height } = res;
       if (height) {
-        this.boardHeight = height
+        this.boardHeight = height;
       }
-    })
+    });
   },
   detached() {
     if (this.timer) {
@@ -322,7 +326,7 @@ wepy.component({
       return 0;
     },
     onBlur() {
-      this.boardHeight = 0
+      this.boardHeight = 0;
     },
     submit() {
       this.editorCtx.getContents({
