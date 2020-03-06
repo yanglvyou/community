@@ -42,6 +42,8 @@
     :showBtn="true"
     :enableTips="enableTips"
     :showLoadMore="hasMore"
+    :emptyBtnTxt="emptyBtnTxt"
+    @emptyTap="onEmptyTap"
     @relaod="onRelaod"
     @scrolltolower="onScrolltolower"
     @refresherrefresh="onRefresherrefresh"
@@ -57,7 +59,9 @@
     </div>
     <slot />
     <block v-if="controller === 'post'">
-      <block v-if="action === 'recommend' || action === 'listForUser' || action === 'listForTopic'">
+      <block
+        v-if="action === 'recommend' || action === 'listForUser' || action === 'listForTopic' || action === 'listForSchool'"
+      >
         <item-post
           v-for="(item, index) in items"
           :key="item.post.id"
@@ -152,6 +156,7 @@ wepy.component({
       type: Boolean,
       default: true
     },
+    emptyBtnTxt: String,
     pageSize: {
       type: Number,
       default: 6
@@ -290,7 +295,9 @@ wepy.component({
           } else if (res.tapIndex === 1) {
             wx.showModal({
               title: '推荐设置提示',
-              content: post.isRecommend ? '确定要取消推荐吗?' : '确定要推荐该贴吗',
+              content: post.isRecommend
+                ? '确定要取消推荐吗?'
+                : '确定要推荐该贴吗',
               confirmText: post.isRecommend ? '取消推荐' : '设为推荐',
               confirmColor: '#d81e06',
               success: async res => {
@@ -309,6 +316,9 @@ wepy.component({
     },
     onShare({ index, post }) {
       this.$emit('share', post);
+    },
+    onEmptyTap() {
+      this.$emit('emptyTap')
     },
     async onRelaod() {
       this.state = 0;

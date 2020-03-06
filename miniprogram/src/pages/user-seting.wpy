@@ -132,11 +132,11 @@
       </div>
     </div>
     <div class="cells">
-      <div class="cell" hover-class="cell-hover" @tap="showSchool = true">
+      <div class="cell" hover-class="cell-hover" @tap="onShowSchool">
         <div class="left">就读学校</div>
         <div class="right">
-          <div class="value">{{user.school}}</div>
-          <div class="icon icon-arrow-right"></div>
+          <div class="value">{{user.school||'选择学校'}}</div>
+          <div class="icon icon-arrow-right" v-if="!user.isAuth"></div>
         </div>
       </div>
     </div>
@@ -455,6 +455,11 @@ wepy.page({
     },
     onSchoolClose() {
       this.showSchool = false;
+    },
+    onShowSchool() {
+      if (!this.user.isAuth) {
+         this.showSchool = true;
+      }
     },
     async onUpload() {
       const res = await wepy.wx.chooseImage({

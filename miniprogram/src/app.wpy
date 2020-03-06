@@ -46,7 +46,7 @@ wepy.app({
   navigationHeight: function() {
     const { statusBarHeight } = wx.getSystemInfoSync();
     const { top, bottom } = wx.getMenuButtonBoundingClientRect();
-    return top - statusBarHeight + bottom + 6;
+    return top - statusBarHeight + bottom;
   },
   onLaunch() {}
 });

@@ -329,6 +329,7 @@ wepy.page({
   },
   async onLoad(q) {
     const { id } = q;
+    this.isqq = Post.isQQ();
     this.navigationHeight = this.$app.$options.navigationHeight();
     if (id) {
       this.post = await Post.details(id);
@@ -442,20 +443,16 @@ wepy.page({
     async onShare() {
       if (this.isqq) {
         if (wx.openQzonePublish) {
-          let path = null;
-          let imageUrl = `${Post.getImgUrl()}/share.png`;
-          if (this.post.imgs.length) {
-            const img = this.post.imgs[0];
-            imageUrl = this.post.imgs[0].path;
-            if (img.isQiniu) {
-              path = await Post.getShareImg(img.fileName);
-            }
-          }
-          if (!path) {
-            path = await Post.getShareImg(imageUrl, true);
-          }
+          const imageUrl =
+            this.post.post.imgs && this.post.post.imgs.length
+              ? this.post.post.imgs[0].path
+              : `${imgUrl}/share.png`;
+          let path = await Post.getShareImg(imageUrl, true);
           wx.openQzonePublish({
-            text: this.post.baseTxt,
+            text:
+              this.post.post.baseTxt ||
+              this.post.post.articleTitle ||
+              this.post.post.content,
             media: [
               {
                 type: 'photo',

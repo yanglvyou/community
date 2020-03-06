@@ -29,6 +29,7 @@ export default class UserService extends BaseService {
                 token
             } = res.data
             wx.setStorageSync('user', user)
+            wx.setStorageSync('school', user.school)
             wx.setStorageSync('token', token)
             return true
         }
@@ -107,6 +108,10 @@ export default class UserService extends BaseService {
         const res = await this.request('/api/user/change', { filed, value }, 'POST')
         wx.hideLoading()
         if (res.code === 0) {
+            const user = this.getUser()
+            if (user) {
+                user[filed] = value
+            }
             this.showToast('设置成功', 'success')
             return true
         }

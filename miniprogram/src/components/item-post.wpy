@@ -243,11 +243,12 @@
       box-sizing: border-box;
       position: relative;
       margin: 0rpx 0rpx;
-      .count-item {
+      .count-item, .btn-share {
         display: flex;
         align-items: center;
         flex-grow: 1;
         padding: 30rpx;
+        padding-left: 0rpx;
         color: var(--txt-second);
         font-size: 24rpx;
         &.drill {
@@ -257,6 +258,8 @@
       button {
         line-height: normal;
         background: none;
+        padding: 0px;
+        margin: 0px;
         &::after {
           border: none;
         }
@@ -312,7 +315,7 @@
     </user>
     <div
       class="post-content"
-      style="margin-left: {{item.post.posType === 2 ? 0 : 84}}rpx;"
+      style="margin-left: 84rpx;"
       @tap="goDetails(item.post.id)"
     >
       <div class="post-questions" v-if="item.post.posType === 3">{{item.post.content}}</div>
@@ -392,7 +395,7 @@
         </text>
       </div>
       <div class="post-tool" v-if="showTool && item.post.posType !== 3">
-        <div @tap.stop="onCatchShare">
+        <div @tap.stop="onCatchShare" class="btn-share">
           <button open-type="share" @touchstart="onShare">
             <div class="count-item">
               <div class="icon icon-share"></div>

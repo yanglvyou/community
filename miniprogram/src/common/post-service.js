@@ -52,6 +52,10 @@ export default class PostService extends BaseService {
     async listForUser(options) {
         return await this._list('/api/post/list/user', options)
     }
+    async listForSchool(options) {
+        options.school = this.getSchool()
+        return await this._list('/api/post/list/school', options)
+    }
     /**
      * 关注动态
      * @param {pageIndex, pageSize, begin, isRefresh} options 

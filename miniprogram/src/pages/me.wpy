@@ -309,6 +309,7 @@ wepy.page({
     await this.loadData();
   },
   async onLoad() {
+    this.isqq = User.isQQ()
     wx.setNavigationBarTitle({
       title: ''
     });

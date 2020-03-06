@@ -100,7 +100,7 @@
           border: none;
         }
       }
-      button[disabled] {
+      .btn-disabled {
         background: #f1f1f1;
         color: #b2b2b2;
       }
@@ -228,7 +228,7 @@
       </scroll-view>
       <div class="editor-action">
         <div class="btn-mini">
-          <button class="btn-send" :loading="loading" :disabled="disabled" @tap="submit">发布</button>
+          <button class="btn-send {{disabled ? 'btn-disabled' : ''}}" :loading="loading" :disabled="disabled" @tap="submit">发布</button>
         </div>
       </div>
     </div>
@@ -277,7 +277,8 @@ wepy.component({
     const { SDKVersion, system } = wx.getSystemInfoSync();
     this.isIOS = !!(system.toLowerCase().search('ios') + 1);
     this.navigationHeight = this.$app.$options.navigationHeight();
-    if (this.compareVersion(SDKVersion, '2.7.0') >= 0) {
+    if (!Post.isQQ()) {
+         if (this.compareVersion(SDKVersion, '2.7.0') >= 0) {
       //
     } else {
       this.canUse = false;
@@ -287,6 +288,7 @@ wepy.component({
         content:
           '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
       });
+    } 
     }
     wx.onKeyboardHeightChange(res => {
       const { height } = res;

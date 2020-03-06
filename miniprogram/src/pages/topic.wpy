@@ -290,7 +290,7 @@ wepy.page({
         showDot: false
       },
       {
-        title: '动弹',
+        title: '图文',
         showDot: false
       },
       {

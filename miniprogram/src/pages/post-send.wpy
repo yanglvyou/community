@@ -548,7 +548,7 @@ wepy.page({
         icon: 'questions'
       },
       {
-        title: '写动弹',
+        title: '发图文',
         type: 0,
         icon: 'xiezuo'
       },

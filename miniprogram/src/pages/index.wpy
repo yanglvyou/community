@@ -129,8 +129,8 @@ wepy.page({
       this.loading = true;
       this.disabled = true;
       this.btntext = '开启中..';
-      const isLogin = true;
-      // const isLogin = await User.login(this.shareId);
+      // const isLogin = true;
+      const isLogin = await User.login(this.shareId);
       if (isLogin) {
         wx.switchTab({
           url: '/pages/home'

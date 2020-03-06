@@ -133,14 +133,14 @@ wepy.page({
         function drawContent(content, top, isDes = false) {
           const lines = computeHeight(content, isDes ? 26 : 34);
           const lineHeight = isDes ? 40 : 50;
-          height = lines > 3 ? 150 : lines * 50;
+          height = lines > 5 ? 250 : lines * 50;
           template.views.push({
             type: 'text',
             text: content,
             css: {
               fontSize: `${isDes ? 26 : 34}rpx`,
               lineHeight: `${lineHeight}rpx`,
-              maxLines: 3,
+              maxLines: 5,
               color: `#${isDes ? 'b2b2b2' : '353535'}`,
               width: '600rpx',
               height: height,

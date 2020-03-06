@@ -158,8 +158,10 @@ wepy.component({
       eventHub.$emit('follow', this.item);
     },
     goInfo() {
-      this.item.isRead = true;
-      eventHub.$emit('read', this.item);
+      if (!this.item.isRead) {
+        eventHub.$emit('read', this.item);
+        this.item.isRead = true;
+      }
       if (this.item.noticeType === 8) {
         wx.navigateTo({
           url: `/pages/post-comment?id=${this.item.commentId}`
