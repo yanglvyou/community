@@ -210,7 +210,7 @@ wepy.component({
       }
     },
     async onLike() {
-      eventHub.$emit('like', this.index);
+      this.$emit('like', { index: this.index, item: this.item });
     },
     onCopy() {
       wx.showActionSheet({
@@ -224,12 +224,12 @@ wepy.component({
             wx.setClipboardData({
               data: this.item.baseTxt
             });
-          } else if(res.tapIndex === 1) {
+          } else if (res.tapIndex === 1) {
             this.$emit('remove', {
               index: this.index,
               comment: this.item
             });
-          } else if(res.tapIndex === 2) {
+          } else if (res.tapIndex === 2) {
             this.$emit('set', {
               index: this.index,
               comment: this.item

@@ -104,6 +104,10 @@
         <text class="icon icon-questions" />
         <text>+1</text>
       </div>
+      <div class="zan" v-if="item.noticeType === 9">
+        <text class="icon icon-beike" />
+        <text>+{{item.shell}}</text>
+      </div>
       <div class="zan" v-if="item.noticeType === 6">
         <text class="icon icon-love-full" />
         <text>+1</text>
@@ -145,7 +149,8 @@ wepy.component({
       '点赞了你的回复',
       '关注了你',
       '回答了你的问题',
-      '捡到了你的纸飞机说:'
+      '捡到了你的纸飞机说:',
+      '打赏你'
     ]
   },
   attached() {
@@ -158,8 +163,10 @@ wepy.component({
       eventHub.$emit('follow', this.item);
     },
     goInfo() {
-      this.item.isRead = true;
-      eventHub.$emit('read', this.item);
+      if (!this.item.isRead) {
+        eventHub.$emit('read', this.item);
+        this.item.isRead = true;
+      }
       if (this.item.noticeType === 8) {
         wx.navigateTo({
           url: `/pages/post-comment?id=${this.item.commentId}`

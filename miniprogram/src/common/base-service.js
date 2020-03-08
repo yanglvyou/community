@@ -1,9 +1,9 @@
 import wepy from '@wepy/core'
-const prefix = ''
-export const baseUrl = 'https://www.wutuobangxinyougou.com' + prefix
+const prefix = '/v1'
+// export const baseUrl = 'https://www.wutuobangxinyougou.com' + prefix
 export const baseImgUrl = 'https://www.wutuobangxinyougou.com'
-// export const baseUrl = 'http://127.0.0.1:7001' + prefix
-export const qiniuUrl = 'http://img.wutuobangxinyougou.com/'
+export const baseUrl = 'http://127.0.0.1:7001' + prefix
+export const qiniuUrl = 'http://img.wutuobangxinyougou.com/' // 七牛存储自定义图片域名根据自己的配置
 export const imgUrl = baseImgUrl + '/public/images'
 const genders = ['未知', '男', '女']
 import weibo from './weibo-emotions';
@@ -89,6 +89,22 @@ export default class BaseService {
         }
         return false
     }
+    async getShareImg(fileName, isUrl = false) {
+        const token = wx.getStorageSync('token') || ''
+        const res = await wepy.wx.downloadFile({
+            url: isUrl ? fileName : `${baseUrl}/api/public/image/${encodeURIComponent(qiniuUrl + fileName)}`,
+            header: {
+                token,
+                'Content-Type': 'application/json',
+                'from-wx': '16f9d417-03c3-45cc-90c7-d58e4e447ae6'
+            },
+            method: 'GET'
+        });
+        if (res.statusCode === 200) {
+            return res.tempFilePath
+        }
+        return null
+    }
     parseEmoji(txt) {
         if (!txt) {
             return ''
@@ -152,6 +168,13 @@ export default class BaseService {
     getUser() {
         return wx.getStorageSync('user')
     }
+    getSchool() {
+        const user = this.getUser()
+        if (user) {
+            return user.school
+        }
+        return null
+    }
     getUserId() {
         const user = this.getUser()
         if (user) {
@@ -174,41 +197,83 @@ export default class BaseService {
         return false
     }
     subscribe(fun) {
-        wx.requestSubscribeMessage({
-            tmplIds: ['OLvHH_KPw3LPS7ePgFsGhnNPQlQVYylWdS5ZLqvtQqw'],
-            success(res) {
-                for (var key in res) {
-                    if (key != 'errMsg') {
-                        if (res[key] == 'reject') {
-                            if (fun) {
-                                fun()
-                            } else {
-                                wx.showModal({
-                                    title: '订阅消息',
-                                    content: '您已拒绝了订阅消息，如需重新订阅请前往设置打开。',
-                                    confirmText: '去设置',
-                                    success: res => {
-                                        if (res.confirm) {
-                                            wx.openSetting({});
-                                        }
-                                    }
+        if (this.isQQ()) {
+            wx.getSetting({
+                success(res) {
+                    if (res.authSetting['scope.appMsgSubscribed'] === undefined) {
+                        wx.subscribeAppMsg({
+                            subscribe: true,
+                            success: () => {
+                                wx.showToast({
+                                    title: '订阅成功'
                                 });
+                            },
+                        })
+                    } else if (res.authSetting['scope.appMsgSubscribed']) {
+                        wx.showToast({
+                            title: '已订阅'
+                        });
+                    } else {
+                        wx.openSetting({
+                            success(res) {
+                                console.log(res);
+
                             }
-                            return;
-                        } else {
-                            wx.showToast({
-                                title: '订阅成功'
-                            });
-                        }
+                        })
+                    }
+                },
+                fail: (res) => {
+                    console.log(res);
+
+                },
+                complete: () => {
+                    if (fun) {
+                        fun()
                     }
                 }
-            },
-            complete: () => {
-                if (fun) {
-                    fun()
+            })
+        } else {
+            wx.requestSubscribeMessage({
+                tmplIds: ['OLvHH_KPw3LPS7ePgFsGhnNPQlQVYylWdS5ZLqvtQqw'],
+                success(res) {
+                    console.log(res);
+
+                    for (var key in res) {
+                        if (key != 'errMsg') {
+                            if (res[key] == 'reject') {
+                                if (fun) {
+                                    fun()
+                                } else {
+                                    wx.showModal({
+                                        title: '订阅消息',
+                                        content: '您已拒绝了订阅消息，如需重新订阅请前往设置打开。',
+                                        confirmText: '去设置',
+                                        success: res => {
+                                            if (res.confirm) {
+                                                wx.openSetting({});
+                                            }
+                                        }
+                                    });
+                                }
+                                return;
+                            } else {
+                                wx.showToast({
+                                    title: '成功订阅一次'
+                                });
+                            }
+                        }
+                    }
+                },
+                fail: (res) => {
+                    console.log(res);
+                },
+                complete: () => {
+                    if (fun) {
+                        fun()
+                    }
                 }
-            }
-        });
+            });
+        }
     }
     async getQiniuToken(fileName, width, isCover = false) {
         const res = await this.request('/api/upload/token', {
@@ -306,5 +371,23 @@ export default class BaseService {
     }
     getBaseUrl() {
         return baseUrl
+    }
+    async post(fuc, loadTxt, successTxt, errTxt) {
+        wx.showLoading({
+            title: loadTxt,
+            mask: true
+        });
+        const res = await fuc()
+        wx.hideLoading()
+        if (res.code === 0) {
+            this.showToast(successTxt, 'success')
+            return true
+        }
+        let title = errTxt
+        if (res.erroCode > 0) {
+            title = res.msg
+        }
+        this.showToast(title)
+        return false
     }
 }

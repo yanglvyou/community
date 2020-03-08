@@ -6,6 +6,7 @@
         :item="item"
         :isLast="likeType === 1"
         :index="index"
+        @like="onLike"
         @remove="onRemove"
         @set="onSet"
       />
@@ -33,28 +34,31 @@ wepy.component({
     isLoading: false
   },
   attached() {
-    eventHub.$on('like', async index => {
-      const item = this.items[index];
-      let isUp = false;
-      if (item.hasLike) {
-        isUp = await Post.cancelLike(item.commenType || 1, item.id);
-      } else {
-        isUp = await Post.like(
-          item.fromId,
-          item.postId,
-          item.id,
-          item.commenType || 1
-        );
-      }
-      if (isUp) {
-        this.items[index].hasLike = !item.hasLike;
-        if (item.hasLike) {
-          this.items[index].thumbsCount++;
-        } else {
-          this.items[index].thumbsCount--;
-        }
-      }
-    });
+    // eventHub.$on('like', async ({ index, item }) => {
+    //   console.log(index);
+    //   console.log(item);
+    //   eventHub.$off('like');
+    //   // const item = this.items[index];
+    //   // let isUp = false;
+    //   // if (item.hasLike) {
+    //   //   isUp = await Post.cancelLike(item.commenType || 1, item.id);
+    //   // } else {
+    //   //   isUp = await Post.like(
+    //   //     item.fromId,
+    //   //     item.postId,
+    //   //     item.id,
+    //   //     item.commenType || 1
+    //   //   );
+    //   // }
+    //   // if (isUp) {
+    //   //   this.items[index].hasLike = !item.hasLike;
+    //   //   if (item.hasLike) {
+    //   //     this.items[index].thumbsCount++;
+    //   //   } else {
+    //   //     this.items[index].thumbsCount--;
+    //   //   }
+    //   // }
+    // });
   },
   methods: {
     async loadData(id) {
@@ -83,6 +87,28 @@ wepy.component({
     addComment(comment) {
       this.items.unshift(comment);
     },
+    async onLike({ index }) {
+      const item = this.items[index];
+      let isUp = false;
+      if (item.hasLike) {
+        isUp = await Post.cancelLike(item.commenType || 1, item.id);
+      } else {
+        isUp = await Post.like(
+          item.fromId,
+          item.postId,
+          item.id,
+          item.commenType || 1
+        );
+      }
+      if (isUp) {
+        this.items[index].hasLike = !item.hasLike;
+        if (item.hasLike) {
+          this.items[index].thumbsCount++;
+        } else {
+          this.items[index].thumbsCount--;
+        }
+      }
+    },
     onRemove({ index, comment }) {
       wx.showModal({
         title: '删除提示',
@@ -107,7 +133,7 @@ wepy.component({
         success: async res => {
           if (res.confirm) {
             if (await Post.setCommentHot(comment.id)) {
-              comment.isHot = !comment.isHot
+              comment.isHot = !comment.isHot;
             }
           }
         }

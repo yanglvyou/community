@@ -1,0 +1,207 @@
+<style lang="less" scoped>
+.money {
+  padding: 50rpx;
+  background: #fff;
+  margin: 30rpx;
+  border-radius: 10rpx;
+  .title {
+    font-size: 24rpx;
+    color: #b2b2b2;
+  }
+  .value {
+    font-size: 72rpx;
+    font-weight: bold;
+    margin: 30rpx 0rpx;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .des {
+      font-size: 42rpx;
+      font-weight: normal;
+      .flag {
+        font-size: 26rpx;
+        margin-left: 8rpx;
+      }
+    }
+  }
+  .list {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    position: relative;
+    padding-top: 30rpx;
+    &::after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      height: 1px;
+      border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+      color: rgba(235, 237, 245, 0.8);
+    }
+    .item {
+      flex-grow: 1;
+      flex-shrink: 0;
+      flex-basis: 50%;
+      margin-right: 50rpx;
+      &:last-child {
+        margin-right: 0rpx;
+      }
+      .item-title {
+        font-size: 24rpx;
+        color: #8a8a8a;
+        margin-bottom: 10rpx;
+      }
+      .item-value {
+        font-size: 56rpx;
+        font-weight: bold;
+        margin: 10rpx 0rpx;
+      }
+      .item-action {
+        font-size: 24rpx;
+        padding: 20rpx 0rpx;
+        color: #7a8299;
+        .icon {
+          font-size: 24rpx;
+        }
+      }
+      .item-des {
+        font-size: 24rpx;
+        color: #b2b2b2;
+      }
+    }
+  }
+  .btn {
+    border: #f1f1f1 solid 1px;
+    border-radius: 64rpx;
+    line-height: 64rpx;
+    font-size: 28rpx;
+    display: inline-block;
+    padding: 0rpx 40rpx;
+    background: #fff;
+    &.btn-hover {
+      background: #f1f1f1;
+    }
+  }
+}
+.cells {
+  padding: 30rpx;
+  .cell {
+    padding: 30rpx 30rpx;
+    display: flex;
+    align-items: center;
+    position: relative;
+    background: #fff;
+    margin-bottom: 30rpx;
+    border-radius: 10rpx;
+    &.cell-hover {
+      background: #f8f8f8;
+    }
+    .ic {
+      font-size: 56rpx;
+      margin-right: 10rpx;
+    }
+    .title {
+      font-size: 32rpx;
+      flex-grow: 1;
+    }
+    .value {
+      color: #8a8a8a;
+      font-size: 28rpx;
+      margin-right: 8rpx;
+    }
+    .icon-right {
+      color: #b2b2b2;
+      font-weight: bold;
+      font-size: 30rpx;
+    }
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="money">
+      <div class="title">总资产(钻和贝)</div>
+      <div class="value">
+        <div>{{user.drill + user.shell}}</div>
+        <div class="des">
+          {{assets}}
+          <text class="flag">元</text>
+        </div>
+      </div>
+      <div class="list">
+        <div class="item">
+          <div class="item-title icon icon-beike">玉帛贝</div>
+          <div class="item-value">{{user.shell}}</div>
+          <div class="item-action" @tap="goTransform">
+            <text>
+              <text>转钻</text>
+              <text class="icon icon-arrow-right" />
+            </text>
+          </div>
+          <div class="item-des">用户打赏的玉帛钻直接转换为贝,玉帛贝可变现</div>
+        </div>
+        <div class="item">
+          <div class="item-title icon icon-drill-full">玉帛钻</div>
+          <div class="item-value">{{user.drill}}</div>
+          <div class="item-action">只能用于打赏</div>
+          <div class="item-des">目前可通过玉帛贝转化成钻,好内容能获得更多流量支持</div>
+        </div>
+      </div>
+      <!-- <div class="btn" hover-class="btn-hover">提现</div> -->
+    </div>
+    <div class="cells">
+      <div class="cell" hover-class="cell-hover" @tap="goMonetize">
+        <div class="icon icon-beike ic"></div>
+        <div class="title">玉帛贝变现</div>
+        <div class="value"></div>
+        <div class="icon icon-arrow-right"></div>
+      </div>
+      <div class="cell" hover-class="cell-hover" @tap="goTrade">
+        <div class="icon icon-qianbao ic"></div>
+        <div class="title">交易记录</div>
+        <div class="value"></div>
+        <div class="icon icon-arrow-right"></div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { Tip } from './api';
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    user: null,
+    assets: 0
+  },
+  async onLoad(q) {
+    this.user = await Tip.getAssets();
+    this.assets = ((this.user.drill + this.user.shell) / 100).toFixed(2);
+  },
+  methods: {
+    goTrade() {
+      wx.navigateTo({
+        url: '/plugin/tip/trade'
+      });
+    },
+    goTransform() {
+      wx.navigateTo({
+        url: '/plugin/tip/transform'
+      });
+    },
+    goMonetize() {
+      wx.navigateTo({
+        url: '/plugin/tip/monetize'
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '我的资产',
+    usingComponents: {
+    }
+}
+</config>

@@ -83,7 +83,7 @@
         <div class="page-error">
           <img src="../images/ic_empty.svg" alt srcset />
           <div class="error">网络一线牵，主动才有缘～</div>
-          <!-- <button class="btn" hover-class="btn-hover">发布动弹</button> -->
+          <button class="btn" hover-class="btn-hover" v-if="emptyBtnTxt" @tap="onEmptyBtnTap">{{emptyBtnTxt}}</button>
         </div>
       </div>
     </scroll-view>
@@ -128,6 +128,7 @@ wepy.component({
       type: Boolean,
       default: false
     },
+    emptyBtnTxt: String,
     error: {
       type: String,
       default: '加载失败,重试'
@@ -172,7 +173,10 @@ wepy.component({
       this.$emit('refresherpulling');
     },
     onReload() {
-      this.$emit('relaod')
+      this.$emit('relaod');
+    },
+    onEmptyBtnTap() {
+      this.$emit('emptyTap');
     }
   }
 });

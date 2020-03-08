@@ -548,7 +548,7 @@ wepy.page({
         icon: 'questions'
       },
       {
-        title: '写动弹',
+        title: '发图文',
         type: 0,
         icon: 'xiezuo'
       },
@@ -630,6 +630,7 @@ wepy.page({
     },
     async submit(res) {
       wx.hideKeyboard();
+      Post.subscribe()
       if (!this.topic) {
         this.onTopic();
         return;
@@ -644,7 +645,8 @@ wepy.page({
       }
       if (
         this.posType === 0 &&
-        this.content.length < 5 && !this.images.length
+        this.content.length < 5 &&
+        !this.images.length
       ) {
         Post.showToast('动弹内容太少');
         return;
@@ -751,7 +753,9 @@ wepy.page({
         } catch (e) {
           console.log(e);
         }
-        wx.navigateBack();
+        Post.subscribe(() => {
+          wx.navigateBack();
+        });
       }
       this.loading = false;
       this.disabled = false;

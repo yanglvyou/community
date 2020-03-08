@@ -98,7 +98,7 @@ wepy.component({
         type: 3
       },
       {
-        title: '写动弹',
+        title: '发图文',
         icon: 'xiezuo',
         type: 0
       },

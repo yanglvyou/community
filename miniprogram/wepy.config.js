@@ -5,12 +5,11 @@ module.exports = {
   wpyExt: '.wpy',
   eslint: true,
   cliLogs: !prod,
-  static: ['static'],
+  static: ['src/images', 'src/plugin/plane/images'],
   build: {
   },
   resolve: {
     alias: {
-      counter: path.join(__dirname, 'src/components/counter'),
       '@': path.join(__dirname, 'src')
     },
     aliasFields: ['wepy', 'weapp'],

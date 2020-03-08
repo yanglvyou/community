@@ -373,6 +373,7 @@ wepy.component({
     },
     async onSend() {
       wx.hideKeyboard();
+      Post.subscribe()
       if(this.isPlane) {
         this.$emit('throw', this.content)
         return

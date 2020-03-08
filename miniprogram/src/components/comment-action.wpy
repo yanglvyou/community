@@ -112,6 +112,7 @@ wepy.component({
           this.likeType === 0 ? this.postId : this.commentId
         );
       } else {
+        Post.subscribe()
         isUp = await Post.like(
           this.toId,
           this.postId,

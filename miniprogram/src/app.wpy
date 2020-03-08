@@ -46,7 +46,7 @@ wepy.app({
   navigationHeight: function() {
     const { statusBarHeight } = wx.getSystemInfoSync();
     const { top, bottom } = wx.getMenuButtonBoundingClientRect();
-    return top - statusBarHeight + bottom + 6;
+    return top - statusBarHeight + bottom;
   },
   onLaunch() {}
 });
@@ -75,7 +75,12 @@ wepy.app({
       'pages/topic-add',
       'pages/gender',
       /**纸飞机 */
-      'plugin/plane/index'
+      'plugin/plane/index',
+      /**打赏 */
+      'plugin/tip/assets',
+      'plugin/tip/transform',
+      'plugin/tip/monetize',
+      'plugin/tip/trade',
     ],
     debug: true,
     tabBar: {

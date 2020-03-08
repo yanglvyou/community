@@ -171,6 +171,40 @@ swiper {
     }
   }
 }
+.assets {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  font-size: 30rpx;
+  background: #fff;
+  position: relative;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .assets-title {
+    font-size: 30rpx;
+    display: flex;
+    align-items: center;
+    color: #FF7E00;
+    image {
+      width: 64rpx;
+      height: 64rpx;
+      margin-right: 6rpx;
+    }
+  }
+  .assets-des {
+    font-size: 28rpx;
+    color: #b2b2b2;
+  }
+}
 </style>
 <template>
   <div class="container">
@@ -213,6 +247,16 @@ swiper {
         <div class="icon icon-arrow-right"></div>
       </div>
     </button>
+    <div class="assets" @tap="goAssets">
+      <div class="assets-title">
+        <img src="../images/ic_wallet.svg" />
+        <div>总资产：¥ {{assets}}</div>
+      </div>
+      <div class="assets-des">
+        <text>查看</text>
+        <text class="icon icon-arrow-right"></text>
+      </div>
+    </div>
     <div class="header">
       <div class="item">
         <div class="item-ic plane" @tap="goPlane">
@@ -303,18 +347,20 @@ wepy.page({
   data: {
     hasBinding: true,
     user: null,
-    isqq: false
+    isqq: false,
+    assets: '0.00'
   },
   async onPullDownRefresh() {
     await this.loadData();
   },
   async onLoad() {
+    this.isqq = User.isQQ();
     wx.setNavigationBarTitle({
       title: ''
     });
     eventHub.$on('binding', async () => {
       await this.loadData();
-    })
+    });
     await this.loadData();
   },
   methods: {
@@ -322,6 +368,7 @@ wepy.page({
       const res = await User.newData();
       if (res) {
         this.user = res;
+        this.assets = ((this.user.shell + this.user.drill) / 100).toFixed(2);
       }
       wx.stopPullDownRefresh();
     },
@@ -358,6 +405,11 @@ wepy.page({
     goGender() {
       wx.navigateTo({
         url: '/pages/gender'
+      });
+    },
+    goAssets() {
+      wx.navigateTo({
+        url: '/plugin/tip/assets'
       });
     }
   }

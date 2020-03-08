@@ -1,0 +1,30 @@
+<style lang="less" scoped>
+.bar-back {
+  .weui-navigation-bar__left {
+    padding-left: 16px;
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <list
+      controller="tip"
+      action="trade"
+      :isInit="true"
+      :pageSize="20"
+      :refresherEnabled="false"
+    />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.page({});
+</script>
+<config>
+{
+    navigationBarTitleText: '交易记录',
+    "usingComponents": {
+      "list": "../../components/page-list"
+    }
+}
+</config>

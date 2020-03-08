@@ -103,4 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-api
+api/config/env
+api/config/config.prod.js
+api/app/public/yidong
