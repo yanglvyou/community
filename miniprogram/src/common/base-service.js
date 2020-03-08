@@ -1,9 +1,9 @@
 import wepy from '@wepy/core'
-const prefix = ''
-export const baseUrl = 'https://www.wutuobangxinyougou.com' + prefix
+const prefix = '/v1'
+// export const baseUrl = 'https://www.wutuobangxinyougou.com' + prefix
 export const baseImgUrl = 'https://www.wutuobangxinyougou.com'
-// export const baseUrl = 'http://127.0.0.1:7001' + prefix
-export const qiniuUrl = 'http://img.wutuobangxinyougou.com/'
+export const baseUrl = 'http://127.0.0.1:7001' + prefix
+export const qiniuUrl = 'http://img.wutuobangxinyougou.com/' // 七牛存储自定义图片域名根据自己的配置
 export const imgUrl = baseImgUrl + '/public/images'
 const genders = ['未知', '男', '女']
 import weibo from './weibo-emotions';

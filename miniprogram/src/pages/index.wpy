@@ -101,7 +101,7 @@ wepy.page({
       this.$app.$options.globalData.postId = obj.postId || postId;
       this.$app.$options.globalData.commentId = obj.commentId || commentId;
     }
-    this.init()
+    // this.init()
     if (User.getUserId()) {
       await this.login();
     }
