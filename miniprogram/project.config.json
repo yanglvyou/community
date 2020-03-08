@@ -61,7 +61,7 @@
 					"id": 1,
 					"name": "pages/post-details",
 					"pathName": "pages/post-details",
-					"query": "id=20",
+					"query": "id=2",
 					"scene": null
 				},
 				{

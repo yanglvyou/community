@@ -341,6 +341,9 @@ wepy.page({
       })
       .exec();
     this.topic = await Topic.getDetails(id);
+    if (this.topic.id === 10) {
+      this.tabs[2].title = '兼职'
+    }
     Topic.topicAddTrack(this.topic);
     this.init0 = true;
   },

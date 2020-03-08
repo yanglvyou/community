@@ -1,0 +1,85 @@
+<style lang="less" scoped>
+.item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  background: #fff;
+  margin: 0rpx 20rpx;
+  margin-bottom: 20rpx;
+  border-radius: 8rpx;
+  .ic {
+    flex-shrink: 0;
+    image {
+      width: 84rpx;
+      height: 84rpx;
+      border-radius: 84rpx;
+    }
+    .icon {
+      font-size: 56rpx;
+    }
+    &.ic-img {
+      background: #fae37c;
+      width: 84rpx;
+      border-radius: 84rpx;
+      text-align: center;
+      line-height: 84rpx;
+      height: 84rpx;
+    }
+  }
+  .item-main {
+    flex-grow: 1;
+    margin-left: 20rpx;
+    .item-main-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .item-title {
+        font-size: 32rpx;
+      }
+      .item-num {
+        font-size: 34rpx;
+        &.green {
+          color: #1afa29;
+        }
+      }
+    }
+    .item-main-time {
+      font-size: 26rpx;
+      color: #b2b2b2;
+      margin-top: 10rpx;
+    }
+  }
+}
+</style>
+<template>
+  <div class="item">
+    <div class="ic" v-if="item.user">
+      <img :src="item.user.avtater" />
+    </div>
+    <div class="ic ic-img" v-else>
+      <text class="icon icon-{{item.type === 0 ? 'qianbao' : 'beike'}}" />
+    </div>
+    <div class="item-main">
+      <div class="item-main-top">
+        <div
+          class="item-title"
+        >{{item.user ? (item.type === 2 ? '打赏': '收到打赏') + item.user.nick : item.type === 0 ? '玉帛贝变现' : '转换为玉帛钻'}}</div>
+        <div
+          class="item-num {{item.type === 3 ? 'green' : ''}}"
+        >{{item.type === 3 ? '+' : '-'}}{{item.shell}}</div>
+      </div>
+      <div class="item-main-time">{{item.moment}}</div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    item: Object
+  }
+});
+</script>

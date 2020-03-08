@@ -255,6 +255,9 @@
           color: #d81e06;
         }
       }
+      .btn-share{
+        padding: 0px;
+      }
       button {
         line-height: normal;
         background: none;
@@ -402,6 +405,10 @@
               <div>分享</div>
             </div>
           </button>
+        </div>
+        <div class="count-item drill">
+          <div class="icon icon-drill" />
+          <div>{{item.post.shell || '赞赏'}}</div>
         </div>
         <div class="count-item">
           <div class="icon icon-zan-line" />

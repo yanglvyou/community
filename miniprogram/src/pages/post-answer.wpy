@@ -147,6 +147,7 @@ wepy.page({
         Post.showToast('回答的内容太少');
         return;
       }
+      Post.subscribe()
       this.loading = true;
       this.disabled = true;
       const imgs = [];

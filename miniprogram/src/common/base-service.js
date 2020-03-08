@@ -222,6 +222,10 @@ export default class BaseService {
                         })
                     }
                 },
+                fail: (res) => {
+                    console.log(res);
+
+                },
                 complete: () => {
                     if (fun) {
                         fun()
@@ -232,6 +236,8 @@ export default class BaseService {
             wx.requestSubscribeMessage({
                 tmplIds: ['OLvHH_KPw3LPS7ePgFsGhnNPQlQVYylWdS5ZLqvtQqw'],
                 success(res) {
+                    console.log(res);
+
                     for (var key in res) {
                         if (key != 'errMsg') {
                             if (res[key] == 'reject') {
@@ -252,11 +258,14 @@ export default class BaseService {
                                 return;
                             } else {
                                 wx.showToast({
-                                    title: '订阅成功'
+                                    title: '成功订阅一次'
                                 });
                             }
                         }
                     }
+                },
+                fail: (res) => {
+                    console.log(res);
                 },
                 complete: () => {
                     if (fun) {
@@ -362,5 +371,23 @@ export default class BaseService {
     }
     getBaseUrl() {
         return baseUrl
+    }
+    async post(fuc, loadTxt, successTxt, errTxt) {
+        wx.showLoading({
+            title: loadTxt,
+            mask: true
+        });
+        const res = await fuc()
+        wx.hideLoading()
+        if (res.code === 0) {
+            this.showToast(successTxt, 'success')
+            return true
+        }
+        let title = errTxt
+        if (res.erroCode > 0) {
+            title = res.msg
+        }
+        this.showToast(title)
+        return false
     }
 }

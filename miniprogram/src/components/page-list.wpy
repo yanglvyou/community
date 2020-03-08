@@ -99,6 +99,9 @@
         <div class="item-num">{{item.followCount}}{{item.nickName}}</div>
       </item-topic>
     </block>
+    <block v-else-if="controller === 'tip'">
+      <item-trade v-for="item in items" :key="item.id" :item="item"/>
+    </block>
     <block v-else-if="controller === 'message'">
       <block v-if="action === 'list'">
         <item-notice v-for="item in items" :key="item.id" :item="item" />
@@ -117,6 +120,7 @@
 <script>
 import wepy from '@wepy/core';
 import { Post, Topic, Message, User } from '../common/api';
+import { Tip } from '../plugin/tip/api'
 let self = null;
 wepy.component({
   props: {
@@ -231,6 +235,11 @@ wepy.component({
           pageIndex: isRefresh ? 1 : this.pageIndex,
           pageSize: this.pageSize
         });
+      } else if(this.controller === 'tip') {
+        items = await Tip[this.action]({
+          pageIndex: isRefresh ? 1 : this.pageIndex,
+          pageSize: this.pageSize
+        });
       }
       if (items) {
         for (const item of items) {
@@ -337,6 +346,7 @@ wepy.component({
         "item-notice": "./item-notice",
         "item-user": "./item-user",
         "item-sys-notice": "./item-sys-notice",
+        "item-trade": "../plugin/tip/components/item-trade"
     }
 }
 </config>

@@ -71,7 +71,6 @@ export default class UserService extends BaseService {
         const res = await this.request(`/api/user/follow/${id}`, null, 'GET')
         if (res.code === 0) {
             this.showToast('已关注', 'success')
-            this.subscribe()
             return true
         }
         this.showToast('关注失败,重试')

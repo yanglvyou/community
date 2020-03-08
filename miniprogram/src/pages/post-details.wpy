@@ -61,6 +61,9 @@
     }
   }
 }
+.reward{
+  background: #fff;
+}
 .post-question-tool {
   display: flex;
   align-items: center;
@@ -246,16 +249,19 @@
             <div>我来回答</div>
           </button>
         </div>
-        <div class="post-share" v-else>
-          <button open-type="share" hover-class="btn-hover">
-            <div class="icon icon-{{isqq ? 'QQ' : 'weixin'}}" />
-            <div>{{isqq ? '分享至QQ' : '分享至微信'}}</div>
-          </button>
-          <button @tap="onShare" hover-class="btn-hover">
-            <div class="icon icon-{{isqq ? 'zone' : 'circle'}}" />
-            <div>{{isqq ? '发表到说说' : '分享至朋友圈'}}</div>
-          </button>
-        </div>
+        <block v-else>
+          <reward :isSelf="post.isSelf" :shell="post.post.shell" :postId="post.post.id" :toId="post.user.id"/>
+          <div class="post-share">
+            <button open-type="share" hover-class="btn-hover">
+              <div class="icon icon-{{isqq ? 'QQ' : 'weixin'}}" />
+              <div>{{isqq ? '分享至QQ' : '分享至微信'}}</div>
+            </button>
+            <button @tap="onShare" hover-class="btn-hover">
+              <div class="icon icon-{{isqq ? 'zone' : 'circle'}}" />
+              <div>{{isqq ? '发表到说说' : '分享至朋友圈'}}</div>
+            </button>
+          </div>
+        </block>
         <div class="topic" @tap="goTopic" v-if="post.topic">
           <img :src="post.topic.iconSrc" />
           <div class="topic-content">
@@ -438,6 +444,7 @@ wepy.page({
         }
       } else {
         this.post.hasFollow = await User.follow(this.post.user.id);
+        User.subscribe()
       }
     },
     async onShare() {
@@ -528,7 +535,8 @@ wepy.page({
       "list-comments": "../components/list-comments",
       "comment-action": "../components/comment-action",
       "comment-input": "../components/input-comment",
-      "navigation-bar": "../components/navigation-bar/navigation-bar"
+      "navigation-bar": "../components/navigation-bar/navigation-bar",
+      "reward": "../plugin/tip/components/reward"
     }
 }
 </config>

@@ -75,7 +75,12 @@ wepy.app({
       'pages/topic-add',
       'pages/gender',
       /**纸飞机 */
-      'plugin/plane/index'
+      'plugin/plane/index',
+      /**打赏 */
+      'plugin/tip/assets',
+      'plugin/tip/transform',
+      'plugin/tip/monetize',
+      'plugin/tip/trade',
     ],
     debug: true,
     tabBar: {

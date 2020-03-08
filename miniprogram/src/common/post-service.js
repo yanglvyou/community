@@ -10,15 +10,7 @@ export default class PostService extends BaseService {
         wx.hideLoading()
         if (res.code === 0) {
             this.showToast('成功发布', 'success')
-            return await new Promise((resolve, reject) => {
-                this.subscribe(() => {
-                    resolve()
-                })
-            }).then(() => {
-                return true
-            }).catch(() => {
-                return true
-            })
+            return true
         } else {
             let title = '发布失败,重试'
             if (res.erroCode > 0) {
@@ -91,7 +83,6 @@ export default class PostService extends BaseService {
         wx.hideLoading()
         if (res.code === 0 && res.data) {
             this.showToast('成功发表', 'success')
-            this.subscribe()
             return this._parseComment(res.data)
         }
         this.showToast('发表失败,重试')
@@ -112,7 +103,6 @@ export default class PostService extends BaseService {
         wx.hideLoading()
         if (res.code === 0) {
             this.showToast('点赞成功', 'success')
-            this.subscribe()
             return true
         }
         this.showToast('操作失败,重试')
