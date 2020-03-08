@@ -1,6 +1,5 @@
 # 社区小程序(基于wepy框架)
-
-
+---
 > 功能介绍
 
 > + 【动弹】用户可以发送文字+图片+表情。
@@ -17,7 +16,10 @@
 > + 【分享】用户可以分享帖子到微信,生成海报分享到朋友圈
 > + 【打赏】用户可以打赏文章
 
+# API目录为后端API
+
 # 如何运行
+
 #### 安装依赖
 
 ```console
@@ -46,7 +48,7 @@ wepy build --watch
 
 # 觉得对你有帮助可以支持下我
 
-![截图](https://www.wutuobangxinyougou.com/public/images/pay.png)
+![截图](https://www.wutuobangxinyougou.com/public/pay.png)
 
 # 小程序内部截图
 
