@@ -34,7 +34,7 @@ wepy build --watch
 
 使用`微信开发者工具`新建项目，本地开发选择项目根目录，会自动导入项目配置。
 
-# 玉帛书小程序码(线上版本比较老)
+# 玉帛书小程序码
 
 ![小程序码](https://www.wutuobangxinyougou.com/public/images/qr_1.jpg)
 
