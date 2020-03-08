@@ -15,6 +15,7 @@
 > + 【评论】用户可以评论动弹,文章,回答
 > + 【点赞】用户可以点赞帖子,评论,回复
 > + 【分享】用户可以分享帖子到微信,生成海报分享到朋友圈
+> + 【打赏】用户可以打赏文章
 
 # 如何运行
 #### 安装依赖
@@ -42,6 +43,10 @@ wepy build --watch
 # 玉帛书交流群(加我拉群)
 
 ![截图](https://www.wutuobangxinyougou.com/public/images/user.png)
+
+# 觉得对你有帮助可以支持下我
+
+![截图](https://www.wutuobangxinyougou.com/public/images/pay.png)
 
 # 小程序内部截图
 
