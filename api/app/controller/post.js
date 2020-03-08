@@ -3,7 +3,7 @@ const request = require("request");
 const cheerio = require('cheerio');
 const moment = require('moment');
 moment.locale('zh-cn');
-const web = 'https://www.wutuobangxinyougou.com'
+const web = 'https://www.wutuobangxinyougou.com' // 配置成自己的域名
 const Controller = require('./baseController');
 
 class PostController extends Controller {
