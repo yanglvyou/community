@@ -868,6 +868,9 @@ wepy.page({
       }
       this.canSend();
     },
+    /**
+     * 
+     */
     onDelEmoji() {
       let str = this.content.split('');
       const leftStr = this.content.substring(0, this.cursor);
