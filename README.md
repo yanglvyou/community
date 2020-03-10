@@ -47,7 +47,9 @@ wepy build --watch
 
 ![截图](https://www.wutuobangxinyougou.com/public/images/user.png)
 
-# 觉得对你有帮助可以支持下我
+# 打赏
+---
+##### 如果用着不错，可以『打赏』支持。因为有你，开源更美好。
 
 ![截图](https://www.wutuobangxinyougou.com/public/pay.png)
 
