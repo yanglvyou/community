@@ -260,9 +260,9 @@ swiper {
     <div class="header">
       <div class="item">
         <div class="item-ic plane" @tap="goPlane">
-          <div class="icon icon-plane" />
+          <div class="icon icon-tucaohover" />
         </div>
-        <div class="item-title">纸飞机</div>
+        <div class="item-title">吐槽机</div>
       </div>
       <div class="item" @tap="goHomPage">
         <div class="item-ic sys">

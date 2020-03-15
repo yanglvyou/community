@@ -47,9 +47,9 @@ wepy.component({
     },
     onAction() {
       wx.navigateTo({
-        url: `/pages/post-answer?&id=${this.post.id}&title=${encodeURI(
+        url: `/pages/post-answer?id=${this.post.id}&topicId=${this.post.topicId}&title=${encodeURI(
           this.post.content
-        )}&topicId=${this.post.topicId}`
+        )}`
       });
     },
     onRemove({ index, post }) {

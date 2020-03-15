@@ -61,7 +61,7 @@
     }
   }
 }
-.reward{
+.reward {
   background: #fff;
 }
 .post-question-tool {
@@ -201,6 +201,7 @@
       <mp-page
         :state="state"
         :refresherEnabled="false"
+        :toView="toView"
         @scroll="onScroll"
         @scrolltolower="onScrolltolower"
         error="帖子不存在了"
@@ -250,7 +251,12 @@
           </button>
         </div>
         <block v-else>
-          <reward :isSelf="post.isSelf" :shell="post.post.shell" :postId="post.post.id" :toId="post.user.id"/>
+          <reward
+            :isSelf="post.isSelf"
+            :shell="post.post.shell"
+            :postId="post.post.id"
+            :toId="post.user.id"
+          />
           <div class="post-share">
             <button open-type="share" hover-class="btn-hover">
               <div class="icon icon-{{isqq ? 'QQ' : 'weixin'}}" />
@@ -262,42 +268,45 @@
             </button>
           </div>
         </block>
-        <div class="topic" @tap="goTopic" v-if="post.topic">
-          <img :src="post.topic.iconSrc" />
-          <div class="topic-content">
-            <div class="title">#{{post.topic.title}}</div>
-            <div class="topic-num">
-              <div class="num">
-                <text>{{post.topic.followCount}}</text>
-                {{post.topic.nickName}}
-              </div>
-              <div class="num">
-                <text>{{post.topic.postCount}}</text>帖子
+        <div slot="other">
+          <div class="topic" @tap="goTopic" v-if="post.topic" id="topic">
+            <img :src="post.topic.iconSrc" />
+            <div class="topic-content">
+              <div class="title">#{{post.topic.title}}</div>
+              <div class="topic-num">
+                <div class="num">
+                  <text>{{post.topic.followCount}}</text>
+                  {{post.topic.nickName}}
+                </div>
+                <div class="num">
+                  <text>{{post.topic.postCount}}</text>帖子
+                </div>
               </div>
             </div>
+            <div class="des">更多</div>
+            <div class="icon icon-arrow-right"></div>
           </div>
-          <div class="des">更多</div>
-          <div class="icon icon-arrow-right"></div>
-        </div>
-        <div class="comments" v-if="post.post.posType !== 3">
-          <div class="comments-top">
-            <div class="title">评论({{post.post.commentCount}})</div>
-            <div class="zan">
-              <img v-for="(img, index) in post.likers" :src="img" :key="index" />
-              <div class="zan-des">{{post.post.thumbsCount}}人赞了</div>
+          <div class="comments" v-if="post.post.posType !== 3">
+            <div class="comments-top">
+              <div class="title">评论({{post.post.commentCount}})</div>
+              <div class="zan">
+                <img v-for="(img, index) in post.likers" :src="img" :key="index" />
+                <div class="zan-des">{{post.post.thumbsCount}}人赞了</div>
+              </div>
             </div>
+            <list-comments ref="list" :likeType="0" />
           </div>
-          <list-comments ref="list" :likeType="0" />
+          <block v-else>
+            <list-answers ref="answers" />
+          </block>
         </div>
-        <block v-else>
-          <list-answers ref="answers" />
-        </block>
       </mp-page>
     </div>
     <block v-if="post.post.posType !== 3 && state === 2">
       <comment-action
         @showInput="showInput = true"
         @like="onLike"
+        @commentTap="onCommentTap"
         :toId="post.user.id"
         :postId="post.post.id"
         :likeType="0"
@@ -329,6 +338,7 @@ wepy.page({
     showInput: false,
     navigationHeight: 0,
     post: null,
+    toView: '',
     template: null,
     state: 0,
     editorCtx: null
@@ -369,7 +379,12 @@ wepy.page({
   },
   methods: {
     onScroll(res) {
+      this.toView = '';
       this.showUser = res.scrollTop > this.navigationHeight;
+    },
+    onCommentTap() {
+      console.log(1);
+      this.toView = 'other';
     },
     onEditorReady() {
       wx.createSelectorQuery()
@@ -421,19 +436,23 @@ wepy.page({
       }
     },
     onAnswer(isQuestion) {
+      console.log(
+        `/pages/post-answer?id=${this.post.post.questionId}&title=${encodeURI(
+          this.post.post.articleTitle
+        )}&topicId=${this.post.post.topicId}`
+      );
+
       if (isQuestion) {
         wx.navigateTo({
-          url: `/pages/post-answer?&id=${
-            this.post.post.questionId
-          }&title=${encodeURI(this.post.post.articleTitle)}&topicId=${
+          url: `/pages/post-answer?id=${this.post.post.questionId}&topicId=${
             this.post.post.topicId
-          }`
+          }&title=${encodeURI(this.post.post.articleTitle)}`
         });
       } else {
         wx.navigateTo({
-          url: `/pages/post-answer?&id=${this.post.post.id}&title=${encodeURI(
-            this.post.post.content
-          )}&topicId=${this.post.post.topicId}`
+          url: `/pages/post-answer?id=${this.post.post.id}&topicId=${
+            this.post.post.topicId
+          }&title=${encodeURI(this.post.post.content)}`
         });
       }
     },
@@ -444,7 +463,7 @@ wepy.page({
         }
       } else {
         this.post.hasFollow = await User.follow(this.post.user.id);
-        User.subscribe()
+        User.subscribe();
       }
     },
     async onShare() {

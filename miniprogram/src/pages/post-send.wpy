@@ -417,7 +417,7 @@ page {
         <div class="post-article" v-if="link" v-show="posType === 1">
           <div
             class="post-article-title {{article ? '' : 'des'}} {{analyseState === 1 ? 'error' : ''}}"
-          >{{article ? article.title : analyseState === 1 ? '解析链接失败(目前支持(公众号|掘金|简书)文章)' : '正在解析链接···'}}</div>
+          >{{article ? article.title : analyseState === 1 ? '解析链接失败(目前支持(公众号|知乎专栏|简书)文章)' : '正在解析链接···'}}</div>
           <img :src="article.imageSrc" mode="aspectFill" v-if="article" />
           <div class="img-empty" v-else>
             <text class="icon icon-link-fill" />

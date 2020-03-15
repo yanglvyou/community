@@ -55,7 +55,7 @@
 <template>
   <div class="page-action">
     <div class="item-input" @tap="onShowInput">{{des}}</div>
-    <div class="item">
+    <div class="item" @tap="onCommentTap">
       <div class="icon icon-comment"></div>
       <div>{{commentCount || '评论'}}</div>
     </div>
@@ -103,6 +103,9 @@ wepy.component({
       wx.navigateTo({
         url: '/pages/post-share?id=' + this.postId
       });
+    },
+    onCommentTap() {
+      this.$emit('commentTap')
     },
     async onLike() {
       let isUp = false;

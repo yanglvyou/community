@@ -283,10 +283,10 @@ page {
     </scroll-view>
     <div class="empty" v-else>
       <img src="./images/img_nearby_empty_zero.png" />
-      <div class="empty-des">还没有人扔纸飞机</div>
+      <div class="empty-des">还没有人吐槽</div>
     </div>
     <div class="footer">
-      <div class="btn" hover-class="btn-hover" @tap="onShow">{{plane ? '更改纸飞机' : '扔个纸飞机'}}</div>
+      <div class="btn" hover-class="btn-hover" @tap="onShow">{{plane ? '更改吐槽' : '我要吐槽'}}</div>
     </div>
     <dialog :show="showDialog" @close="showDialog=flase" ext-class="dialog">
       <div class="dialog-main">
@@ -318,9 +318,9 @@ page {
       :content="plane && plane.content || ''"
       :showCancel="plane ? true : false"
       :isPlane="true"
-      :btnTxt="plane ? '修改纸飞机': '扔出纸飞机'"
-      btnCancelTxt="撤销纸飞机"
-      placeholder="说出你的心声,让TA来安慰你"
+      :btnTxt="plane ? '修改': '吐槽'"
+      btnCancelTxt="撤销吐槽"
+      placeholder="说出心中的不悦,尽情吐槽吧!"
     ></plane-add>
     <comment-input
       :show="showReplyInput"
@@ -414,7 +414,7 @@ wepy.page({
 </script>
 <config>
 {
-    navigationBarTitleText: '纸飞机',
+    navigationBarTitleText: '吐槽机',
     backgroundColor: '#ffeb30',
     navigationBarBackgroundColor: '#ffeb30',
     "usingComponents": {

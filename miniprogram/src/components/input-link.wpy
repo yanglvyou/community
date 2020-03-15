@@ -72,14 +72,14 @@
     <div slot="footer" class="footer">
       <div class="input {{isError ? 'err' : ''}}">
         <div class="input-title">添加链接</div>
-        <div class="input-des">可在此添加(公众号|掘金|简书)文章链接,解析后更直观</div>
-        <input @focus="onFocus" v-model="url" @blur="onBlur" placeholder="请输入(公众号|掘金｜简书)文章链接" />
+        <div class="input-des">可在此添加(公众号|知乎专栏|简书)文章链接,解析后更直观</div>
+        <input @focus="onFocus" v-model="url" @blur="onBlur" placeholder="请输入(公众号|知乎专栏｜简书)文章链接" />
         <div class="input-link" v-if="link" @tap.stop="onSelect">
           <div class="link-des">粘贴最近复制的链接</div>
           <div class="link-web">{{link}}</div>
         </div>
       </div>
-      <div class="input-error" v-if="isError">请输入(公众号|掘金|简书)文章链接</div>
+      <div class="input-error" v-if="isError">请输入(公众号|知乎专栏|简书)文章链接</div>
       <div class="footer-action" style="bottom:{{bottom ? bottom + 'px' : '40rpx'}}">
         <button class="btn" :disabled="!url" hover-class="btn-hover" @tap="onAdd">添加</button>
       </div>
@@ -104,7 +104,7 @@ wepy.component({
     link: null,
     url: '',
     isError: false,
-    urlReg: /(https):\/\/([mp.weixin.qq.com|juejin.im|www.jianshu.com])[-A-Za-z0-9+&@#/%=~_|]*/,
+    urlReg: /(https):\/\/([mp.weixin.qq.com|zhuanlan.zhihu.com|www.jianshu.com])[-A-Za-z0-9+&@#/%=~_|]*/,
     bottom: 0
   },
   attached() {

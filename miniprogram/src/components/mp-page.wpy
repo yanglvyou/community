@@ -53,6 +53,8 @@
       :scroll-y="scrollY"
       :refresher-enabled="refresherEnabled"
       :refresher-triggered="triggered"
+      :scroll-into-view="toView"
+      :scroll-with-animation="true"
       @scroll="onScroll"
       @scrolltolower="onScrolltolower"
       @refresherrefresh="onRefresherrefresh"
@@ -72,13 +74,16 @@
           <button class="btn" @tap="onReload" hover-class="btn-hover" v-if="showBtn">重新加载</button>
         </div>
       </div>
-      <div v-else-if="state === 2">
+      <block v-else-if="state === 2">
         <slot />
+        <div id="other">
+          <slot name="other"/>
+        </div>
         <div class="page-footer" v-if="showFooter">
           <loading :show="true" v-if="showLoadMore" />
           <div v-else>｡◕‿◕｡ 没有更多 ｡◕‿◕｡</div>
         </div>
-      </div>
+      </block>
       <div class="page-state-4 page" v-else>
         <div class="page-error">
           <img src="../images/ic_empty.svg" alt srcset />
@@ -97,6 +102,7 @@
 import wepy from '@wepy/core';
 wepy.component({
   options: {
+    multipleSlots: true,
     addGlobalClass: true
   },
   props: {
@@ -111,6 +117,10 @@ wepy.component({
     scrollY: {
       type: Boolean,
       default: true
+    },
+    toView: {
+      type: String,
+      default: ''
     },
     refresherEnabled: {
       type: Boolean,

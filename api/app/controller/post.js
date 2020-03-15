@@ -101,10 +101,10 @@ class PostController extends Controller {
                     if (/(https):\/\/(mp.weixin.qq.com)[-A-Za-z0-9+&@#/%=~_|]*/.test(url)) {
                         title = $('meta[property="twitter:title"]').attr('content')
                         imageSrc = $('meta[property="twitter:image"]').attr('content')
-                    } else if (/(https):\/\/(juejin.im)[-A-Za-z0-9+&@#/%=~_|]*/.test(url)) {
+                    }else if (/(https):\/\/(juejin.im)[-A-Za-z0-9+&@#/%=~_|]*/.test(url)) {
                         title = $('title').text()
                         imageSrc = $('link[rel="apple-touch-icon"]').attr('href')
-                    } else if (/(https):\/\/(www.jianshu.com)[-A-Za-z0-9+&@#/%=~_|]*/.test(url)) {
+                    } else if (/(https):\/\/([www.jianshu.com|zhuanlan.zhihu.com])[-A-Za-z0-9+&@#/%=~_|]*/.test(url)) {
                         title = $('meta[property="og:title"]').attr('content')
                         imageSrc = $('meta[property="og:image"]').attr('content')
                     }
@@ -145,6 +145,24 @@ class PostController extends Controller {
                             for (const img of imgs) {
                                 let src = $(img).attr('data-src')
                                 $(img).attr('src', `${web}/api/public/image/${encodeURIComponent(src)}`)
+                            }
+                        }else if(/(https):\/\/(zhuanlan.zhihu.com)[-A-Za-z0-9+&@#/%=~_|]*/.test(url)) {
+                            const links = $('link[rel="stylesheet"]').toArray()
+                            $('.Post-NormalMain .Post-Header').attr('style', 'width:100%;')
+                            $('.Post-NormalMain>div').attr('style', 'width:100%;')
+                            $('.Post-NormalSub>div').attr('style', 'width:100%;')
+                            for (const link of links) {
+                                let src = $(link).attr('href')
+                                if (src) {
+                                    $(link).attr('href', `${web}/api/public/image/${encodeURIComponent(src)}`)
+                                }
+                            }
+                            const imgs = $('img').toArray()
+                            for (const img of imgs) {
+                                let src = $(img).attr('data-original')
+                                if (src) {
+                                    $(img).attr('src', `${web}/api/public/image/${encodeURIComponent(src)}`)
+                                }
                             }
                         } else if (/(https):\/\/(juejin.im)[-A-Za-z0-9+&@#/%=~_|]*/.test(url)) {
                             $('script').remove()
@@ -638,7 +656,7 @@ class PostController extends Controller {
                 fromId: userId,
                 likeType
             }
-            if (likeType === 0) {
+            if (likeType === 0 || likeType === 3 ) {
                 where.postId = postId
             } else {
                 where.commentId = commentId

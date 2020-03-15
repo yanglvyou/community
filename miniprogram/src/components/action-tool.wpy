@@ -88,8 +88,8 @@ wepy.component({
   data: {
     items: [
       {
-        title: '纸飞机',
-        icon: 'plane',
+        title: '吐槽机',
+        icon: 'tucaohover',
         type: -1
       },
       {

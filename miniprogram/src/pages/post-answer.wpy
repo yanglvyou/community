@@ -122,6 +122,8 @@ wepy.page({
   },
   onLoad(q) {
     const { id, title, topicId } = q;
+    console.log(q);
+    
     this.title = decodeURI(title);
     this.id = id;
     this.topicId = topicId;
