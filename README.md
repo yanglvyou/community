@@ -1,5 +1,5 @@
 # 社区小程序(分wepy版本和云开发版本)
-> 如果想用于商业请联系我
+> 如果想用于商业请联系我(微信:liubin1592)
 
 # 已经支持云版本
 [云版本](https://github.com/liubin1592/community/tree/master/miniprogram-cloud)
