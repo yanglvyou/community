@@ -1,0 +1,132 @@
+<style lang="less" scoped>
+.page-action {
+  position: fixed;
+  background: #fff;
+  bottom: 0rpx;
+  left: 0rpx;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10rpx 30rpx;
+  box-sizing: border-box;
+  z-index: 1000;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .item {
+    padding: 20rpx;
+    box-sizing: border-box;
+    flex-grow: 1;
+    text-align: center;
+    font-size: 24rpx;
+    display: flex;
+    padding: 20rpx 30rpx;
+    justify-content: center;
+    .icon {
+      font-size: 48rpx;
+      margin-right: 6rpx;
+    }
+  }
+  .item-input {
+    font-size: 28rpx;
+    color: #b2b2b2;
+    background: #f8f8f8;
+    line-height: 64rpx;
+    height: 64rpx;
+    padding: 0rpx 20rpx;
+    flex-grow: 1;
+    border-radius: 80rpx;
+    text-overflow: ellipsis;
+    max-width: 200rpx;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /*设置文本行数限制*/
+    -webkit-box-orient: vertical; /*设置文本排列方式*/
+  }
+}
+</style>
+<template>
+  <div class="page-action">
+    <div class="item-input" @tap="onShowInput">{{des}}</div>
+    <div class="item" @tap="onCommentTap">
+      <div class="icon icon-comment"></div>
+      <div>{{commentCount || '评论'}}</div>
+    </div>
+    <div class="item" @tap="onLike">
+      <div class="icon icon-zan-{{isLike ? 'full' : 'line'}}"></div>
+      <div>{{thumbsCount||'点赞'}}</div>
+    </div>
+    <div class="item" @tap="onShare" v-if="showShare">
+      <div class="icon icon-share"></div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    commentCount: Number,
+    thumbsCount: Number,
+    toId: Number,
+    postId: Number,
+    commentId: Number,
+    likeType: Number,
+    showShare: {
+      type: Boolean,
+      default: true
+    },
+    isLike: {
+      type: Boolean,
+      default: false
+    },
+    des: {
+      type: String,
+      default: '来,神评是你的'
+    }
+  },
+  methods: {
+    onShowInput() {
+      this.$emit('showInput');
+    },
+    onShare() {
+      wx.navigateTo({
+        url: '/pages/post-share?id=' + this.postId
+      });
+    },
+    onCommentTap() {
+      this.$emit('commentTap')
+    },
+    async onLike() {
+      let isUp = false;
+      if (this.isLike) {
+        isUp = await Post.cancelLike(
+          this.likeType,
+          this.likeType === 0 ? this.postId : this.commentId
+        );
+      } else {
+        Post.subscribe()
+        isUp = await Post.like(
+          this.toId,
+          this.postId,
+          this.commentId,
+          this.likeType
+        );
+      }
+      if (isUp) {
+        this.$emit('like', !this.isLike);
+      }
+    }
+  }
+});
+</script>

@@ -1,0 +1,415 @@
+<style lang="less" scoped>
+.mask {
+  background: rgba(0, 0, 0, 0.1);
+  position: fixed;
+  height: calc(100vh);
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 10001;
+}
+.input-box {
+  position: fixed;
+  left: 0rpx;
+  bottom: 0rpx;
+  background: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s;
+  align-items: center;
+  border-top: #f1f1f1 solid 0.5px;
+  z-index: 10002;
+  .input-textarea {
+    padding: 20rpx 0rpx;
+    textarea {
+      width: 100%;
+      font-size: 32rpx;
+      padding: 0rpx 20rpx;
+      box-sizing: border-box;
+      color: #474747;
+      box-sizing: border-box;
+      height: 100rpx;
+    }
+  }
+}
+.input-imgs {
+  background: transparent;
+  .list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 30rpx 0rpx;
+    .item {
+      flex-shrink: 0;
+      position: relative;
+      margin-left: 30rpx;
+      image {
+        width: 128rpx;
+        height: 128rpx;
+        border-radius: 10rpx;
+      }
+      .btn-del {
+        position: absolute;
+        font-size: 56rpx;
+        top: -20rpx;
+        right: -20rpx;
+        color: #ffd100;
+      }
+      .num {
+        position: absolute;
+        bottom: 10rpx;
+        right: 0rpx;
+        padding: 6rpx 12rpx;
+        font-size: 22rpx;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+        border-top-left-radius: 10rpx;
+        border-bottom-right-radius: 10rpx;
+      }
+    }
+  }
+}
+.input-tool {
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  .btn-mini {
+    color: #000000;
+    padding: 10rpx 20rpx;
+    font-size: 28rpx;
+    border-radius: 8rpx;
+    align-self: center;
+    line-height: normal;
+    background: #fae37c;
+    color: #13100e;
+    border: none;
+    margin-left: 30rpx;
+    // box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.3);
+    &::after {
+      border: none;
+    }
+    &.btn-disabled {
+      background: #f4f4f4;
+      color: #b2b2b2;
+    }
+  }
+  .action {
+    flex-grow: 1;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    .item {
+      text-align: left;
+      padding: 0rpx 36rpx;
+      padding-left: 0rpx;
+      .icon {
+        font-size: 56rpx;
+      }
+    }
+  }
+  .buttons {
+    display: flex;
+    align-content: center;
+    .btn {
+      margin-left: 30rpx;
+    }
+  }
+}
+</style>
+<template>
+  <div :hidden="!show" @touchmove.stop="onTouchmove">
+    <div class="mask" @tap.stop="onHide"></div>
+    <emoji-input :height="boardheight" @emoji="onInputEmoji" @del="onDelEmoji" :hide="bottom <= 0" />
+    <div class="input-box" style="bottom: {{bottom}}px;">
+      <scroll-view :scroll-x="true" class="input-imgs" v-if="imgs.length">
+        <div class="list">
+          <div class="item" v-for="(img,index) in imgs">
+            <img :src="img.path" mode="aspectFill" />
+            <div class="btn-del icon icon-del-full" @tap.stop="onRemove(index)"></div>
+            <div class="num">{{index + 1}}</div>
+          </div>
+        </div>
+      </scroll-view>
+      <div class="input-textarea">
+        <textarea
+          :placeholder="placeholder"
+          :adjust-position="false"
+          :show-confirm-bar="false"
+          :auto-focus="false"
+          :hold-keyboard="true"
+          :focus="focus"
+          :cursor="cursor"
+          @keyboardheightchange="onkeyboardheightchange"
+          @focus="onFocus"
+          @blur="onBlur"
+          :auto-height="true"
+          :maxlength="500"
+          v-if="show"
+          v-model.trim="content"
+        />
+      </div>
+      <div class="input-tool">
+        <div class="action">
+          <div class="item" @tap.stop="onEmoji(0)" v-if="inputType === 0">
+            <div class="icon icon-emoji"></div>
+          </div>
+          <div class="item" @tap.stop="onEmoji(1)" v-else>
+            <div class="icon icon-jianpan"></div>
+          </div>
+          <div class="item" @tap.stop="chooseImage" v-if="showImg">
+            <div class="icon icon-tupian"></div>
+          </div>
+        </div>
+        <button
+          v-if="showCancel"
+          class="btn-mini btn-disabled"
+          hover-class="btn-hover"
+          @tap.stop="onCancel"
+        >{{btnCancelTxt}}</button>
+        <button
+          disabled="{{content ? false : true}}"
+          :loading="loading"
+          class="btn-mini"
+          hover-class="btn-hover"
+          @tap.stop="onSend"
+        >{{btnTxt}}</button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    toId: Number,
+    postId: Number,
+    commentId: Number,
+    commenType: Number,
+    isPlane: {
+      type: Boolean,
+      default: false
+    },
+    showImg: {
+      type: Boolean,
+      default: true
+    },
+    showCancel: {
+      type: Boolean,
+      default: false
+    },
+    content: {
+      type: String,
+      default: ''
+    },
+    replyType: {
+      type: Number,
+      default: 0
+    },
+    show: {
+      type: Boolean,
+      default: false
+    },
+    btnTxt: {
+      type: String,
+      default: '发表'
+    },
+    btnCancelTxt: {
+      type: String,
+      default: '取消'
+    },
+    placeholder: {
+      type: String,
+      default: '来,神评是你的'
+    }
+  },
+  data: {
+    focus: false,
+    disabled: true,
+    loading: false,
+    // btnTxt: '发表',
+    user: null,
+    cursor: -1,
+    boardheight: 0,
+    bottom: 0,
+    imgs: [],
+    inputType: 0,
+    content: ''
+  },
+  watch: {
+    async show(val) {
+      this.focus = val;
+    }
+  },
+  methods: {
+    onTouchmove() {
+    },
+    onFocus(res) {
+      const { isBinding } = wx.getStorageSync('user');
+      if (isBinding === 0) {
+        wx.navigateTo({
+          url: '/pages/gender'
+        });
+      } else {
+        const { height } = res.$wx.detail;
+        if (height) {
+          this.bottom = height;
+          this.boardheight = height;
+          this.inputType = 0;
+        }
+        this.focus = true;
+      }
+    },
+    onBlur(res) {
+      const { cursor } = res.$wx.detail;
+      if (cursor) {
+        this.cursor = cursor;
+      }
+      this.cursor = cursor;
+      if (this.inputType === 0) {
+        this.focus = false;
+        this.bottom = 0;
+      }
+    },
+    onEmoji(type) {
+      if (type === 0) {
+        wx.hideKeyboard();
+        this.bottom = this.boardheight;
+        this.focus = false;
+      } else {
+        this.focus = true;
+      }
+      this.inputType = type === 0 ? 1 : 0;
+    },
+    onInputEmoji(val) {
+      let str = this.content.split('');
+      str.splice(this.cursor, 0, val);
+      this.content = str.join('');
+      if (this.cursor === -1) {
+        this.cursor += val.length + 1;
+      } else {
+        this.cursor += val.length;
+      }
+    },
+    onDelEmoji() {
+      let str = this.content.split('');
+      const leftStr = this.content.substring(0, this.cursor);
+      const leftLen = leftStr.length;
+      const rightStr = this.content.substring(this.cursor);
+      const left_left_Index = leftStr.lastIndexOf('[');
+      const left_right_Index = leftStr.lastIndexOf(']');
+      const right_right_Index = rightStr.indexOf(']');
+      const right_left_Index = rightStr.indexOf('[');
+      if (
+        left_right_Index === leftLen - 1 &&
+        leftLen - left_left_Index <= 8 &&
+        left_left_Index > -1
+      ) {
+        const len = left_right_Index - left_left_Index + 1;
+        str.splice(this.cursor - len, len);
+        this.cursor -= len;
+      } else if (
+        left_left_Index > -1 &&
+        right_right_Index > -1 &&
+        left_right_Index < left_left_Index &&
+        right_right_Index <= 6
+      ) {
+        let len = right_right_Index + 1 + (leftLen - left_left_Index);
+        if (len <= 10) {
+          str.splice(this.cursor - (leftLen - left_left_Index), len);
+          this.cursor -= leftLen - left_left_Index;
+        } else {
+          str.splice(this.cursor, 1);
+          this.cursor -= 1;
+        }
+      } else {
+        str.splice(this.cursor, 1);
+        this.cursor -= 1;
+      }
+      this.content = str.join('');
+    },
+    onkeyboardheightchange(e) {
+      const { height } = e.$wx.detail;
+      if (height > 0) {
+        this.inputType = 0;
+        this.bottom = height;
+        this.boardheight = height;
+      }
+    },
+    onHide() {
+      this.bottom = 0;
+      this.focus = false;
+      this.inputType = 0;
+      this.$emit('hide');
+    },
+    async chooseImage() {
+      const res = await wepy.wx.chooseImage({
+        count: 9 - this.imgs.length,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
+      const { tempFilePaths } = res;
+      for (const file of tempFilePaths) {
+        const info = await wepy.wx.getImageInfo({
+          src: file
+        });
+        const { height, width, type } = info;
+        this.imgs.push({
+          height,
+          width,
+          type,
+          path: file
+        });
+      }
+      this.focus = true;
+    },
+    onRemove(index) {
+      this.imgs.splice(index, 1);
+    },
+    async onSend() {
+      wx.hideKeyboard();
+      Post.subscribe()
+      if(this.isPlane) {
+        this.$emit('throw', this.content)
+        return
+      }
+      wx.showLoading({
+        title: '发表中...',
+        mask: true
+      });
+      this.loading = true;
+      this.btnTxt = '发表中...';
+      this.imgs = await Post.uploadFile(this.imgs, 2);
+      const comment = await Post.comment({
+        toId: this.toId,
+        postId: this.postId,
+        commentId: this.commentId,
+        commenType: this.commenType,
+        content: this.content,
+        imgs: this.imgs
+      });
+      this.btnTxt = '发表';
+      this.disabled = false;
+      this.loading = false;
+      this.content = '';
+      this.imgs = [];
+      this.$emit('comment', comment);
+    },
+    onCancel() {
+      this.$emit('cancel');
+    }
+  }
+});
+</script>
+<config>
+{
+    "usingComponents": {
+      "emoji-input": "./input-emoji",
+    }
+}
+</config>

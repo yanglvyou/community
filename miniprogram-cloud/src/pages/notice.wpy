@@ -1,0 +1,174 @@
+<style lang="less" scoped>
+.my-tabs {
+  border-radius: 0rpx;
+  text-align: left;
+  .tab {
+    font-size: 28rpx;
+    &.active {
+      font-size: 34rpx;
+    }
+  }
+}
+.list {
+  margin-top: 20rpx;
+  .clean {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b2b2b2;
+    font-size: 28rpx;
+    background: #fff;
+    padding: 20rpx;
+    position: relative;
+    &.clean-hover {
+      background: #f9f9f9;
+    }
+    &::after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      height: 1px;
+      border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+      color: rgba(235, 237, 245, 0.8);
+    }
+    .icon {
+      margin-right: 10rpx;
+    }
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <navigation-bar :back="false" background="transparent">
+      <div slot="left">
+        <tabs extClass="my-tabs" :labels="labels" :selectedIndex="tabIndex" @change="onTabChange" />
+      </div>
+    </navigation-bar>
+    <swiper
+      :current="current"
+      @change="onChange"
+      style="height: calc(100vh - {{navigationHeight}}px);"
+    >
+      <swiper-item>
+        <list
+          controller="message"
+          action="list"
+          :isInit="init0"
+          :scrollY="true"
+          :pageSize="15"
+          :showTip="true"
+        >
+          <div class="list">
+            <div class="clean" hover-class="clean-hover" @tap="onClean">
+              <div class="icon icon-clean" />
+              <div>清除未读</div>
+            </div>
+          </div>
+        </list>
+      </swiper-item>
+      <swiper-item>
+        <list
+          controller="message"
+          action="sysList"
+          :isInit="init1"
+          :scrollY="true"
+          :showTip="false"
+          :pageSize="10"
+        />
+      </swiper-item>
+    </swiper>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Message, eventHub, User } from '../common/api';
+wepy.page({
+  data: {
+    labels: [
+      {
+        title: '消息',
+        showDot: false
+      },
+      {
+        title: '通知',
+        showDot: false
+      }
+    ],
+    current: 0,
+    tabIndex: 0,
+    navigationHeight: 0,
+    user: null,
+    init0: true,
+    init1: false
+  },
+  async onLoad() {
+    this.navigationHeight = this.$app.$options.navigationHeight();
+    const _user = User.getUser();
+    if (_user) {
+      this.showTip = !_user.subscribe;
+    }
+    eventHub.$on('follow', async item => {
+      if (item.hasFollow) {
+        if (await User.cancel(item.fromId)) {
+          item.hasFollow = false;
+        }
+      } else {
+        item.hasFollow = await User.follow(item.fromId);
+      }
+    });
+    eventHub.$on('read', async item => {
+      await Message.read(item.id);
+    });
+    eventHub.$on('sysread', async item => {
+      if (await Message.read(item.id, true)) {
+        item.isRead = true;
+      } else {
+        Message.showToast('标记失败');
+      }
+    });
+    wx.removeTabBarBadge({
+      index: 1
+    });
+  },
+  async onShow() {
+    this.user = await Message.notice();
+    if (this.user) {
+      const { noticeCount, sysMsgCount } = this.user;
+      this.labels[0].showDot = noticeCount > 0;
+      this.labels[1].showDot = sysMsgCount > 0;
+    }
+  },
+  methods: {
+    onTabChange(index) {
+      this.current = index;
+    },
+    onChange(res) {
+      const { current, source } = res.$wx.detail;
+      this.tabIndex = current;
+      this.current = current;
+      if (!this[`init${current}`]) {
+        this[`init${current}`] = true;
+      }
+    },
+    async onClean() {
+      if (await Message.read()) {
+        Message.showToast('全部已读', 'success');
+        eventHub.$emit('allRead');
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '玉帛书',
+    navigationStyle: 'custom',
+    usingComponents: {
+      "tabs": "../components/tab-bar",
+      "list": "../components/page-list",
+      "navigation-bar": "../components/navigation-bar/navigation-bar",
+    }
+}
+</config>import { eventHub } from '../common/api'

@@ -1,0 +1,426 @@
+<style lang="less" scoped>
+.info {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  line-height: normal;
+  width: 100%;
+  padding: 20rpx 30rpx;
+  border-radius: 0px;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+  &::after {
+    border: none;
+  }
+  .avtater {
+    image {
+      width: 120rpx;
+      height: 120rpx;
+      border-radius: 120rpx;
+    }
+  }
+  .content {
+    flex-grow: 1;
+    margin-left: 20rpx;
+    .nick {
+      font-size: 36rpx;
+      font-weight: bold;
+    }
+    .des {
+      font-size: 28rpx;
+      margin-top: 16rpx;
+      .label {
+        color: #b2b2b2;
+        margin-right: 12rpx;
+      }
+      .value {
+        color: #000;
+        margin-right: 30rpx;
+      }
+    }
+  }
+  .right {
+    display: flex;
+    align-items: center;
+    font-size: 30rpx;
+    color: #888888;
+    .login-txt {
+      color: #e6a23c;
+    }
+  }
+}
+.header {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0rpx;
+  position: relative;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .item {
+    text-align: center;
+    flex-grow: 1;
+    .item-ic {
+      width: 72rpx;
+      height: 72rpx;
+      border-radius: 160rpx;
+      display: inline-block;
+      color: #000;
+      position: relative;
+      .icon {
+        font-size: 48rpx;
+        display: inline-block;
+      }
+      //   &.plane{
+      //       background: #fae37c;
+      //   }
+      //   &.sys {
+      //     background: #fd6d7e;
+      //   }
+      //   &.thumbup {
+      //     background: #45b0f7;
+      //   }
+      //   &.fens {
+      //     background: #4ed2aa;
+      //   }
+    }
+    .item-title {
+      font-size: 24rpx;
+    }
+  }
+}
+.tool {
+  margin: 30rpx;
+  background: #fff;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  border-radius: 20rpx;
+  .item {
+    flex-grow: 1;
+    text-align: center;
+    .value {
+      font-size: 32rpx;
+      font-weight: bold;
+      margin-bottom: 8rpx;
+      &.rank {
+        font-weight: normal;
+        font-size: 28rpx;
+        color: #e6a23c;
+      }
+    }
+    .label {
+      font-size: 24rpx;
+      color: #b2b2b2;
+    }
+  }
+}
+swiper {
+  margin: 20rpx 0rpx;
+  background: #ffffff;
+  height: 290rpx;
+}
+.cells {
+  padding: 20rpx 0rpx;
+  background: #fff;
+  margin-bottom: 30rpx;
+  button {
+    text-align: left;
+    &::after {
+      border: none;
+    }
+  }
+  .cell {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    padding: 20rpx 40rpx;
+    &.cell-hover {
+      background: #f8f8f8;
+    }
+    .left {
+      flex-grow: 1;
+      .title {
+        font-size: 32rpx;
+        line-height: 32rpx;
+      }
+      .des {
+        font-size: 24rpx;
+        color: #b2b2b2;
+      }
+    }
+    .right {
+      display: flex;
+      align-items: center;
+      color: #b2b2b2;
+      .value {
+        font-size: 28rpx;
+      }
+      .auth {
+        font-size: 26rpx;
+        color: red;
+      }
+    }
+  }
+}
+.assets {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  font-size: 30rpx;
+  background: #fff;
+  position: relative;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .assets-title {
+    font-size: 30rpx;
+    display: flex;
+    align-items: center;
+    color: #FF7E00;
+    image {
+      width: 64rpx;
+      height: 64rpx;
+      margin-right: 6rpx;
+    }
+  }
+  .assets-des {
+    font-size: 28rpx;
+    color: #b2b2b2;
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="info" @tap="goHomPage" v-if="user.isBinding">
+      <div class="avtater">
+        <img :src="user.avtater" />
+      </div>
+      <div class="content">
+        <div class="nick">{{user.nick}}</div>
+        <div class="des">
+          <text>
+            <text class="label">获赞</text>
+            <text class="value">{{user.thumbsNum}}</text>
+          </text>
+          <text>
+            <text class="label">关注</text>
+            <text class="value">{{user.followNum}}</text>
+          </text>
+          <text>
+            <text class="label">粉丝</text>
+            <text class="value">{{user.fansNum}}</text>
+          </text>
+        </div>
+      </div>
+      <div class="right">
+        <div>主页</div>
+        <div class="icon icon-arrow-right"></div>
+      </div>
+    </div>
+    <button @tap.stop="goGender" class="info" v-else>
+      <div class="avtater">
+        <img src="../images/avtater_empty.svg" />
+      </div>
+      <div class="content">
+        <div class="nick">未登录</div>
+        <div class="des">登录后可编辑个人资料</div>
+      </div>
+      <div class="right">
+        <div class="login-txt">{{isqq ? '点击QQ授权' : '点击微信授权'}}</div>
+        <div class="icon icon-arrow-right"></div>
+      </div>
+    </button>
+    <div class="assets" @tap="goAssets">
+      <div class="assets-title">
+        <img src="../images/ic_wallet.svg" />
+        <div>总资产：¥ {{assets}}</div>
+      </div>
+      <div class="assets-des">
+        <text>查看</text>
+        <text class="icon icon-arrow-right"></text>
+      </div>
+    </div>
+    <div class="header">
+      <div class="item">
+        <div class="item-ic plane" @tap="goPlane">
+          <div class="icon icon-tucaohover" />
+        </div>
+        <div class="item-title">吐槽机</div>
+      </div>
+      <div class="item" @tap="goHomPage">
+        <div class="item-ic sys">
+          <div class="icon icon-article" />
+        </div>
+        <div class="item-title">我的帖子</div>
+      </div>
+      <div class="item" @tap="goComments">
+        <div class="item-ic thumbup">
+          <div class="icon icon-pinglun" />
+        </div>
+        <div class="item-title">我的评论</div>
+      </div>
+      <div class="item" @tap="goLikes">
+        <div class="item-ic fens">
+          <div class="icon icon-thumbup-fill" />
+        </div>
+        <div class="item-title">我赞过的</div>
+      </div>
+    </div>
+    <div class="cells">
+      <button class="cell" @tap="goEdit">
+        <div class="left">
+          <div class="title">编辑个人信息</div>
+          <div class="des">完善个人信息让更多同学了解你</div>
+        </div>
+        <div class="right">
+          <div class="icon icon-arrow-right"></div>
+        </div>
+      </button>
+      <button class="cell" @tap="goAuth" v-if="!user.isAuth">
+        <div class="left">
+          <div class="title">学生认证</div>
+          <div class="des">学生认证后可解锁更多特权</div>
+        </div>
+        <div class="right">
+          <div class="auth">未认证</div>
+          <div class="icon icon-arrow-right"></div>
+        </div>
+      </button>
+    </div>
+    <div class="cells">
+      <button
+        class="cell"
+        open-type="{{isqq ? 'openGroupProfile' : 'contact'}}"
+        group-id="1006532345"
+      >
+        <div class="left">
+          <div class="title">客服小书</div>
+          <div class="des">投稿,帮助,疑问都可以点击这里</div>
+        </div>
+        <div class="right">
+          <!-- <div class="value">0</div> -->
+          <div class="icon icon-arrow-right"></div>
+        </div>
+      </button>
+      <button class="cell" open-type="feedback">
+        <div class="left">
+          <div class="title">意见反馈</div>
+          <div class="des">你的意见和建议,是对我们最大的支持</div>
+        </div>
+        <div class="right">
+          <div class="icon icon-arrow-right"></div>
+        </div>
+      </button>
+      <button class="cell" open-type="share">
+        <div class="left">
+          <div class="title">推荐给好友</div>
+          <div class="des">觉得好玩,就分享给你身边的同学吧</div>
+        </div>
+        <div class="right">
+          <div class="icon icon-arrow-right"></div>
+        </div>
+      </button>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { User, eventHub } from '../common/api';
+wepy.page({
+  data: {
+    hasBinding: true,
+    user: null,
+    isqq: false,
+    assets: '0.00'
+  },
+  async onPullDownRefresh() {
+    await this.loadData();
+  },
+  async onLoad() {
+    this.isqq = User.isQQ();
+    wx.setNavigationBarTitle({
+      title: ''
+    });
+    eventHub.$on('binding', async () => {
+      await this.loadData();
+    });
+    await this.loadData();
+  },
+  methods: {
+    async loadData() {
+      const res = await User.newData();
+      if (res) {
+        this.user = res;
+        this.assets = ((this.user.shell + this.user.drill) / 100).toFixed(2);
+      }
+      wx.stopPullDownRefresh();
+    },
+    goHomPage() {
+      wx.navigateTo({
+        url: `/pages/user-home?id=${this.user.id}`
+      });
+    },
+    goAuth() {
+      wx.navigateTo({
+        url: `/pages/user-auth`
+      });
+    },
+    goEdit() {
+      wx.navigateTo({
+        url: `/pages/user-seting`
+      });
+    },
+    goPlane() {
+      wx.navigateTo({
+        url: '/plugin/plane/index'
+      });
+    },
+    goComments() {
+      wx.navigateTo({
+        url: `/pages/user-comments`
+      });
+    },
+    goLikes() {
+      wx.navigateTo({
+        url: `/pages/user-likes`
+      });
+    },
+    goGender() {
+      wx.navigateTo({
+        url: '/pages/gender'
+      });
+    },
+    goAssets() {
+      wx.navigateTo({
+        url: '/plugin/tip/assets'
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '',
+    enablePullDownRefresh: true,
+    "usingComponents": {
+       
+    }
+}
+</config>

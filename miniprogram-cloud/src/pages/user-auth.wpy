@@ -1,0 +1,215 @@
+<style lang="less" scoped>
+.cell {
+  padding: 30rpx;
+  margin-top: 20rpx;
+  background: #ffffff;
+  .title {
+    margin-bottom: 30rpx;
+    font-size: 36rpx;
+  }
+  .input {
+    color: #b2b2b2;
+    font-weight: lighter;
+  }
+  input {
+    font-size: 36rpx;
+    margin-top: 20rpx;
+  }
+  .title-des {
+    color: #b2b2b2;
+    font-size: 28rpx;
+    margin-top: -24rpx;
+  }
+  .place {
+    width: 500rpx;
+    height: 300rpx;
+    margin: 40rpx 0rpx;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #f8f8f8;
+    color: #b2b2b2;
+    position: relative;
+    image {
+      width: 500rpx;
+      height: 300rpx;
+    }
+    .icon {
+      font-size: 56rpx;
+    }
+    .des {
+      font-size: 28rpx;
+      margin-top: 8rpx;
+    }
+    .btn-del {
+      position: absolute;
+      width: 48rpx;
+      height: 48rpx;
+      line-height: 48rpx;
+      background: rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+      font-size: 38rpx;
+      bottom: 8rpx;
+      right: 8rpx;
+      border-radius: 8rpx;
+    }
+  }
+  .note {
+    font-size: 28rpx;
+    color: #888888;
+    margin: 30rpx 0rpx;
+  }
+}
+.msg {
+  text-align: center;
+  padding: 30rpx;
+  color: red;
+  font-size: 34rpx;
+}
+.footer {
+  text-align: center;
+  margin-top: 50rpx;
+}
+</style>
+<template>
+  <div class="container">
+    <div class="cell">
+      <div class="title">填写姓名</div>
+      <input placeholder-class="input" v-model="realName" auto-focus placeholder="点击输入你的真实姓名" />
+    </div>
+    <div class="cell">
+      <div class="title">上传学生证</div>
+      <div class="title-des">学生证需清晰看到姓名，学校，院系，年级信息</div>
+      <block v-if="src">
+        <div class="place" @tap="onView">
+          <img :src="src" alt srcset mode="scaleToFill" />
+          <div v-if="!student" class="btn-del icon icon-del-line" @tap.stop="onDel" />
+        </div>
+      </block>
+      <block v-else>
+        <div class="place" @tap="onUpload">
+          <div class="icon icon-camera-full"></div>
+          <div class="des" @tap.stop="onDel">上传学生证首页展开照片</div>
+        </div>
+      </block>
+      <div class="note">
+        <div>提示:</div>
+        <div>1,玉帛书对你的证明材料严格保密</div>
+        <div>2,提交后预计1个工作日内通过消息发送认证结果</div>
+        <div>3,请确保提交的材料真实，合法，有效，否则会影响认证</div>
+      </div>
+    </div>
+    <block v-if="user && user.authSrc">
+      <div class="msg">资料审核中...</div>
+    </block>
+    <block v-else>
+      <div class="footer">
+        <button
+          class="btn"
+          hover-class="btn-hover"
+          :loading="loading"
+          :disabled="disabled"
+          @tap="onSubmit"
+        >提交资料</button>
+      </div>
+    </block>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { User, qiniuUrl } from '../common/api';
+wepy.page({
+  data: {
+    loading: false,
+    disabled: false,
+    realName: '',
+    src: '',
+    path: '',
+    user: null
+  },
+  async onLoad() {
+    this.user = await User.details();
+    if (this.user) {
+      this.realName = this.user.realName;
+      this.src = this.user.authSrc;
+      this.path = this.user.authSrc;
+    }
+  },
+  methods: {
+    async onUpload() {
+      const res = await wepy.wx.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
+      const { tempFilePaths } = res;
+      wx.showLoading({
+        title: '上传头像...',
+        mask: true
+      });
+      const imgUrl = await User.uploadFile(
+        [
+          {
+            path: tempFilePaths[0]
+          }
+        ],
+        3
+      );
+      this.path = qiniuUrl + imgUrl;
+      this.src = this.path;
+      wx.hideLoading();
+    },
+    onView() {
+      wx.previewImage({
+        urls: [this.src],
+        current: 0
+      });
+    },
+    onDel() {
+      this.src = '';
+      this.path = '';
+    },
+    goCenter() {
+      wx.switchTab({
+        url: '/pages/me'
+      });
+    },
+    async onSubmit() {
+      if (!this.realName) {
+        wx.showToast({
+          title: `真实姓名不能为空`,
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      if (!this.path) {
+        wx.showToast({
+          title: `请上传学生证`,
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+      this.disabled = true;
+      this.loading = true;
+      const res = await User.auth(this.realName, this.path);
+      if (res) {
+        setTimeout(() => {
+          wx.switchTab({
+            url: '/pages/me'
+          });
+        }, 2000);
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '学生认证',
+    "usingComponents": {
+    }
+}
+</config>

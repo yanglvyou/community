@@ -1,0 +1,135 @@
+<style lang="less">
+page {
+  background: #fff;
+}
+swiper {
+  swiper-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .item {
+      text-align: center;
+      padding-bottom: 40rpx;
+      image {
+        width: 500rpx;
+        height: 650rpx;
+      }
+      .title {
+        font-size: 36rpx;
+        font-weight: bold;
+        margin: 30rpx 0rpx;
+      }
+      .des {
+        font-size: 28rpx;
+        color: #969696;
+        margin-bottom: 60rpx;
+      }
+    }
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <swiper
+      style="height: calc(100vh - 56px);"
+      :indicator-dots="true"
+      indicator-color="#fae37c"
+      indicator-active-color="rgba(250, 227, 124, 0.2)"
+    >
+      <swiper-item v-for="(item,index) in items" :key="index">
+        <div class="item">
+          <img :src="item.icon" />
+          <div class="title">{{item.title}}</div>
+          <div class="des">{{item.des}}</div>
+          <button
+            class="btn"
+            hover-class="btn-hover"
+            :loading="loading"
+            :disabled="disabled"
+            @tap="login"
+          >{{btntext}}</button>
+        </div>
+      </swiper-item>
+    </swiper>
+  </div>
+</template>
+
+<script>
+import wepy from '@wepy/core';
+import { User } from '../common/api';
+wepy.page({
+  data: {
+    btntext: '开始体验',
+    items: [
+      {
+        title: '记录校园',
+        des: '记录校园生活，分享大学故事',
+        icon: 'http://img.wutuobangxinyougou.com/guide_1.svg'
+      },
+      {
+        title: '真实的TA',
+        des: '全国各高校真实学生，学生实名认证',
+        icon: 'http://img.wutuobangxinyougou.com/guide_2.svg'
+      },
+      {
+        title: '拓展圈子',
+        des: '认识志趣相同的同学,拓展人脉',
+        icon: 'http://img.wutuobangxinyougou.com/guide_3.svg'
+      },
+      {
+        title: '校园网红',
+        des: '施展你的才华,成为校园里耀眼的星',
+        icon: 'http://img.wutuobangxinyougou.com/guide_4.svg'
+      }
+    ],
+    loading: false,
+    disabled: false
+  },
+  async onLoad(q) {
+    const scene = decodeURIComponent(q.scene);
+    const { room, mode, id, postId, commentId } = q;
+    if (scene) {
+      const obj = {};
+      const params = scene.split('&');
+      for (const p of params) {
+        const arr = p.split('=');
+        if (arr.length === 2) {
+          obj[arr[0]] = arr[1];
+        }
+      }
+      this.shareId = obj.id || id;
+      this.$app.$options.globalData.postId = obj.postId || postId;
+      this.$app.$options.globalData.commentId = obj.commentId || commentId;
+    }
+    if (User.getUserId()) {
+      await this.login();
+    }
+  },
+  methods: {
+    async login() {
+      this.loading = true;
+      this.disabled = true;
+      this.btntext = '开启中..';
+      const isLogin = await User.login(this.shareId);
+      if (isLogin) {
+        wx.switchTab({
+          url: '/pages/home'
+        });
+      } else {
+        this.btntext = '重试';
+      }
+      this.loading = false;
+      this.disabled = false;
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '玉帛书',
+    navigationBarBackgroundColor: '#ffffff',
+    usingComponents: {
+      
+    }
+}
+</config>

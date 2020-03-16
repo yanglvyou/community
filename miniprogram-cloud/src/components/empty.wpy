@@ -1,0 +1,69 @@
+<style lang="less" scoped>
+.empty {
+  text-align: center;
+  padding: 60rpx 30rpx;
+  color: #b2b2b2;
+  .ic-empty {
+    width: 200rpx;
+    height: 200rpx;
+  }
+  .des {
+    font-size: 28rpx;
+    margin-top: 20rpx;
+  }
+  .content {
+    margin-top: 30rpx;
+  }
+  .btn {
+    height: 72rpx;
+    line-height: 72rpx;
+    border-radius: 72rpx;
+    padding: 0rpx 64rpx;
+    display: inline-block;
+    background: #fae37c;
+    color: #13100e;
+    border: none;
+    box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.3);
+    font-size: 34rpx;
+    &::after {
+      border: none;
+    }
+    &.btn-hover {
+      background: rgba(250, 227, 124, 0.5);
+    }
+  }
+}
+</style>
+<template>
+  <div class="empty">
+    <img src="../images/ic_empty.svg" class="ic-empty" />
+    <div class="des">{{des}}</div>
+    <div class="content">
+      <div class="btn icon icon-xiezuo" hover-class="btn-hover" @tap="onTap" v-if="btnTxt">{{btnTxt}}</div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    des: String,
+    btnTxt: String
+  },
+  methods: {
+    onTap() {
+      const { isBinding } = wx.getStorageSync('user');
+      if (isBinding === 0) {
+        wx.navigateTo({
+        url: '/pages/gender'
+      });
+      } else {
+        this.$emit('action');
+      }
+    }
+  }
+});
+</script>

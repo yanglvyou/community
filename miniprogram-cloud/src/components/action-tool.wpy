@@ -1,0 +1,141 @@
+<style lang="less" scoped>
+.action-tool {
+  position: fixed;
+  bottom: 30rpx;
+  right: 30rpx;
+  transition: all 0.3s;
+  z-index: 10001;
+  .btn-i {
+    width: 96rpx;
+    height: 96rpx;
+    line-height: 96rpx;
+    text-align: center;
+    background: #fae37c;
+    border-radius: 96rpx;
+    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40rpx;
+    position: relative;
+    &.btn-circle {
+      width: 84rpx;
+      height: 84rpx;
+      line-height: 84rpx;
+      margin-left: 6rpx;
+      transition: all 0.3s;
+    }
+    .btn-des {
+      position: absolute;
+      width: 160rpx;
+      left: -190rpx;
+      box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8rpx;
+      line-height: 72rpx;
+      top: 8rpx;
+      background: #f1f1f1;
+      font-size: 28rpx;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .icon {
+      font-size: 56rpx;
+      transition: all 0.3s;
+    }
+  }
+}
+.mask {
+  background: rgba(255, 255, 255, 0.95);
+  position: fixed;
+  height: calc(100vh);
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  z-index: 10000;
+}
+</style>
+<template>
+  <div>
+    <div class="mask" v-show="showMore" @tap.stop="showMore = !showMore"></div>
+    <div class="action-tool">
+      <div>
+        <div
+          class="btn-circle btn-i"
+          style="margin-bottom: {{showMore ? 55 : -84}}rpx;"
+          v-for="(item, index) in items"
+          @tap="goSend(index)"
+        >
+          <div class="icon icon-{{item.icon}}"></div>
+          <div
+            class="btn-des"
+            v-show="showMore"
+            style="opacity: {{showMore ? 1 : 0}};"
+          >{{item.title}}</div>
+        </div>
+      </div>
+      <div class="btn-i" @tap.stop="showMore = !showMore">
+        <div class="icon icon-add" style="transform: rotate({{showMore  ? 135 : 0}}deg);"></div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    topic: Object
+  },
+  data: {
+    items: [
+      {
+        title: '吐槽机',
+        icon: 'tucaohover',
+        type: -1
+      },
+      {
+        title: '写问答',
+        icon: 'questions',
+        type: 3
+      },
+      {
+        title: '发图文',
+        icon: 'xiezuo',
+        type: 0
+      },
+      {
+        title: '写文章',
+        icon: 'write',
+        type: 2
+      },
+      {
+        title: '分享文章',
+        icon: 'share-article',
+        type: 1
+      }
+    ],
+    showMore: false
+  },
+  methods: {
+    goSend(index) {
+      this.showMore = false;
+      if (index === 0) {
+         wx.navigateTo({
+          url: '/plugin/plane/index'
+        });
+        return
+      }
+      if (this.topic) {
+        wx.navigateTo({
+          url: `/pages/post-send?type=${index}&topicId=${
+            this.topic.id
+          }&title=${encodeURI(this.topic.title)}`
+        });
+      } else {
+        wx.navigateTo({
+          url: `/pages/post-send?type=${index}`
+        });
+      }
+    }
+  }
+});
+</script>

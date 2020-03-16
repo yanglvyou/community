@@ -1,0 +1,107 @@
+<style lang="less" scoped>
+.form {
+  background: #fff;
+  padding: 30rpx;
+  margin: 30rpx;
+  border-radius: 10rpx;
+  .form-title {
+    font-size: 34rpx;
+    padding: 30rpx 0rpx;
+  }
+  input {
+    padding: 30rpx 0rpx;
+  }
+  .form-score {
+    font-size: 26rpx;
+    color: #7a8299;
+    margin-bottom: 10rpx;
+  }
+  .form-des {
+    font-size: 24rpx;
+    color: #b2b2b2;
+  }
+}
+.btn-trans {
+  font-size: 32rpx;
+  background: #fae37c;
+  box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.5);
+  padding: 24rpx 0rpx;
+  border-radius: 50rpx;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  margin: 30rpx auto;
+  margin-bottom: 50rpx;
+  width: 600rpx;
+  justify-content: center;
+  &::after {
+    border: none;
+  }
+  &.btn-disabled {
+    background: #f8f8f8;
+    color: #8a8a8a;
+    box-shadow: none;
+  }
+  &.btn-hover {
+    background: rgba(250, 227, 124, 0.5);
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="form">
+      <div class="form-title">转换玉帛钻的数量</div>
+      <input type="number" @input="onInput" v-model.number="score" placeholder="输入数量" />
+      <div class="form-score">消耗{{shell || '0'}}个玉帛贝</div>
+      <div class="form-des">当前余额：{{user.shell}}贝</div>
+    </div>
+    <button
+      :disabled="btnDisabled"
+      :loading="btnLoading"
+      class="btn-trans"
+      hover-class="btn-hover"
+      @tap="onTransform"
+    >
+      <div>确认转换</div>
+    </button>
+  </div>
+</template>
+<script>
+import { Tip } from './api';
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    user: null,
+    btnDisabled: true,
+    btnLoading: false,
+    shell: ''
+  },
+  async onLoad(q) {
+    this.user = await Tip.getAssets();
+  },
+  methods: {
+    onInput(e) {
+      const { value } = e.$wx.detail;
+      this.shell = parseInt(value);
+      this.btnDisabled = !this.user || this.user.shell < this.shell;
+    },
+    async onTransform() {
+      this.btnDisabled = true;
+      this.btnLoading = true;
+      const res = await Tip.convert(this.shell);
+      if (res) {
+        this.user.shell -= this.shell;
+      }
+      this.btnDisabled = false;
+      this.btnLoading = false;
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '玉帛贝转玉帛钻',
+    usingComponents: {
+    }
+}
+</config>

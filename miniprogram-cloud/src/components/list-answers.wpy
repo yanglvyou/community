@@ -1,0 +1,88 @@
+<template>
+  <div>
+    <block v-if="items.length">
+      <post-item v-for="(item,index) in items" :item="item" @remove="onRemove" />
+    </block>
+    <empty des="暂无回答" btnTxt="回答问题" @action="onAction" v-else />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post, eventHub } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  data: {
+    items: [],
+    pageIndex: 1,
+    pageSize: 20,
+    hasMore: true,
+    post: null,
+    isLoading: false
+  },
+  attached() {},
+  methods: {
+    async loadData(post) {
+      if (post) {
+        this.post = post;
+      }
+      if (!this.hasMore || this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      const res = await Post.answers(
+        this.post.id,
+        this.pageIndex,
+        this.pageSize
+      );
+      if (res) {
+        for (const item of res) {
+          this.items.push(item);
+        }
+        this.pageIndex++;
+        this.hasMore = this.pageSize === res.length;
+      }
+      this.isLoading = false;
+    },
+    onAction() {
+      wx.navigateTo({
+        url: `/pages/post-answer?id=${this.post.id}&topicId=${this.post.topicId}&title=${encodeURI(
+          this.post.content
+        )}`
+      });
+    },
+    onRemove({ index, post }) {
+      wx.showActionSheet({
+        itemList: ['删除'],
+        itemColor: '#d81e06',
+        success: res => {
+          if (res.tapIndex === 0) {
+            wx.showModal({
+              title: '删除提示',
+              content: '确定要删除该贴吗?',
+              confirmText: '删除',
+              confirmColor: '#d81e06',
+              success: async res => {
+                if (res.confirm) {
+                  if (await Post.removePost(post.id)) {
+                    this.items.splice(index, 1);
+                  }
+                }
+              }
+            });
+          }
+        }
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    usingComponents: {
+      "empty": "./empty",
+      "post-item": "./item-post",
+    }
+}
+</config>

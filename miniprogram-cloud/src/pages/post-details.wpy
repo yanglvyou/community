@@ -1,0 +1,561 @@
+<style lang="less" scoped>
+.bar-ext {
+  .weui-navigation-bar__left {
+    padding-left: 16px;
+  }
+  .user-back {
+    display: flex;
+    .btn-back {
+      width: 64rpx;
+      height: 72rpx;
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E  %3Cpath fill-opacity='.9' fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E");
+      background-position: 0% 50%;
+      background-size: 44%;
+      background-repeat: no-repeat;
+    }
+  }
+  .navigation-title {
+    font-size: 34rpx;
+  }
+}
+.article {
+  background: #fff;
+  padding: 30rpx 50rpx;
+  .article-title {
+    font-size: 34rpx;
+    font-weight: bold;
+    margin-bottom: 30rpx;
+  }
+  editor {
+    height: auto;
+    font-size: 34rpx;
+    line-height: 56rpx;
+    color: #353535;
+  }
+}
+.post-share {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 20rpx;
+  margin-top: -30rpx;
+  button {
+    margin-right: 30rpx;
+    font-size: 32rpx;
+    display: flex;
+    align-items: center;
+    color: #13100e;
+    .icon {
+      margin-right: 10rpx;
+      font-size: 36rpx;
+    }
+    &::after {
+      border: none;
+    }
+    &.btn-hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    &:last-child {
+      margin-left: 0rpx;
+    }
+  }
+}
+.reward {
+  background: #fff;
+}
+.post-question-tool {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx 20rpx;
+  padding-top: 0rpx;
+  .btn-txt {
+    display: flex;
+    align-items: center;
+    font-size: 28rpx;
+    color: #409eff;
+    .icon-edit {
+      margin-right: 10rpx;
+    }
+  }
+}
+.topic {
+  padding: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  margin: 20rpx 0rpx;
+  font-size: 34rpx;
+  color: #409eff;
+  image {
+    width: 84rpx;
+    height: 84rpx;
+    border-radius: 10rpx;
+  }
+  .topic-content {
+    flex-grow: 1;
+    margin-left: 30rpx;
+    .title {
+      color: #000;
+      font-size: 32rpx;
+      margin-bottom: 10rpx;
+    }
+    .topic-num {
+      display: flex;
+      align-items: center;
+    }
+    .num {
+      color: #b2b2b2;
+      font-size: 26rpx;
+      margin-right: 20rpx;
+      text {
+        margin-right: 8rpx;
+      }
+    }
+  }
+  .title {
+    flex-grow: 1;
+  }
+  .des {
+    font-size: 24rpx;
+  }
+}
+.comments {
+  background: #ffffff;
+  .comments-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0rpx 20rpx;
+    .title {
+      font-size: 32rpx;
+    }
+    .zan {
+      display: flex;
+      align-items: center;
+      font-size: 24rpx;
+      color: #b2b2b2;
+      margin: 30rpx 0rpx;
+      image {
+        width: 36rpx;
+        height: 36rpx;
+        border-radius: 36rpx;
+        border: #ffffff solid 4rpx;
+        margin-right: -14rpx;
+      }
+      .zan-des {
+        margin-left: 24rpx;
+      }
+    }
+  }
+}
+.btn-answer {
+  position: fixed;
+  bottom: 60rpx;
+  right: 30rpx;
+  width: 96rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  background: #fae37c;
+  border-radius: 96rpx;
+  box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.1);
+  .icon {
+    font-size: 56rpx;
+    transition: all 0.3s;
+  }
+}
+.btn-follow {
+  font-size: 28rpx;
+  background: #fae37c;
+  padding: 10rpx 30rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  line-height: normal;
+  &::after {
+    border: none;
+  }
+  &.has {
+    box-shadow: none;
+    background: #f8f8f8;
+    color: #b2b2b2;
+    font-size: 26rpx;
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <navigation-bar ext-class="bar-ext" :back="!showUser" background="#ffffff">
+      <div slot="left" class="user-back" v-if="showUser">
+        <div class="btn-back" @tap="goBack"></div>
+        <user style="opacity:1;transition: all 0.3s;" :item="post.user" />
+      </div>
+      <div slot="center" class="navigation-title" v-else>帖子详情</div>
+    </navigation-bar>
+    <div
+      style="height: calc(100vh - {{navigationHeight}}px - {{post.post.posType !== 3 ? 100 : 0}}rpx);"
+    >
+      <mp-page
+        :state="state"
+        :refresherEnabled="false"
+        :toView="toView"
+        @scroll="onScroll"
+        @scrolltolower="onScrolltolower"
+        error="帖子不存在了"
+      >
+        <post-item
+          :showTool="false"
+          :showTopice="false"
+          :showFollow="true && !post.isSelf"
+          :item="post"
+          @follow="onFollow"
+          v-if="post.post.posType === 0 || post.post.posType === 1 || post.post.posType === 3"
+        ></post-item>
+        <block v-else-if="post.post.posType === 4 || post.post.posType === 2">
+          <div class="article">
+            <div class="article-title">{{post.post.articleTitle}}</div>
+            <div class="post-question-tool" v-if="post.post.posType === 4">
+              <div class="btn-txt" hover-class="btn-hover" @tap="onAnswer(true)">
+                <div class="icon icon-edit" />
+                <div>我来回答</div>
+              </div>
+              <div class="btn-txt" @tap="goQustion">
+                <div>更多回答</div>
+                <div class="icon icon-arrow-right" />
+              </div>
+            </div>
+            <div style="margin-bottom: 30rpx;">
+              <user :item="post.user">
+                <div slot="action" v-if="!post.isSelf">
+                  <button class="btn-follow {{post.hasFollow ? 'has' : ''}}" @tap.stop="onFollow">
+                    <text class="icon icon-{{post.hasFollow ? 'follow' : 'add'}}"></text>
+                    <text>{{post.hasFollow ? '已关注' : '关注'}}</text>
+                  </button>
+                </div>
+              </user>
+            </div>
+            <editor id="editor" @ready="onEditorReady" read-only="true" />
+          </div>
+        </block>
+        <div class="post-share" v-if="post.post.posType === 3">
+          <button open-type="share" hover-class="btn-hover">
+            <div class="icon icon-user-add" />
+            <div>邀请好友回答</div>
+          </button>
+          <button @tap="onAnswer(false)" hover-class="btn-hover">
+            <div class="icon icon-edit" />
+            <div>我来回答</div>
+          </button>
+        </div>
+        <block v-else>
+          <reward
+            :isSelf="post.isSelf"
+            :shell="post.post.shell"
+            :postId="post.post.id"
+            :toId="post.user.id"
+          />
+          <div class="post-share">
+            <button open-type="share" hover-class="btn-hover">
+              <div class="icon icon-{{isqq ? 'QQ' : 'weixin'}}" />
+              <div>{{isqq ? '分享至QQ' : '分享至微信'}}</div>
+            </button>
+            <button @tap="onShare" hover-class="btn-hover">
+              <div class="icon icon-{{isqq ? 'zone' : 'circle'}}" />
+              <div>{{isqq ? '发表到说说' : '分享至朋友圈'}}</div>
+            </button>
+          </div>
+        </block>
+        <div slot="other">
+          <div class="topic" @tap="goTopic" v-if="post.topic" id="topic">
+            <img :src="post.topic.iconSrc" />
+            <div class="topic-content">
+              <div class="title">#{{post.topic.title}}</div>
+              <div class="topic-num">
+                <div class="num">
+                  <text>{{post.topic.followCount}}</text>
+                  {{post.topic.nickName}}
+                </div>
+                <div class="num">
+                  <text>{{post.topic.postCount}}</text>帖子
+                </div>
+              </div>
+            </div>
+            <div class="des">更多</div>
+            <div class="icon icon-arrow-right"></div>
+          </div>
+          <div class="comments" v-if="post.post.posType !== 3">
+            <div class="comments-top">
+              <div class="title">评论({{post.post.commentCount}})</div>
+              <div class="zan">
+                <img v-for="(img, index) in post.likers" :src="img" :key="index" />
+                <div class="zan-des">{{post.post.thumbsCount}}人赞了</div>
+              </div>
+            </div>
+            <list-comments ref="list" :likeType="0" />
+          </div>
+          <block v-else>
+            <list-answers ref="answers" />
+          </block>
+        </div>
+      </mp-page>
+    </div>
+    <block v-if="post.post.posType !== 3 && state === 2">
+      <comment-action
+        @showInput="showInput = true"
+        @like="onLike"
+        @commentTap="onCommentTap"
+        :toId="post.user.id"
+        :postId="post.post.id"
+        :likeType="0"
+        :isLike="post.hasLike"
+        :thumbsCount="post.post.thumbsCount"
+        :commentCount="post.post.commentCount"
+      />
+      <comment-input
+        :show="showInput"
+        @hide="showInput = false"
+        @comment="onComment"
+        :commenType="0"
+        :postId="post.post.id"
+        :toId="post.user.id"
+      />
+    </block>
+    <div class="btn-answer" v-if="post.post.posType === 3" @tap="onAnswer(false)">
+      <text class="icon icon-write" />
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post, User, eventHub, imgUrl, baseUrl } from '../common/api';
+wepy.page({
+  data: {
+    showUser: false,
+    isqq: false,
+    showInput: false,
+    navigationHeight: 0,
+    post: null,
+    toView: '',
+    template: null,
+    state: 0,
+    editorCtx: null
+  },
+  async onLoad(q) {
+    const { id } = q;
+    this.isqq = Post.isQQ();
+    this.navigationHeight = this.$app.$options.navigationHeight();
+    if (id) {
+      this.post = await Post.details(id);
+      if (this.post) {
+        setTimeout(async () => {
+          if (this.post.post.posType === 3) {
+            await this.$refs.answers.loadData(this.post.post);
+          } else {
+            await this.$refs.list.loadData(this.post.post.id);
+          }
+          this.state = this.post ? 2 : 1;
+        }, 300);
+      } else {
+        this.state = 1;
+      }
+    }
+  },
+  onShareAppMessage() {
+    const imageUrl =
+      this.post.post.imgs && this.post.post.imgs.length
+        ? this.post.post.imgs[0].path
+        : `${imgUrl}/share.png`;
+    return {
+      title:
+        this.post.post.baseTxt ||
+        this.post.post.articleTitle ||
+        this.post.post.content,
+      imageUrl: imageUrl,
+      path: `/pages/index?id=${Post.getUserId()}&postId=${this.post.post.id}`
+    };
+  },
+  methods: {
+    onScroll(res) {
+      this.toView = '';
+      this.showUser = res.scrollTop > this.navigationHeight;
+    },
+    onCommentTap() {
+      console.log(1);
+      this.toView = 'other';
+    },
+    onEditorReady() {
+      wx.createSelectorQuery()
+        .select('#editor')
+        .context(res => {
+          if (res) {
+            this.editorCtx = res.context;
+            if (this.post) {
+              this.editorCtx.setContents({
+                html: this.post.post.articleHtml,
+                delta: this.post.post.articleDelta
+              });
+            }
+          }
+        })
+        .exec();
+    },
+    async onScrolltolower() {
+      if (this.post.post.posType === 3) {
+        await this.$refs.answers.loadData();
+      } else {
+        await this.$refs.list.loadData();
+      }
+    },
+    onComment(comment) {
+      this.$refs.list.addComment(comment);
+      this.showInput = false;
+      this.post.post.commentCount++;
+    },
+    goBack() {
+      wx.navigateBack();
+    },
+    goTopic(id) {
+      wx.navigateTo({
+        url: `/pages/topic?id=${this.post.post.topicId}`
+      });
+    },
+    goQustion() {
+      wx.navigateTo({
+        url: `/pages/post-details?id=${this.post.post.questionId}`
+      });
+    },
+    onLike(isLike) {
+      this.post.hasLike = isLike;
+      if (isLike) {
+        this.post.post.thumbsCount++;
+      } else {
+        this.post.post.thumbsCount--;
+      }
+    },
+    onAnswer(isQuestion) {
+      console.log(
+        `/pages/post-answer?id=${this.post.post.questionId}&title=${encodeURI(
+          this.post.post.articleTitle
+        )}&topicId=${this.post.post.topicId}`
+      );
+
+      if (isQuestion) {
+        wx.navigateTo({
+          url: `/pages/post-answer?id=${this.post.post.questionId}&topicId=${
+            this.post.post.topicId
+          }&title=${encodeURI(this.post.post.articleTitle)}`
+        });
+      } else {
+        wx.navigateTo({
+          url: `/pages/post-answer?id=${this.post.post.id}&topicId=${
+            this.post.post.topicId
+          }&title=${encodeURI(this.post.post.content)}`
+        });
+      }
+    },
+    async onFollow() {
+      if (this.post.hasFollow) {
+        if (await User.cancel(this.post.user.id)) {
+          this.post.hasFollow = false;
+        }
+      } else {
+        this.post.hasFollow = await User.follow(this.post.user.id);
+        User.subscribe();
+      }
+    },
+    async onShare() {
+      if (this.isqq) {
+        if (wx.openQzonePublish) {
+          const imageUrl =
+            this.post.post.imgs && this.post.post.imgs.length
+              ? this.post.post.imgs[0].path
+              : `${imgUrl}/share.png`;
+          let path = await Post.getShareImg(imageUrl, true);
+          wx.openQzonePublish({
+            text:
+              this.post.post.baseTxt ||
+              this.post.post.articleTitle ||
+              this.post.post.content,
+            media: [
+              {
+                type: 'photo',
+                path
+              }
+            ]
+          });
+        }
+      } else {
+        const title = '授权后才可以分享图片';
+        const id = this.post.post.id;
+        wx.getSetting({
+          success: res => {
+            if (res.authSetting['scope.writePhotosAlbum']) {
+              goShare();
+            } else {
+              const auth = res.authSetting['scope.writePhotosAlbum'];
+              if (auth === undefined) {
+                wx.authorize({
+                  scope: 'scope.writePhotosAlbum',
+                  success: () => {
+                    goShare();
+                  },
+                  fail() {
+                    wx.showToast({
+                      title,
+                      icon: 'none'
+                    });
+                  }
+                });
+              } else {
+                wx.openSetting({
+                  success: res => {
+                    if (res.authSetting['scope.writePhotosAlbum']) {
+                      goShare();
+                    } else {
+                      wx.showToast({
+                        title,
+                        icon: 'none'
+                      });
+                    }
+                  },
+                  fail: () => {
+                    wx.showToast({
+                      title,
+                      icon: 'none'
+                    });
+                  }
+                });
+              }
+            }
+          }
+        });
+        function goShare() {
+          wx.navigateTo({
+            url: '/pages/post-share?id=' + id
+          });
+        }
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '帖子详情',
+    navigationStyle: 'custom',
+    usingComponents: {
+      "mp-page": "../components/mp-page",
+      "user": "../components/item-user",
+      "post-item": "../components/item-post",
+      "list-answers": "../components/list-answers",
+      "list-comments": "../components/list-comments",
+      "comment-action": "../components/comment-action",
+      "comment-input": "../components/input-comment",
+      "navigation-bar": "../components/navigation-bar/navigation-bar",
+      "reward": "../plugin/tip/components/reward"
+    }
+}
+</config>

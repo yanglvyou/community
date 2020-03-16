@@ -1,0 +1,225 @@
+<style lang="less" scoped>
+.container {
+  position: relative;
+}
+.box {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  opacity: 1;
+  transition: all 0.3s;
+  .box-mask {
+    background: #000;
+    opacity: 0.3;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    z-index: 999;
+  }
+  .box-main {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    box-sizing: border-box;
+    left: 0px;
+    background: #ffffff;
+    box-shadow: 10rpx 0rpx 20rpx rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 40rpx;
+    transition: all 0.3s;
+    font-size: 36rpx;
+    font-weight: bold;
+    line-height: 60rpx;
+  }
+}
+.navigation {
+  .weui-navigation-bar__left {
+    padding-left: 16px;
+  }
+}
+.user-back {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  .icon {
+    padding: 20rpx 0rpx;
+    padding-right: 30rpx;
+    font-size: 42rpx;
+    font-weight: bold;
+  }
+  .title {
+    flex-grow: 1;
+    font-size: 32rpx;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    .title-c {
+      max-width: 310rpx;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 1; /*设置文本行数限制*/
+      -webkit-box-orient: vertical; /*设置文本排列方式*/
+    }
+    .icon {
+      padding: 0rpx;
+      transition: all 0.3s;
+    }
+  }
+}
+</style>
+<template>
+  <div class="container" style="height: calc(100vh);position: relative;">
+    <navigation-bar
+      ext-class="navigation"
+      :back="true"
+      @back="onClose"
+      :show="true"
+      background="#ffffff"
+    >
+      <div slot="center" class="user-back" style="{{innerWidth}}">
+        <!-- <div class="icon icon-close" @tap="onClose"></div> -->
+        <div class="title" @tap="showAction">
+          <div class="title-c">{{title}}</div>
+          <div class="icon icon-arr-right" style="transform: rotate({{showBox ? 0 : 90}}deg);"></div>
+        </div>
+      </div>
+    </navigation-bar>
+    <div class="send-content">
+      <input-editor
+        :offset="0"
+        placeholder="分享你的真实观点和经验"
+        :loading="loading"
+        :disabled="disabled"
+        @submit="submit"
+      />
+    </div>
+    <div class="box" v-show="showBox">
+      <div class="box-mask" @tap="hideBox"></div>
+      <div class="box-main" style="top:140rpx;opacity:{{opacity}};">{{title}}</div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post } from '../common/api';
+wepy.page({
+  data: {
+    loading: false,
+    disabled: false,
+    showBox: false,
+    opacity: 0,
+    id: null,
+    topicId: null,
+    title: ''
+  },
+  onLoad(q) {
+    const { id, title, topicId } = q;
+    console.log(q);
+    
+    this.title = decodeURI(title);
+    this.id = id;
+    this.topicId = topicId;
+  },
+  methods: {
+    showAction() {
+      this.showBox = true;
+      setTimeout(() => {
+        this.opacity = 1;
+      }, 100);
+    },
+    hideBox() {
+      this.opacity = 0;
+      setTimeout(() => {
+        this.showBox = false;
+      }, 300);
+    },
+    onClose() {
+      wx.navigateBack();
+    },
+    async submit(res) {
+      if (res.text.html < 20) {
+        Post.showToast('回答的内容太少');
+        return;
+      }
+      Post.subscribe()
+      this.loading = true;
+      this.disabled = true;
+      const imgs = [];
+      const images = [];
+      wx.showLoading({
+        title: '上传图片...',
+        mask: true
+      });
+      for (const item of res.delta.ops) {
+        const path = item.insert.image;
+        if (path && path.indexOf(Post.getQiniuUrl()) === -1) {
+          const { height, width, type } = await wepy.wx.getImageInfo({
+            src: path
+          });
+          const _res = await Post.uploadFile(
+            [
+              {
+                height,
+                width,
+                type,
+                path
+              }
+            ],
+            2
+          );
+          const url = Post.getQiniuUrl() + _res[0].path;
+          item.insert.image = url;
+          res.html = res.html.replace(path, url);
+          if (_res[0].path) {
+            images.push({
+              height,
+              width,
+              type,
+              isQiniu: true,
+              path: _res[0].path
+            });
+          }
+        }
+      }
+      wx.hideLoading();
+      const post = {
+        questionId: this.id,
+        topicId: this.topicId,
+        articleTitle: this.title,
+        articleHtml: res.html,
+        articleDelta: res.delta.ops,
+        introduction: res.text.substring(0, 200),
+        imgs: images.length ? images : null,
+        posType: 4
+      };
+      if (await Post.release(post)) {
+        try {
+          wx.removeStorageSync('editor');
+        } catch (e) {
+          console.log(e);
+        }
+        wx.navigateBack();
+      }
+      this.loading = false;
+      this.disabled = false;
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationStyle: 'custom',
+    "usingComponents": {
+      "navigation-bar": "../components/navigation-bar/navigation-bar",
+      "input-editor": "../components/input-editor"
+    }
+}
+</config>

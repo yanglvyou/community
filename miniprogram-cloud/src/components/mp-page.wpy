@@ -1,0 +1,200 @@
+<style lang="less" scoped>
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  &.page-state-1 {
+    .page-loading {
+      display: inline-block;
+      font-size: 26rpx;
+      color: #b2b2b2;
+    }
+  }
+  &.page-state-2,
+  &.page-state-4 {
+    text-align: center;
+    image {
+      width: 200rpx;
+      height: 200rpx;
+    }
+    .page-error {
+      display: inline-block;
+      font-size: 26rpx;
+      color: #b2b2b2;
+      .error {
+        margin-bottom: 30rpx;
+      }
+    }
+  }
+}
+.page-footer {
+  padding: 30rpx 0rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #b2b2b2;
+}
+.tips {
+  position: absolute;
+  background: #fae37c;
+  box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.6);
+  font-size: 28rpx;
+  width: 320rpx;
+  text-align: center;
+  padding: 16rpx 0rpx;
+  border-radius: 60rpx;
+  left: 215rpx;
+  transition: all 0.3s;
+}
+</style>
+<template>
+  <div style="height: 100%;position: relative;">
+    <scroll-view
+      :scroll-y="scrollY"
+      :refresher-enabled="refresherEnabled"
+      :refresher-triggered="triggered"
+      :scroll-into-view="toView"
+      :scroll-with-animation="true"
+      @scroll="onScroll"
+      @scrolltolower="onScrolltolower"
+      @refresherrefresh="onRefresherrefresh"
+      @refresherrestore="onRefresherrestore"
+      @refresherpulling="onRefresherpulling"
+      style="height: 100%;"
+    >
+      <div class="page-state-1 page" v-if="state === 0">
+        <div class="page-loading">
+          <loading :show="true" type="circle" />
+        </div>
+      </div>
+      <div class="page-state-2 page" v-else-if="state === 1">
+        <div class="page-error">
+          <img src="../images/loading_err.svg" alt srcset />
+          <div class="error">{{error}}</div>
+          <button class="btn" @tap="onReload" hover-class="btn-hover" v-if="showBtn">重新加载</button>
+        </div>
+      </div>
+      <block v-else-if="state === 2">
+        <slot />
+        <div id="other">
+          <slot name="other"/>
+        </div>
+        <div class="page-footer" v-if="showFooter">
+          <loading :show="true" v-if="showLoadMore" />
+          <div v-else>｡◕‿◕｡ 没有更多 ｡◕‿◕｡</div>
+        </div>
+      </block>
+      <div class="page-state-4 page" v-else>
+        <div class="page-error">
+          <img src="../images/ic_empty.svg" alt srcset />
+          <div class="error">网络一线牵，主动才有缘～</div>
+          <button class="btn" hover-class="btn-hover" v-if="emptyBtnTxt" @tap="onEmptyBtnTap">{{emptyBtnTxt}}</button>
+        </div>
+      </div>
+    </scroll-view>
+    <block v-if="enableTips">
+      <div class="tips" style="top: {{top}}rpx;" v-if="num">为你选出{{num}}条好内容</div>
+      <div class="tips" style="top: {{top}}rpx;" v-else>暂时没有更好的内容</div>
+    </block>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    multipleSlots: true,
+    addGlobalClass: true
+  },
+  props: {
+    state: {
+      type: Number,
+      default: 0 // 0:加载中,1:加载失败,2:加载成功,3:没数据
+    },
+    showLoadMore: {
+      type: Boolean,
+      default: false
+    },
+    scrollY: {
+      type: Boolean,
+      default: true
+    },
+    toView: {
+      type: String,
+      default: ''
+    },
+    refresherEnabled: {
+      type: Boolean,
+      default: true
+    },
+    showFooter: {
+      type: Boolean,
+      default: true
+    },
+    triggered: {
+      type: Boolean,
+      default: false
+    },
+    showBtn: {
+      type: Boolean,
+      default: false
+    },
+    emptyBtnTxt: String,
+    error: {
+      type: String,
+      default: '加载失败,重试'
+    },
+    num: {
+      type: Number,
+      default: -1
+    },
+    enableTips: {
+      type: Boolean,
+      default: true
+    }
+  },
+  watch: {
+    num(val) {
+      if (val !== -1) {
+        this.top = 10;
+        setTimeout(() => {
+          this.top = -100;
+        }, 2000);
+      }
+    }
+  },
+  data: {
+    top: -100
+  },
+  methods: {
+    onRefresherrefresh() {
+      this.$emit('refresherrefresh');
+      // this.triggered = false;
+    },
+    onRefresherrestore() {
+      this.$emit('refresherrestore');
+    },
+    onScroll(res) {
+      this.$emit('scroll', res.$wx.detail);
+    },
+    onScrolltolower() {
+      this.$emit('scrolltolower');
+    },
+    onRefresherpulling() {
+      this.$emit('refresherpulling');
+    },
+    onReload() {
+      this.$emit('relaod');
+    },
+    onEmptyBtnTap() {
+      this.$emit('emptyTap');
+    }
+  }
+});
+</script>
+<config>
+{
+    usingComponents: {
+        "loading": "./loading/loading"
+    }
+}
+</config>

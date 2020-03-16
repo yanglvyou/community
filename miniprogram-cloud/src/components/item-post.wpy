@@ -1,0 +1,513 @@
+<style lang="less" scoped>
+.post {
+  background: #fff;
+  padding: 20rpx 30rpx;
+  margin-bottom: 20rpx;
+  .post-content {
+    padding-top: 30rpx;
+    .post-txt {
+      font-size: 32rpx;
+      line-height: 48rpx;
+      color: var(--txt-content);
+      margin-bottom: 20rpx;
+      &.post-answer {
+        max-width: 600rpx;
+        margin-right: 20rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 8; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+      .post-article-c {
+        display: flex;
+        align-items: center;
+        padding: 20rpx 30rpx;
+        background: #f8f8f8;
+        border-radius: 8rpx;
+        .post-article-c-m {
+          flex-grow: 1;
+        }
+        image {
+          width: 140rpx;
+          height: 140rpx;
+          border-radius: 20rpx;
+          flex-shrink: 0;
+          margin-left: 8rpx;
+        }
+      }
+      .post-title {
+        font-weight: bold;
+        font-size: 28rpx;
+        line-height: 38rpx;
+        margin-bottom: 10rpx;
+      }
+      .post-article-content {
+        font-size: 28rpx;
+        line-height: 40rpx;
+        color: #888888;
+        max-width: 600rpx;
+        margin-right: 20rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+      &.post-txt-content {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        line-height: 40rpx;
+        .icon-mini-img {
+          width: 34rpx;
+          height: 34rpx;
+          padding: 0rpx 4rpx;
+        }
+      }
+    }
+    .post-questions {
+      font-size: 32rpx;
+      font-weight: bold;
+      line-height: 48rpx;
+      color: var(--txt-content);
+      margin-bottom: 20rpx;
+    }
+    .post-imgs {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 10rpx 0rpx;
+      .post-img-item {
+        position: relative;
+        padding: 10rpx;
+        .img-des {
+          position: absolute;
+          right: 20rpx;
+          bottom: 20rpx;
+          background: rgba(0, 0, 0, 0.5);
+          color: #ffffff;
+          font-size: 22rpx;
+          padding: 6rpx 8rpx;
+          border-radius: 6rpx;
+        }
+        image {
+          width: 180rpx;
+          height: 180rpx;
+        }
+      }
+    }
+    .post-article {
+      display: flex;
+      align-items: center;
+      padding: 20rpx 30rpx;
+      background: #f4f4f4;
+      border-radius: 8rpx;
+      image {
+        width: 84rpx;
+        height: 84rpx;
+        border-radius: 8rpx;
+        flex-shrink: 0;
+      }
+      .img-empty {
+        width: 84rpx;
+        height: 84rpx;
+        border-radius: 8rpx;
+        flex-shrink: 0;
+        color: #fff;
+        text-align: center;
+        line-height: 80rpx;
+        background: #dadada;
+        .icon {
+          font-size: 48rpx;
+        }
+      }
+      .article-title {
+        font-size: 32rpx;
+        width: 600rpx;
+        margin-right: 20rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+    }
+    .post-location {
+      margin-top: 20rpx;
+      .address {
+        display: flex;
+        align-items: center;
+        font-size: 22rpx;
+        color: #24c688;
+        image {
+          width: 32rpx;
+          height: 32rpx;
+          margin-right: 8rpx;
+        }
+        .icon-arr-right {
+          font-size: 36rpx;
+        }
+      }
+    }
+    .post-topic {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 30rpx 0rpx;
+      .topic {
+        font-size: 26rpx;
+        color: #409eff;
+        background: #ecf8ff;
+        padding: 8rpx 20rpx;
+        border-radius: 50rpx;
+        margin-right: 10rpx;
+        display: flex;
+        align-items: center;
+        .topicTitle {
+          max-width: 260rpx;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 1; /*设置文本行数限制*/
+          -webkit-box-orient: vertical; /*设置文本排列方式*/
+        }
+        .icon {
+          font-size: 30rpx;
+        }
+        .icon-topic-line {
+          font-weight: bold;
+          font-size: 30rpx;
+          margin-right: 6rpx;
+        }
+      }
+      .hot-num {
+        color: red;
+        font-size: 28rpx;
+        background: linear-gradient(to right, red, blue);
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        text-fill-color: transparent;
+        .hot-num {
+          font-size: 28rpx;
+          margin-left: 6rpx;
+        }
+        .icon {
+          margin-right: 0rpx;
+        }
+      }
+      .zan {
+        display: flex;
+        align-items: center;
+        font-size: 24rpx;
+        color: #b2b2b2;
+        image {
+          width: 36rpx;
+          height: 36rpx;
+          border-radius: 36rpx;
+          border: #ffffff solid 4rpx;
+          margin-right: -14rpx;
+        }
+        .zan-des {
+          margin-left: 24rpx;
+        }
+      }
+    }
+    .post-comment {
+      padding: 10rpx 20rpx;
+      border-left: #efefef solid 1rpx;
+      text {
+        font-size: 26rpx;
+        color: #7a8299;
+        line-height: 42rpx;
+      }
+      .hot-tag {
+        background: #fdf6ec;
+        color: #ec9615;
+        font-weight: normal;
+        margin-right: 8rpx;
+        font-size: 22rpx;
+        border-radius: 50rpx;
+        padding: 4rpx 10rpx;
+      }
+      .nick {
+        font-weight: bold;
+        font-size: 26rpx;
+        color: #474f66;
+      }
+    }
+    .post-tool {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      box-sizing: border-box;
+      position: relative;
+      margin: 0rpx 0rpx;
+      .count-item, .btn-share {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        padding: 30rpx;
+        padding-left: 0rpx;
+        color: var(--txt-second);
+        font-size: 24rpx;
+        &.drill {
+          color: #d81e06;
+        }
+      }
+      .btn-share{
+        padding: 0px;
+      }
+      button {
+        line-height: normal;
+        background: none;
+        padding: 0px;
+        margin: 0px;
+        &::after {
+          border: none;
+        }
+      }
+      .icon {
+        margin-right: 0rpx;
+        margin-right: 8rpx;
+        font-size: 34rpx;
+      }
+    }
+  }
+}
+.btn-more {
+  color: #b2b2b2;
+  padding: 0rpx 20rpx;
+  .icon {
+    font-size: 56rpx;
+  }
+}
+.btn-follow {
+  font-size: 28rpx;
+  background: #fae37c;
+  padding: 10rpx 30rpx;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  line-height: normal;
+  &::after {
+    border: none;
+  }
+  &.has {
+    box-shadow: none;
+    background: #f8f8f8;
+    color: #b2b2b2;
+    font-size: 26rpx;
+  }
+}
+</style>
+<template>
+  <div class="post">
+    <user :item="item.user || item.from">
+      <div slot="action" v-if="showFollow">
+        <button class="btn-follow {{item.hasFollow ? 'has' : ''}}" @tap.stop="onFollow">
+          <text class="icon icon-{{item.hasFollow ? 'follow' : 'add'}}"></text>
+          <text>{{item.hasFollow ? '已关注' : '关注'}}</text>
+        </button>
+      </div>
+      <block v-else>
+        <div slot="action" class="btn-more" @tap.stop="onMore" v-if="item.isSelf || item.isSys">
+          <text class="icon icon-more"></text>
+        </div>
+      </block>
+    </user>
+    <div
+      class="post-content"
+      style="margin-left: 84rpx;"
+      @tap="goDetails(item.post.id)"
+    >
+      <div class="post-questions" v-if="item.post.posType === 3">{{item.post.content}}</div>
+      <div class="post-txt" v-else-if="item.post.posType === 2">
+        <div class="post-article-c">
+          <div class="post-article-c-m">
+            <div class="post-title">{{item.post.articleTitle}}</div>
+            <div class="post-article-content">{{item.post.introduction}}</div>
+          </div>
+          <img
+            :src="item.post.imgs[0].path"
+            mode="aspectFill"
+            v-if="item.post.imgs && item.post.imgs.length"
+          />
+        </div>
+      </div>
+      <div class="post-txt post-answer" v-else-if="item.post.posType === 4">
+        <text>{{item.post.introduction}}</text>
+      </div>
+      <div class="post-txt post-txt-content" v-else>
+        <block v-for="obj in item.post.content">
+          <text
+            class="{{showInfo ? 'simple' : ''}}"
+            v-if="obj.type === 0"
+            space="nbsp"
+          >{{obj.value}}</text>
+          <img v-else class="icon-mini-img" :src="obj.src" />
+        </block>
+      </div>
+      <div class="post-imgs" v-if="item.post.imgs && item.post.posType !== 2">
+        <div class="post-img-item" v-for="(img, index) in item.post.imgs" :key="index">
+          <img
+            @tap.stop="onPreview(item.post.imgs, index)"
+            :src="img.thumbPath"
+            mode="aspectFill"
+            :lazy-load="true"
+          />
+          <div class="img-des" v-if="img.height > 1080">长图</div>
+        </div>
+      </div>
+      <div class="post-article" v-if="item.post.link" @tap.stop="goWeb(item.post.link)">
+        <div class="article-title">{{item.post.articleTitle}}</div>
+        <img :src="item.post.articleImg" mode="aspectFill" v-if="item.post.articleImg" />
+        <div class="img-empty" v-else>
+          <text class="icon icon-link-fill" />
+        </div>
+      </div>
+      <div class="post-location" v-if="item.post.address">
+        <div class="address">
+          <img src="../images/location.svg" />
+          <div class="name">{{address}}</div>
+          <div class="icon icon-arr-right"></div>
+        </div>
+      </div>
+      <div class="post-topic" v-if="item.post.topicTitle && showTool">
+        <div class="hot-num" v-if="item.post.hot > -1">
+          <text class="icon icon-hot" />热度
+          <text class="hot-num">{{item.post.hot}}</text>℃
+        </div>
+        <div class="topic" @tap.stop="goTopic(item.post.topicId)" v-else>
+          <div class="icon icon-topic-line" />
+          <div class="topicTitle">{{item.post.topicTitle}}</div>
+          <div class="icon icon-arrow-right" />
+        </div>
+        <div class="zan" v-if="item.post.posType === 3 || item.likers">
+          <img v-for="(img, index) in item.likers" :src="img" :key="index" />
+          <div
+            class="zan-des"
+          >{{item.post.posType === 3 ? item.post.commentCount : item.post.thumbsCount}}人{{item.post.posType === 3 ? '回答' : '赞了'}}</div>
+        </div>
+      </div>
+      <div class="post-comment" v-if="item.comment">
+        <text>
+          <text class="hot-tag">热评</text>
+          <text class="nick">{{item.comment.user.nick}}：</text>
+          <text>{{item.comment.content}}</text>
+        </text>
+      </div>
+      <div class="post-tool" v-if="showTool && item.post.posType !== 3">
+        <div @tap.stop="onCatchShare" class="btn-share">
+          <button open-type="share" @touchstart="onShare">
+            <div class="count-item">
+              <div class="icon icon-share"></div>
+              <div>分享</div>
+            </div>
+          </button>
+        </div>
+        <div class="count-item drill">
+          <div class="icon icon-drill" />
+          <div>{{item.post.shell || '赞赏'}}</div>
+        </div>
+        <div class="count-item">
+          <div class="icon icon-zan-line" />
+          <div>{{item.post.thumbsCount || '赞'}}</div>
+        </div>
+        <div class="count-item">
+          <div class="icon icon-comment" />
+          <div>{{item.post.commentCount || '评论'}}</div>
+        </div>
+      </div>
+    </div>
+    <slot />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { baseUrl } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    item: Object,
+    showTool: {
+      type: Boolean,
+      default: true
+    },
+    index: Number,
+    showTopice: {
+      type: Boolean,
+      default: true
+    },
+    showFollow: {
+      type: Boolean,
+      default: false
+    },
+    isQuestions: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    onPreview(imgs, index) {
+      const urls = imgs.map(img => {
+        return img.path;
+      });
+      wx.previewImage({
+        urls,
+        current: urls[index]
+      });
+    },
+    goDetails(id) {
+      wx.navigateTo({
+        url: `/pages/post-details?id=${id}`
+      });
+    },
+    goTopic(id) {
+      wx.navigateTo({
+        url: `/pages/topic?id=${id}`
+      });
+    },
+    goWeb(url) {
+      wx.navigateTo({
+        url: `/pages/post-article?url=${baseUrl}/api/public/article/${encodeURIComponent(
+          url
+        )}`
+      });
+    },
+    onMore() {
+      this.$emit('remove', {
+        index: this.index,
+        isSys: this.item.isSys,
+        post: this.item.post
+      });
+      // eventHub.$emit('remove', {
+      //   index: this.index,
+      //   post: this.item
+      // })
+    },
+    onFollow() {
+      this.$emit('follow')
+    },
+    onCatchShare() {},
+    onShare() {
+      console.log(1);
+
+      this.$emit('share', {
+        index: this.index,
+        post: this.item.post
+      });
+      return false;
+    }
+  }
+});
+</script>
+<config>
+{
+    usingComponents: {
+        "user": "./item-user"
+    }
+}
+</config>

@@ -1,0 +1,152 @@
+<template>
+  <div>
+    <block v-if="items.length">
+      <comment-item
+        v-for="(item,index) in items"
+        :item="item"
+        :isLast="likeType === 1"
+        :index="index"
+        @like="onLike"
+        @remove="onRemove"
+        @set="onSet"
+      />
+    </block>
+    <empty des="来,神评是你的" v-else />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post, eventHub } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    id: Number,
+    likeType: Number
+  },
+  data: {
+    items: [],
+    pageIndex: 1,
+    pageSize: 15,
+    hasMore: true,
+    id: null,
+    isLoading: false
+  },
+  attached() {
+    // eventHub.$on('like', async ({ index, item }) => {
+    //   console.log(index);
+    //   console.log(item);
+    //   eventHub.$off('like');
+    //   // const item = this.items[index];
+    //   // let isUp = false;
+    //   // if (item.hasLike) {
+    //   //   isUp = await Post.cancelLike(item.commenType || 1, item.id);
+    //   // } else {
+    //   //   isUp = await Post.like(
+    //   //     item.fromId,
+    //   //     item.postId,
+    //   //     item.id,
+    //   //     item.commenType || 1
+    //   //   );
+    //   // }
+    //   // if (isUp) {
+    //   //   this.items[index].hasLike = !item.hasLike;
+    //   //   if (item.hasLike) {
+    //   //     this.items[index].thumbsCount++;
+    //   //   } else {
+    //   //     this.items[index].thumbsCount--;
+    //   //   }
+    //   // }
+    // });
+  },
+  methods: {
+    async loadData(id) {
+      if (id) {
+        this.id = id;
+      }
+      if (!this.hasMore || this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      const res = await Post.getComments({
+        likeType: this.likeType,
+        id: this.id,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize
+      });
+      if (res) {
+        for (const item of res) {
+          this.items.push(item);
+        }
+        this.pageIndex++;
+        this.hasMore = this.pageSize === res.length;
+      }
+      this.isLoading = false;
+    },
+    addComment(comment) {
+      this.items.unshift(comment);
+    },
+    async onLike({ index }) {
+      const item = this.items[index];
+      let isUp = false;
+      if (item.hasLike) {
+        isUp = await Post.cancelLike(item.commenType || 1, item.id);
+      } else {
+        isUp = await Post.like(
+          item.fromId,
+          item.postId,
+          item.id,
+          item.commenType || 1
+        );
+      }
+      if (isUp) {
+        this.items[index].hasLike = !item.hasLike;
+        if (item.hasLike) {
+          this.items[index].thumbsCount++;
+        } else {
+          this.items[index].thumbsCount--;
+        }
+      }
+    },
+    onRemove({ index, comment }) {
+      wx.showModal({
+        title: '删除提示',
+        content: '确定要删除该评论吗?',
+        confirmText: '删除',
+        confirmColor: '#d81e06',
+        success: async res => {
+          if (res.confirm) {
+            if (await Post.removeComment(comment.id)) {
+              this.items.splice(index, 1);
+            }
+          }
+        }
+      });
+    },
+    onSet({ index, comment }) {
+      wx.showModal({
+        title: comment.isHot ? '取消提示' : '设置提示',
+        content: comment.isHot ? '确定要取消热评吗?' : '确定要设置为热评吗',
+        confirmText: comment.isHot ? '取消热评' : '设为热评',
+        confirmColor: '#d81e06',
+        success: async res => {
+          if (res.confirm) {
+            if (await Post.setCommentHot(comment.id)) {
+              comment.isHot = !comment.isHot;
+            }
+          }
+        }
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    usingComponents: {
+      "empty": "./empty",
+      "comment-item": "./item-comment",
+    }
+}
+</config>

@@ -1,0 +1,155 @@
+<style lang="less" scoped>
+.footer {
+  height: calc(85vh - 200rpx);
+  position: relative;
+  .input {
+    margin: 60rpx;
+    margin-bottom: 0rpx;
+    border-bottom: #353535 solid 6rpx;
+    text-align: left;
+    position: relative;
+    &.err{
+      border-bottom-color: red;
+      color: red;
+    }
+    .input-link {
+      position: absolute;
+      left: 0rpx;
+      bottom: -140rpx;
+      background: #fefefe;
+      box-shadow: 2px 1px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8rpx;
+      padding: 20rpx;
+      .link-des {
+        font-size: 24rpx;
+        color: #9b9797;
+        margin-bottom: 8rpx;
+      }
+      .link-web {
+        color: #353535;
+        font-size: 32rpx;
+        max-width: 596rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+    }
+    .input-title {
+      font-size: 56rpx;
+      margin-bottom: 10rpx;
+    }
+    .input-des {
+      font-size: 30rpx;
+      margin-bottom: 40rpx;
+    }
+    input {
+      padding: 20rpx 0rpx;
+    }
+  }
+  .input-error {
+    font-size: 26rpx;
+    color: red;
+    text-align: left;
+    padding: 20rpx 50rpx;
+  }
+  .footer-action {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 40rpx;
+    padding: 30rpx 0rpx;
+    transition: all 0.2s;
+    button[disabled] {
+      background: rgba(250, 227, 124, 0.5);
+    }
+  }
+}
+</style>
+<template>
+  <screen-dialog :show="show" @close="onClose">
+    <div slot="footer" class="footer">
+      <div class="input {{isError ? 'err' : ''}}">
+        <div class="input-title">添加链接</div>
+        <div class="input-des">可在此添加(公众号|知乎专栏|简书)文章链接,解析后更直观</div>
+        <input @focus="onFocus" v-model="url" @blur="onBlur" placeholder="请输入(公众号|知乎专栏｜简书)文章链接" />
+        <div class="input-link" v-if="link" @tap.stop="onSelect">
+          <div class="link-des">粘贴最近复制的链接</div>
+          <div class="link-web">{{link}}</div>
+        </div>
+      </div>
+      <div class="input-error" v-if="isError">请输入(公众号|知乎专栏|简书)文章链接</div>
+      <div class="footer-action" style="bottom:{{bottom ? bottom + 'px' : '40rpx'}}">
+        <button class="btn" :disabled="!url" hover-class="btn-hover" @tap="onAdd">添加</button>
+      </div>
+    </div>
+  </screen-dialog>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: {
+    disabled: true,
+    focus: true,
+    link: null,
+    url: '',
+    isError: false,
+    urlReg: /(https):\/\/([mp.weixin.qq.com|zhuanlan.zhihu.com|www.jianshu.com])[-A-Za-z0-9+&@#/%=~_|]*/,
+    bottom: 0
+  },
+  attached() {
+    wx.getClipboardData({
+      success: res => {
+        if (this.urlReg.test(res.data)) {
+          this.link = res.data;
+        }
+      }
+    });
+  },
+  methods: {
+    onFocus(res) {
+      this.focus = true;
+      const { height } = res.$wx.detail;
+      if (height) {
+        this.bottom = height;
+      }
+    },
+    onSelect() {
+      this.url = this.link;
+      this.link = null;
+    },
+    onBlur() {
+      this.bottom = 0;
+      this.focus = false;
+    },
+    onAdd() {
+      if (this.urlReg.test(this.url)) {
+        this.isError = false;
+        this.$emit('add', this.url);
+      } else {
+        this.isError = true;
+      }
+    },
+    onClose() {
+      this.$emit('close');
+    }
+  }
+});
+</script>
+<config>
+{
+    "usingComponents": {
+        "screen-dialog": "./half-screen-dialog/half-screen-dialog"
+    }
+}
+</config>

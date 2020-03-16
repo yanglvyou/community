@@ -1,0 +1,188 @@
+<style lang="less" scoped>
+.notice {
+  display: flex;
+  background: #fff;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  position: relative;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .avtater {
+    flex-shrink: 0;
+    image {
+      width: 96rpx;
+      height: 96rpx;
+      border-radius: 96rpx;
+    }
+  }
+  .content {
+    flex-grow: 1;
+    font-size: 30rpx;
+    margin: 0rpx 30rpx;
+    color: #66b1ff;
+    &.has-read {
+      color: #b2b2b2;
+    }
+    .nick {
+      font-size: 28rpx;
+      margin-right: 20rpx;
+    }
+    .zan {
+      margin: 20rpx 0rpx;
+      .icon {
+        margin-right: 20rpx;
+      }
+    }
+    .comment {
+      margin: 16rpx 0rpx;
+      font-size: 28rpx;
+      color: #7a8299;
+    }
+    .time {
+      font-size: 24rpx;
+      color: #b2b2b2;
+    }
+  }
+  .img {
+    flex-shrink: 0;
+    image {
+      width: 130rpx;
+      height: 130rpx;
+      border-radius: 10rpx;
+    }
+  }
+  .btn-follow {
+    font-size: 26rpx;
+    background: #fae37c;
+    box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.5);
+    padding: 20rpx 30rpx;
+    border-radius: 8rpx;
+    line-height: normal;
+    display: flex;
+    align-items: center;
+    .icon {
+      font-size: 32rpx;
+      margin-right: 10rpx;
+    }
+    &.has {
+      background: #f8f8f8;
+      color: #b2b2b2;
+      box-shadow: none;
+    }
+    &.btn-hover {
+      background: rgba(250, 227, 124, 0.5);
+    }
+  }
+}
+</style>
+<template>
+  <div class="notice" @tap="goInfo">
+    <div class="avtater">
+      <img :src="item.user.avtater" />
+    </div>
+    <div class="content {{item.isRead ? 'has-read' : ''}}">
+      <div>
+        <text>
+          <text class="nick">{{item.user.nick}}</text>
+          <text>{{labels[item.noticeType]}}</text>
+        </text>
+      </div>
+      <div class="comment" v-if="item.comment">{{item.comment.content}}</div>
+      <div class="zan" v-if="item.noticeType === 3 || item.noticeType === 5">
+        <text class="icon icon-zan-full" />
+        <text>+1</text>
+      </div>
+      <div class="zan" v-if="item.noticeType === 7">
+        <text class="icon icon-questions" />
+        <text>+1</text>
+      </div>
+      <div class="zan" v-if="item.noticeType === 9">
+        <text class="icon icon-beike" />
+        <text>+{{item.shell}}</text>
+      </div>
+      <div class="zan" v-if="item.noticeType === 6">
+        <text class="icon icon-love-full" />
+        <text>+1</text>
+      </div>
+      <div class="time">{{item.moment}}</div>
+    </div>
+    <div class="action" v-if="item.noticeType === 6">
+      <div
+        class="btn-follow {{item.hasFollow ? 'has' : ''}}"
+        hover-class="btn-hover"
+        @tap="onFollow"
+      >
+        <text class="icon icon-{{item.hasFollow ? 'follow' : 'add'}}"></text>
+        <text>{{item.hasFollow ? '已关注' : '关注'}}</text>
+      </div>
+    </div>
+    <div class="img" v-if="item.post && item.post.imgs && item.post.imgs.length">
+      <img :src="item.post.imgs[0].thumbPath" />
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { eventHub } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    item: Object
+  },
+  data: {
+    labels: [
+      '评论:',
+      '回复:',
+      '回复:',
+      '点赞了你的帖子',
+      '点赞了你的评论',
+      '点赞了你的回复',
+      '关注了你',
+      '回答了你的问题',
+      '回复了你的吐槽:',
+      '打赏你'
+    ]
+  },
+  attached() {
+    eventHub.$on('allRead', () => {
+      this.item.isRead = true;
+    });
+  },
+  methods: {
+    onFollow() {
+      eventHub.$emit('follow', this.item);
+    },
+    goInfo() {
+      if (!this.item.isRead) {
+        eventHub.$emit('read', this.item);
+        this.item.isRead = true;
+      }
+      if (this.item.noticeType === 8) {
+        wx.navigateTo({
+          url: `/pages/post-comment?id=${this.item.commentId}`
+        });
+      } else {
+      if (this.item.replyId) {
+        wx.navigateTo({
+          url: `/pages/post-comment?id=${this.item.replyId}`
+        });
+      } else if (this.item.postId) {
+        wx.navigateTo({
+          url: `/pages/post-details?id=${this.item.postId}`
+        });
+      }
+      }
+    }
+  }
+});
+</script>

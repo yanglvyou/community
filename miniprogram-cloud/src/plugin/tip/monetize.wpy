@@ -1,0 +1,141 @@
+<style lang="less" scoped>
+.form {
+  padding: 50rpx 30rpx;
+  background: #fff;
+  margin: 30rpx;
+  border-radius: 10rpx;
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    .item {
+      flex-basis: 191rpx;
+      background: #f1f1f1;
+      padding: 30rpx 0rpx;
+      border-radius: 10rpx;
+      box-sizing: border-box;
+      text-align: center;
+      margin-right: 20rpx;
+      margin-top: 30rpx;
+      .item-title {
+        font-size: 34rpx;
+        font-weight: bold;
+        margin-bottom: 10rpx;
+      }
+      .item-des {
+        font-size: 26rpx;
+        color: #b2b2b2;
+      }
+      &.active {
+        background: #fae37c;
+      }
+    }
+  }
+}
+.btn-m {
+  font-size: 32rpx;
+  background: #fae37c;
+  box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.5);
+  padding: 24rpx 0rpx;
+  border-radius: 50rpx;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  margin: 30rpx auto;
+  margin-bottom: 50rpx;
+  width: 600rpx;
+  justify-content: center;
+  &::after {
+    border: none;
+  }
+  &.btn-disabled {
+    background: #f8f8f8;
+    color: #8a8a8a;
+    box-shadow: none;
+  }
+  &.btn-hover {
+    background: rgba(250, 227, 124, 0.5);
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="form">
+      <div class="form-title">当前余额：{{user.shell}}贝</div>
+      <div class="list">
+        <div
+          class="item {{activeIndex === index ? 'active' : ''}}"
+          @tap="onItemTap(item, index)"
+          v-for="(item,index) in items"
+          :key="index"
+        >
+          <div class="item-title">{{item[0]}}元</div>
+          <div class="item-des">消耗{{item[1]}}贝</div>
+        </div>
+      </div>
+    </div>
+    <button
+      :disabled="btnDisabled"
+      :loading="btnLoading"
+      class="btn-m"
+      hover-class="btn-hover"
+      @tap="onCash"
+    >
+      <div>确认变现</div>
+    </button>
+  </div>
+</template>
+<script>
+import { Tip } from './api';
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    user: null,
+    btnDisabled: true,
+    btnLoading: false,
+    activeIndex: -1,
+    shell: 0,
+    items: [
+      [5, 500],
+      [10, 1000],
+      [15, 1500],
+      [30, 3000],
+      [50, 5000],
+      [100, 10000]
+    ]
+  },
+  async onLoad(q) {
+    this.user = await Tip.getAssets();
+  },
+  methods: {
+    onItemTap(item, index) {
+      this.activeIndex = index;
+      this.btnDisabled = item[1] > this.user.shell;
+      this.shell = item[1]
+    },
+    async onCash() {
+      const { isBinding } = wx.getStorageSync('user');
+      if (isBinding === 0) {
+        wx.navigateTo({
+          url: '/pages/gender'
+        });
+      } else {
+        this.btnDisabled = true;
+        this.btnLoading = true;
+        const res = await Tip.monetize(this.shell);
+        if (res) {
+            this.user.shell -= this.shell
+        }
+        this.btnDisabled = false;
+        this.btnLoading = false;
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '玉帛贝变现',
+    usingComponents: {
+    }
+}
+</config>
