@@ -49,6 +49,7 @@ wepy build --watch
 # 玉帛书交流群(加我拉群)
 
 ![截图](https://www.wutuobangxinyougou.com/public/images/user.png)
+![qq群](https://github.com/liubin1592/community/blob/master/qq.png)
 
 # 打赏
 ---
