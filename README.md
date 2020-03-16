@@ -1,7 +1,7 @@
 # 社区小程序(分wepy版本和云开发版本)
 
 # 已经支持云版本
-> ### 需要云版本的扫下面二维码加我
+[云版本](https://github.com/liubin1592/community/tree/master/miniprogram-cloud)
 ---
 > 功能介绍
 
