@@ -52,6 +52,8 @@ wepy build --watch
     });
   }
 ```
+### 导入初始化数据
+找到目录下的`schools.json`,`topics.json`导入到对应的数据集
 
 # 玉帛书小程序码
 
