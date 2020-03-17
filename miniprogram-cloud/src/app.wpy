@@ -49,6 +49,7 @@ wepy.app({
     return top - statusBarHeight + bottom;
   },
   onLaunch() {
+    //请配置自己的环境ID
     wx.cloud.init({
       env: "ybs-liubin1592"
     });

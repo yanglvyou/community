@@ -19,7 +19,7 @@ class PostController extends Controller {
                 return
             }
         }
-        let _userId = await this.getUserId()
+        let _userId = await this.getUserId(null, topicTitle)
         const post = await this.ctx.model.transaction(async t => {
             const _hasFollow = await this.count({
                 userId: _userId,
@@ -599,7 +599,8 @@ class PostController extends Controller {
             this.fail(10011, '动弹内容包含违规文字，请修改后再发布');
             return
         }
-        let fromId = await this.getUserId()
+        const _post = await this.findByPk(postId, ['topicTitle'])
+        let fromId = await this.getUserId(null, _post && _post.topicTitle || null)
         const _comment = await this.ctx.model.transaction(async t => {
             const obj = await this.create({ fromId, toId, postId, commentId, commenType, content, imgs }, t, 'PostComment')
             if (!obj) {

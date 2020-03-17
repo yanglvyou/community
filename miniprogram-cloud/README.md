@@ -42,6 +42,17 @@ wepy build --watch
 
 使用`微信开发者工具`新建项目，本地开发选择项目`community-cloud`目录，会自动导入项目配置。
 
+#### 配置自己的环境ID
+在`app.wpy`中配置
+```
+  onLaunch() {
+    //请配置自己的环境ID
+    wx.cloud.init({
+      env: ""
+    });
+  }
+```
+
 # 玉帛书小程序码
 
 ![小程序码](https://www.wutuobangxinyougou.com/public/images/qr_1.jpg)
