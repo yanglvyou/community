@@ -1,0 +1,117 @@
+<style lang="less" scoped>
+.item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background: #fff;
+  &.item-hover {
+    background: #fafafa;
+  }
+  image {
+    width: 96rpx;
+    height: 96rpx;
+    border-radius: 10rpx;
+  }
+  .item-content {
+    flex-grow: 1;
+    text-align: left;
+    margin-left: 30rpx;
+    .item-title {
+      font-size: 30rpx;
+    }
+    .item-des {
+      font-size: 26rpx;
+      margin-top: 12rpx;
+      color: #b2b2b2;
+      max-width: 410rpx;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 1; /*设置文本行数限制*/
+      -webkit-box-orient: vertical; /*设置文本排列方式*/
+    }
+  }
+  .item-action {
+    .btn-follow {
+      font-size: 28rpx;
+      background: #fae37c;
+      box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.5);
+      padding: 14rpx 20rpx;
+      border-radius: 8rpx;
+      display: flex;
+      align-items: center;
+      line-height: normal;
+      &::after {
+        border: none;
+      }
+      &.has {
+        box-shadow: none;
+        background: #f8f8f8;
+        color: #b2b2b2;
+        font-size: 26rpx;
+      }
+    }
+    .icon {
+      font-size: 32rpx;
+      margin-right: 6rpx;
+      font-weight: bold;
+    }
+    .num {
+      font-size: 28rpx;
+      color: #409eff;
+    }
+  }
+}
+</style>
+<template>
+  <div class="item" hover-class="item-hover" @tap="goTopic(item.id)">
+    <img :src="item.iconSrc" />
+    <div class="item-content">
+      <div class="item-title">{{item.title}}</div>
+      <div class="item-des">{{item.des}}</div>
+    </div>
+    <div class="item-action" @tap.stop="onFollow(item, index)" v-if="showBtn">
+      <button class="btn-follow {{item.hasFollow ? 'has' : ''}}">
+        <text class="icon icon-{{item.hasFollow ? 'follow' : 'add'}}"></text>
+        <text>{{item.hasFollow ? '已关注' : '关注'}}</text>
+      </button>
+    </div>
+    <block v-else>
+      <div class="item-action">
+        <slot />
+      </div>
+    </block>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    item: Object,
+    index: Number,
+    isLink: {
+      type: Boolean,
+      default: true
+    },
+    showBtn: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    goTopic(id) {
+      if (this.isLink) {
+        wx.navigateTo({
+          url: `/pages/topic?id=${id}`
+        });
+      }
+    },
+    onFollow(topic, index) {
+      this.$emit('follow', { topic, index });
+    }
+  }
+});
+</script>

@@ -1,0 +1,263 @@
+<style lang="less" scoped>
+.container {
+  .head {
+    background: #fff;
+    text-align: center;
+    font-size: 28rpx;
+    display: flex;
+    align-items: center;
+    padding: 30rpx 40rpx;
+    .logo {
+      width: 144rpx;
+      height: 144rpx;
+    }
+    .img {
+      background: #f1f1f1;
+      width: 144rpx;
+      padding: 20rpx;
+      flex-shrink: 0;
+      border-radius: 10rpx;
+      .icon {
+        font-size: 48rpx;
+      }
+      .title {
+        font-size: 26rpx;
+        margin: 6rpx 0rpx;
+        color: #474747;
+      }
+      .des {
+        font-size: 24rpx;
+        color: #8a8a8a;
+      }
+    }
+    .input {
+      flex-grow: 1;
+      padding: 0rpx 30rpx;
+      text-align: left;
+      input {
+        font-size: 34rpx;
+        padding: 20rpx 0rpx;
+      }
+      .placeholder {
+        color: #8a8a8a;
+      }
+      .input-des {
+        font-size: 24rpx;
+        color: #b2b2b2;
+        position: relative;
+        padding: 20rpx 0rpx;
+        &::after {
+          content: ' ';
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          height: 1px;
+          border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+          color: rgba(235, 237, 245, 0.8);
+        }
+      }
+    }
+  }
+  .item {
+    background: #fff;
+    padding: 30rpx 50rpx;
+    margin-top: 20rpx;
+    .item-title {
+      font-size: 30rpx;
+      text {
+        font-size: 28rpx;
+        color: red;
+        margin-left: 4rpx;
+      }
+    }
+    input,
+    textarea {
+      font-size: 30rpx;
+      padding: 20rpx 0rpx;
+    }
+    textarea {
+    }
+  }
+  .cell-title {
+    font-size: 34rpx;
+    padding: 30rpx 40rpx;
+  }
+  .cell {
+    padding: 0rpx 40rpx;
+    margin-bottom: 30rpx;
+    icon {
+      margin-right: 10rpx;
+    }
+    display: flex;
+    align-items: center;
+    font-size: 28rpx;
+    color: #7a8299;
+  }
+  .footer {
+    padding: 40rpx 0rpx;
+    text-align: center;
+    .btn-add {
+      font-size: 32rpx;
+      background: #fae37c;
+      box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.5);
+      padding: 10rpx 20rpx;
+      border-radius: 20rpx;
+      width: 400rpx;
+      &::after {
+        border: none;
+      }
+      &.btn-disabled {
+        background: #d8d8d8;
+        color: #f1f1f1;
+        box-shadow: none;
+      }
+      &.btn-hover {
+        background: rgba(250, 227, 124, 0.5);
+      }
+    }
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="head">
+      <img :src="imgPath" class="logo" v-if="imgPath" @tap="chooseImage" />
+      <div class="img" v-else @tap="chooseImage">
+        <div class="icon icon-camera-full" />
+        <div class="title">话题头像</div>
+        <div class="des">(必选)</div>
+      </div>
+      <div class="input">
+        <input
+          v-model="title"
+          placeholder="给话题起个响亮的名称吧"
+          placeholder-class="placeholder"
+          :maxlength="10"
+        />
+        <div class="input-des">支持2-10个汉字/英文字母</div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-title">
+        关注者
+        <text>*</text>
+      </div>
+      <input v-model="nickName" placeholder="给关注者起个称号吧" maxlength="5" />
+    </div>
+    <div class="item">
+      <div class="item-title">
+        话题描述
+        <text>*</text>
+      </div>
+      <textarea
+        v-model="des"
+        placeholder="简单介绍你的话题，玩法等(140字以内)"
+        :auto-height="true"
+        :maxlength="140"
+      />
+    </div>
+    <div class="cell-title">创建话题条件</div>
+    <div class="cell">
+      <icon type="success" size="16" color="#{{isAuth ? 'ffd100' : '7a8299'}}" />
+      <div>完成学生认证</div>
+    </div>
+    <div class="cell">
+      <icon type="success" size="16" color="#{{isVip ? 'ffd100' : '7a8299'}}" />
+      <div>已成为VIP用户</div>
+    </div>
+    <div class="footer">
+      <button
+        class="btn-add {{disabled ? 'btn-disabled' : ''}}"
+        :disabled="disabled"
+        @tap="onAdd"
+      >创建话题</button>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Topic } from '../common/api';
+wepy.page({
+  data: {
+    title: '',
+    des: '',
+    imgPath: null,
+    iconPath: null,
+    nickName: '',
+    disabled: true,
+    isAuth: false,
+    isVip: false
+  },
+  onLoad() {
+    const { isAuth, isBinding, userType, grade } = wx.getStorageSync('user');
+    this.isAuth = isAuth > 0;
+    this.isVip = userType === 1 || grade === 3
+    this.disabled = !this.isAuth || !this.isVip;
+  },
+  methods: {
+    async chooseImage() {
+      this.iconPath = null;
+      const res = await wepy.wx.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
+      const { tempFilePaths } = res;
+      if (tempFilePaths) {
+        this.imgPath = tempFilePaths[0];
+      }
+    },
+    async onAdd() {
+      if (!this.imgPath) {
+        Topic.showToast('请选择话题头像');
+        return;
+      }
+      if (!this.iconPath) {
+        this.iconPath = await Topic.uploadFile(
+          [
+            {
+              path: this.imgPath
+            }
+          ],
+          1
+        );
+      }
+      if (!this.iconPath) {
+        Topic.showToast('上传头像失败');
+        return;
+      }
+      if (!/[\u4e00-\u9fa5a-zA-Z]{2,10}/.test(this.title)) {
+        Topic.showToast('话题标题格式不对');
+        return;
+      }
+      if (!this.nickName) {
+        Topic.showToast('输入关注者称号');
+        return;
+      }
+      if (!this.des) {
+        Topic.showToast('输入话题描述');
+        return;
+      }
+      const topic = await Topic.add({
+        title: this.title,
+        des: this.des,
+        iconSrc: this.iconPath,
+        nickName: this.nickName
+      });
+      if (topic) {
+        wx.redirectTo({
+          url: '/pages/topic?id=' + topic.id
+        });
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '创建话题',
+    "usingComponents": {
+    }
+}
+</config>

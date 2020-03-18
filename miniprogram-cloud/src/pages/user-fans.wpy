@@ -1,0 +1,98 @@
+<style lang="less" scoped>
+.bar-back {
+  .weui-navigation-bar__left {
+    padding-left: 16px;
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <navigation-bar ext-class="bar-back" :back="true" background="transparent">
+      <div slot="center">
+        <tabs extClass="my-tabs" :auto="true" :labels="labels" :selectedIndex="tabIndex" @change="onTabChange" />
+      </div>
+    </navigation-bar>
+    <swiper
+      :current="current"
+      @change="onChange"
+      style="height: calc(100vh - {{navigationHeight}}px);"
+    >
+      <swiper-item>
+        <list
+          controller="user"
+          action="fans"
+          :objId="userId"
+          :dataType="0"
+          :isInit="init0"
+          :pageSize="20"
+          :refresherEnabled="false"
+        />
+      </swiper-item>
+      <swiper-item>
+        <list
+          controller="user"
+          action="fans"
+          :objId="userId"
+          :dataType="1"
+          :isInit="init1"
+          :pageSize="20"
+          :refresherEnabled="false"
+        />
+      </swiper-item>
+    </swiper>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    labels: [
+      {
+        title: '关注',
+        showDot: false
+      },
+      {
+        title: '粉丝',
+        showDot: false
+      }
+    ],
+    current: 0,
+    tabIndex: 0,
+    navigationHeight: 0,
+    userId: null,
+    init0: false,
+    init1: false
+  },
+  async onLoad(q) {
+    const { id, type } = q;
+    this.userId = id;
+    this.navigationHeight = this.$app.$options.navigationHeight();
+    this.tabIndex = parseInt(type);
+    this.current = this.tabIndex;
+    this[`init${type}`] = true;
+  },
+  methods: {
+    onTabChange(index) {
+      this.current = index;
+    },
+    onChange(res) {
+      const { current, source } = res.$wx.detail;
+      this.tabIndex = current;
+      this.current = current;
+      if (!this[`init${current}`]) {
+        this[`init${current}`] = true;
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationStyle: 'custom',
+    "usingComponents": {
+      "tabs": "../components/tab-bar",
+      "list": "../components/page-list",
+      "navigation-bar": "../components/navigation-bar/navigation-bar",
+    }
+}
+</config>

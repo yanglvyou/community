@@ -13,9 +13,9 @@ module.exports = appInfo => {
   const config = exports = {};
 
   // use for cookie sign key, should change to your own and keep security
-  config.keys = appInfo.name + '_1581759089415_5829';
-  config.secret = '8974&*6732@#dji~!2sdoi2';
-  config.prefix = 'v1'
+  config.keys = appInfo.name + '_1581759033415_5829';
+  config.secret = 'sdoi202@!@sd(*$5sd';
+  config.prefix = 'v1' 
   // add your middleware config here
   config.middleware = [ 'authorize' ];
   // add your user config here
@@ -64,9 +64,9 @@ module.exports = appInfo => {
     dialect: 'mysql',
     host: '127.0.0.1',
     port: 3306,
-    database: '数据库',
+    database: 'community',
     username: 'root',
-    password: '数据库密码',
+    password: 'LB123456',
     timezone: '+08:00',
   };
   exports.http = {

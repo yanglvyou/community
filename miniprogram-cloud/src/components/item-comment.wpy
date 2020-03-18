@@ -1,0 +1,253 @@
+<style lang="less" scoped>
+.comment {
+  padding: 30rpx;
+  background: url(http://img.wutuobangxinyougou.com/ic_comment.svg) #fff;
+  background-repeat: no-repeat;
+  background-size: 12%;
+  position: relative;
+  &::after {
+    content: ' ';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 1px;
+    border-bottom: 0.4px solid rgba(235, 237, 245, 0.8);
+    color: rgba(235, 237, 245, 0.8);
+  }
+  .comment-content {
+    margin-left: 74rpx;
+    .comment-txt {
+      margin: 20rpx 0rpx;
+      line-height: 46rpx;
+      font-size: 30rpx;
+      color: #353535;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      .nick {
+        color: #409eff;
+      }
+      text {
+        color: var(--txt-content);
+        font-size: 32rpx;
+        text-align: left;
+      }
+      .icon-mini-img {
+        width: 34rpx;
+        height: 34rpx;
+        padding: 0rpx 4rpx;
+      }
+    }
+    .comment-imgs {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 10rpx 0rpx;
+      .comment-img-item {
+        position: relative;
+        padding: 10rpx;
+        .img-des {
+          position: absolute;
+          right: 20rpx;
+          bottom: 20rpx;
+          background: rgba(0, 0, 0, 0.5);
+          color: #ffffff;
+          font-size: 22rpx;
+          padding: 6rpx 8rpx;
+          border-radius: 6rpx;
+        }
+        image {
+          width: 180rpx;
+          height: 180rpx;
+        }
+      }
+    }
+    .comment-action {
+      display: flex;
+      align-items: center;
+      .time {
+        color: #b2b2b2;
+        font-size: 22rpx;
+      }
+      .reply {
+        background: #f1f1f1;
+        padding: 6rpx 20rpx;
+        border-radius: 60rpx;
+        color: #353535;
+        font-size: 24rpx;
+        margin-left: 8rpx;
+      }
+    }
+  }
+  .zan {
+    font-size: 24rpx;
+    color: #353535;
+    display: flex;
+    align-items: center;
+    .icon {
+      font-size: 34rpx;
+      margin-right: 6rpx;
+    }
+    .num {
+      align-self: flex-start;
+    }
+  }
+  .btn-follow {
+    font-size: 24rpx;
+    background: #fae37c;
+    box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.5);
+    padding: 10rpx 20rpx;
+    border-radius: 8rpx;
+    line-height: normal;
+    display: flex;
+    align-items: center;
+    .icon {
+      font-size: 30rpx;
+    }
+    &.follow {
+      background: #f8f8f8;
+      color: #b2b2b2;
+    }
+    &.btn-hover {
+      background: rgba(250, 227, 124, 0.5);
+    }
+  }
+  .ic-img {
+    width: 28rpx;
+    height: 28rpx;
+    margin-left: 8rpx;
+  }
+}
+</style>
+<template>
+  <div
+    class="comment"
+    @tap="goComment"
+    @longpress="onCopy"
+    style="  background-position: {{item.isHot ? 90 : -100}}% 80%;"
+  >
+    <user :item="item.from">
+      <div slot="action" class="zan" v-if="showAction" @tap.stop="onLike">
+        <div class="icon icon-zan-{{item.hasLike ? 'full' : 'line'}}" />
+        <div class="num">{{item.thumbsCount || '赞'}}</div>
+      </div>
+    </user>
+    <div class="comment-content">
+      <div class="comment-txt">
+        <text v-if="item.to && item.commenType === 2">
+          <text>回复</text>
+          <text class="nick">{{item.to.nick}}</text>:
+        </text>
+        <block v-for="obj in item.content">
+          <text
+            class="{{showInfo ? 'simple' : ''}}"
+            v-if="obj.type === 0"
+            space="nbsp"
+          >{{obj.value}}</text>
+          <img v-else class="icon-mini-img" :src="obj.src" />
+        </block>
+      </div>
+      <div class="comment-imgs">
+        <div class="comment-img-item" v-for="(img, index) in item.imgs" :key="index">
+          <img
+            @tap.stop="onPreview(item.imgs, index)"
+            :src="img.path"
+            mode="aspectFill"
+            :lazy-load="true"
+          />
+          <div class="img-des" v-if="img.height > 1080">长图</div>
+        </div>
+      </div>
+      <div class="comment-action" v-if="showAction">
+        <div class="time">{{item.moment}}</div>
+        <div class="reply" v-if="showReply">{{item.replyCount || ''}}回复</div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { eventHub, Post } from '../common/api';
+wepy.component({
+  options: {
+    multipleSlots: true,
+    addGlobalClass: true
+  },
+  props: {
+    showAction: {
+      type: Boolean,
+      default: true
+    },
+    isLast: {
+      type: Boolean,
+      default: false
+    },
+    showReply: {
+      type: Boolean,
+      default: true
+    },
+    index: Number,
+    item: Object
+  },
+  data: {},
+  methods: {
+    onPreview(imgs, index) {
+      const urls = imgs.map(img => {
+        return img.path;
+      });
+      wx.previewImage({
+        urls,
+        current: urls[index]
+      });
+    },
+    goComment() {
+      if (this.isLast) {
+        eventHub.$emit('showInput', this.item.from);
+      } else {
+        wx.navigateTo({
+          url: `/pages/post-comment?id=${this.item.id}`
+        });
+      }
+    },
+    async onLike() {
+      this.$emit('like', { index: this.index, item: this.item });
+    },
+    onCopy() {
+      wx.showActionSheet({
+        itemList: this.item.isSys
+          ? ['复制评论', '删除', this.item.isHot ? '取消热评' : '设为热评']
+          : this.item.isSelf
+          ? ['复制评论', '删除']
+          : ['复制评论'],
+        success: res => {
+          if (res.tapIndex === 0) {
+            wx.setClipboardData({
+              data: this.item.baseTxt
+            });
+          } else if (res.tapIndex === 1) {
+            this.$emit('remove', {
+              index: this.index,
+              comment: this.item
+            });
+          } else if (res.tapIndex === 2) {
+            this.$emit('set', {
+              index: this.index,
+              comment: this.item
+            });
+          }
+        },
+        fail(res) {
+          console.log(res.errMsg);
+        }
+      });
+    }
+  }
+});
+</script>
+<config>
+{
+    usingComponents: {
+        "user": "./item-user"
+    }
+}
+</config>

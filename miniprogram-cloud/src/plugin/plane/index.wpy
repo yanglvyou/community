@@ -1,0 +1,427 @@
+<style lang="less" scoped>
+page {
+  background: #ffeb30;
+}
+.container {
+  position: relative;
+  height: 100vh;
+  .empty {
+    text-align: center;
+    padding-top: 80rpx;
+    height: 80vh;
+    image {
+      width: 390rpx;
+      height: 390rpx;
+    }
+    .empty-des {
+      font-size: 28rpx;
+      color: #13100e;
+    }
+  }
+  .footer {
+    position: absolute;
+    width: 100%;
+    bottom: 5%;
+    left: 0rpx;
+    text-align: center;
+    .btn {
+      width: 400rpx;
+      padding: 40rpx;
+      display: inline-block;
+      text-align: center;
+      background: #fff;
+      font-size: 36rpx;
+      font-weight: bold;
+      border-radius: 80rpx;
+      box-shadow: 4rpx 8rpx 12rpx rgba(255, 209, 0, 0.3);
+      &.btn-hover {
+        background: rgba(255, 209, 0, 0.3);
+      }
+    }
+  }
+  .cloud {
+    position: absolute;
+    top: 30rpx;
+    left: -177rpx;
+    z-index: -1;
+    animation: cloudFrames 14s infinite linear;
+    animation-delay: 1s;
+    image {
+      width: 177rpx;
+      height: 96rpx;
+    }
+    &.cloud-1 {
+      animation-delay: 5s;
+      top: 300rpx;
+    }
+    &.cloud-2 {
+      animation-delay: 10s;
+      top: 900rpx;
+    }
+  }
+  .planes {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    height: 100vh;
+    .plane-list {
+      position: relative;
+      flex-shrink: 0;
+      flex-basis: 750rpx;
+      width: 750rpx;
+      height: 100%;
+      .plane {
+        width: 114rpx;
+        height: 114rpx;
+        position: absolute;
+        top: calc(5%);
+        left: calc(50%);
+        animation: planFrames 6s infinite linear;
+        .school {
+          position: absolute;
+          right: -140rpx;
+          padding: 4rpx 8rpx;
+          border-radius: 30rpx;
+          top: 0rpx;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 1; /*设置文本行数限制*/
+          -webkit-box-orient: vertical; /*设置文本排列方式*/
+          background: #fff;
+          font-size: 20rpx;
+          max-width: 140rpx;
+          .icon {
+            font-size: 24rpx;
+          }
+        }
+        .plane-behind {
+          width: 114rpx;
+          height: 114rpx;
+          position: absolute;
+        }
+        .plane-front {
+          width: 114rpx;
+          height: 114rpx;
+          position: absolute;
+        }
+        .plane-seen {
+          height: 120rpx;
+          width: 120rpx;
+          position: absolute;
+        }
+        .plane-boy {
+          height: 120rpx;
+          width: 120rpx;
+          position: absolute;
+        }
+        &.plane-0 {
+          top: calc(8%);
+          left: calc(30%);
+        }
+        &.plane-1 {
+          top: calc(20%);
+          left: calc(60%);
+          animation-delay: 0.1s;
+        }
+        &.plane-2 {
+          top: calc(30%);
+          left: calc(5%);
+          animation-delay: 0.3s;
+        }
+        &.plane-3 {
+          top: calc(40%);
+          left: calc(50%);
+          animation-delay: 1s;
+        }
+        &.plane-4 {
+          top: calc(60%);
+          left: calc(20%);
+          animation-delay: 1.3s;
+        }
+        &.plane-5 {
+          top: calc(65%);
+          left: calc(70%);
+          animation-delay: 1.5 s;
+        }
+      }
+    }
+  }
+}
+@keyframes cloudFrames {
+  0%,
+  1% {
+    transform: translate(-120rpx);
+  }
+  // 54%,
+  // 55% {
+  //   transform: translate(450rpx);
+  // }
+  99%,
+  100% {
+    transform: translate(950rpx);
+  }
+}
+@keyframes planFrames {
+  0%,
+  1% {
+    transform: translate(0, -30rpx);
+  }
+  54%,
+  55% {
+    transform: translate(0, 30rpx);
+  }
+  99%,
+  100% {
+    transform: translate(0, -30rpx);
+  }
+}
+.dialog {
+  position: relative;
+  .dialog-footer {
+    margin-top: 50rpx;
+    .btn-reply {
+      color: #000000;
+      padding: 20rpx;
+      font-size: 32rpx;
+      border-radius: 40rpx;
+      font-weight: normal;
+      align-self: center;
+      line-height: normal;
+      background: #fae37c;
+      color: #13100e;
+      border: none;
+      // box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.3);
+      &::after {
+        border: none;
+      }
+      &.btn-hover {
+        background: rgba(250, 227, 124, 0.5);
+      }
+    }
+  }
+  .dialog-main {
+    .main-txt {
+      margin: 20rpx 0rpx;
+      color: #000;
+      text-align: left;
+      text {
+        color: var(--txt-content);
+        font-size: 28rpx;
+        text-align: left;
+      }
+      .icon-mini-img {
+        width: 28rpx;
+        height: 28rpx;
+      }
+    }
+  }
+  .btn-close {
+    position: absolute;
+    width: 100rpx;
+    height: 100rpx;
+    top: 0rpx;
+    right: 0rpx;
+    text-align: center;
+    line-height: 100rpx;
+    .icon {
+      font-size: 36rpx;
+      color: #c2c2c2;
+    }
+  }
+}
+</style>
+<template>
+  <div class="container">
+    <div class="cloud">
+      <img src="./images/img_nearby_plane_cloud.png" />
+    </div>
+    <div class="cloud cloud-1">
+      <img src="./images/img_nearby_plane_cloud.png" />
+    </div>
+    <div class="cloud cloud-2">
+      <img src="./images/img_nearby_plane_cloud.png" />
+    </div>
+    <scroll-view
+      :scroll-x="true"
+      @scrolltolower="onScrolltolower"
+      style="height:80vh"
+      v-if="items.length"
+    >
+      <div class="planes">
+        <div class="plane-list" v-for="(item, index) in items" :key="index">
+          <div
+            class="plane plane-{{(j + 1) % 6}}"
+            v-for="(plane, j) in item"
+            :key="plane.id"
+            @tap="onItem(plane, index, j)"
+          >
+            <img
+              v-if="!plane.hasSeen"
+              src="./images/img_plane_{{plane.user.sex === 1 ? 'boy' : 'girl'}}_behind_{{(index + 1) * (j + 1) % 9}}.png"
+              class="plane-behind"
+            />
+            <img
+              src="./images/img_plane_{{plane.user.sex === 1 ? 'boy' : 'girl'}}_{{(index + 1) * (j + 1) % 9}}.png"
+              class="plane-boy"
+            />
+            <img
+              v-if="!plane.hasSeen"
+              src="./images/img_plane_{{plane.user.sex === 1 ? 'boy' : 'girl'}}_front_{{(index + 1) * (j + 1) % 9}}.png"
+              class="plane-front"
+            />
+            <img v-if="plane.hasSeen" src="./images/img_plane_seen.png" class="plane-seen" />
+            <div class="school">
+              <text>
+                <text class="icon icon-dingwei-full"></text>
+                <text>{{plane.user.school || '来自外太空'}}</text>
+              </text>
+            </div>
+          </div>
+        </div>
+      </div>
+    </scroll-view>
+    <div class="empty" v-else>
+      <img src="./images/img_nearby_empty_zero.png" />
+      <div class="empty-des">还没有人吐槽</div>
+    </div>
+    <div class="footer">
+      <div class="btn" hover-class="btn-hover" @tap="onShow">{{plane ? '更改吐槽' : '我要吐槽'}}</div>
+    </div>
+    <dialog :show="showDialog" @close="showDialog=flase" ext-class="dialog">
+      <div class="dialog-main">
+        <user-item :item="itemPlane.user" />
+        <div class="main-txt">
+          <block v-for="obj in itemPlane.content">
+            <text
+              class="{{showInfo ? 'simple' : ''}}"
+              v-if="obj.type === 0"
+              space="nbsp"
+            >{{obj.value}}</text>
+            <img v-else class="icon-mini-img" :src="obj.src" />
+          </block>
+        </div>
+        <div class="dialog-footer" @tap="showReplyInput=true">
+          <div class="btn-reply">回复TA</div>
+        </div>
+        <div class="btn-close" @tap="showDialog=false">
+          <text class="icon icon-close" />
+        </div>
+      </div>
+    </dialog>
+    <plane-add
+      @hide="onHide"
+      @cancel="onCancel"
+      @throw="onThrow"
+      :show="showInput"
+      :showImg="false"
+      :content="plane && plane.content || ''"
+      :showCancel="plane ? true : false"
+      :isPlane="true"
+      :btnTxt="plane ? '修改': '吐槽'"
+      btnCancelTxt="撤销吐槽"
+      placeholder="说出心中的不悦,尽情吐槽吧!"
+    ></plane-add>
+    <comment-input
+      :show="showReplyInput"
+      :showImg="true"
+      :commenType="8"
+      :postId="itemPlane.id"
+      :toId="itemPlane.user.id"
+      @hide="onReplyHide"
+      @comment="showReplyInput = false"
+      btnTxt="发送"
+      :placeholder="placeholder"
+    />
+  </div>
+</template>
+<script>
+import { Plane } from './api';
+import wepy from '@wepy/core';
+wepy.page({
+  data: {
+    disabled: true,
+    loading: false,
+    showInput: false,
+    showReplyInput: false,
+    showDialog: false,
+    pageIndex: 1,
+    pageSize: 12,
+    placeholder: '回复TA',
+    itemPlane: null,
+    items: [],
+    isLoadData: false,
+    hasMore: true,
+    plane: null
+  },
+  async onLoad() {
+    this.plane = await Plane.details(null, true);
+    await this.loadData();
+  },
+  methods: {
+    async loadData() {
+      if (!this.hasMore || this.isLoadData) {
+        return;
+      }
+      this.isLoadData = true;
+      const res = await Plane.list(this.pageIndex, this.pageSize);
+      if (res && res.length) {
+        this.items.push(res.slice(0, 6));
+        this.items.push(res.slice(6));
+        this.pageIndex++;
+        this.hasMore = res.length === this.pageSize;
+      }
+      this.isLoadData = false;
+    },
+    onShow() {
+      this.showInput = true;
+    },
+    onHide() {
+      this.showInput = false;
+    },
+    onReplyHide() {
+      this.showReplyInput = false;
+    },
+    async onItem(plane, i, j) {
+      console.log(plane);
+
+      this.placeholder = `回复${plane.user.nick}:`;
+      if (!plane.hasSeen) {
+        this.items[i][j].hasSeen = true;
+        await Plane.read(plane.id);
+      }
+      this.itemPlane = plane;
+      this.showDialog = true;
+    },
+    async onScrolltolower() {
+      await this.loadData();
+    },
+    async onCancel() {
+      if (await Plane.remove()) {
+        this.plane = null;
+      }
+    },
+    async onThrow(content) {
+      if (!content || content.length < 5) {
+        Plane.showToast('内容不能少于5个字符');
+        return;
+      }
+      this.onHide();
+      this.plane = await Plane.edit(content);
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationBarTitleText: '吐槽机',
+    backgroundColor: '#ffeb30',
+    navigationBarBackgroundColor: '#ffeb30',
+    "usingComponents": {
+      "comment-input": "../../components/input-comment",
+      "plane-add": "../../components/input-comment",
+      "user-item": "../../components/item-user",
+      "dialog": "../../components/dialog/dialog",
+    }
+}
+</config>

@@ -1,0 +1,120 @@
+<style lang="less" scoped>
+.tab-bar {
+  position: relative;
+  .tabs {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    .tab-bar {
+      position: absolute;
+      width: 18rpx;
+      height: 6rpx;
+      background: #13100e;
+      border-radius: 30rpx;
+      bottom: 12rpx;
+      transition: all .3s;
+    }
+  }
+  .tab {
+    display: inline-block;
+    font-size: 30rpx;
+    width: 120rpx;
+    flex-shrink: 0;
+    padding: 24rpx 0rpx;
+    box-sizing: border-box;
+    line-height: 40rpx;
+    color: #9b9b9b;
+    text-align: center;
+    position: relative;
+    &.active {
+      color: #000000;
+      font-weight: bold;
+    }
+    .dot{
+      position:absolute;
+      color: red;
+      top: 0rpx;
+      right: 0rpx;
+    }
+  }
+}
+</style>
+<template>
+  <scroll-view
+    :scroll-x="true"
+    :scroll-with-animation="true"
+    style="{{auto ? '' : innerWidth}}"
+    scroll-into-view="tab-{{currentView}}"
+  >
+    <div class="tab-bar {{extClass}}">
+      <div class="tabs">
+        <div
+          class="tab {{index === selectedIndex ? 'active' : ''}}"
+          v-for="(item, index) in labels"
+          id="tab-{{index}}"
+          :key="index"
+          @tap="tabTap(index)"
+        >
+        <div>{{item.title}}</div>
+        <div class="dot" v-if="item.showDot">
+          <text class="icon icon-dot"/>
+        </div>
+        </div>
+        <div class="tab-bar" style="left: {{left}}rpx;"></div>
+      </div>
+    </div>
+  </scroll-view>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    labels: Array,
+    selectedIndex: {
+      type: Number,
+      default: 0
+    },
+    auto: {
+      type: Boolean,
+      default: false
+    },
+    extClass: {
+      type: String,
+      default: ''
+    }
+  },
+  data: {
+    left: 51,
+    innerWidth: '',
+    currentView: 0
+  },
+  attached() {
+    const isSupport = !!wx.getMenuButtonBoundingClientRect;
+    const rect = wx.getMenuButtonBoundingClientRect
+      ? wx.getMenuButtonBoundingClientRect()
+      : null;
+    this.innerWidth = isSupport ? 'width:' + rect.left + 'px' : '';
+  },
+  watch: {
+    selectedIndex(index) {
+      this.change(index);
+      this.currentView - index > 0 ? this.currentView = index + 2 : this.currentView = index  - 2
+    }
+  },
+  methods: {
+    change(index) {
+      this.left = index * (100 + 19) + 51;
+    },
+    tabTap(index) {
+      this.selectedIndex = index;
+      this.change(index);
+      this.$emit('change', index);
+    }
+  }
+});
+</script>

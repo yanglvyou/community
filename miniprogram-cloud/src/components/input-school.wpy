@@ -1,0 +1,107 @@
+<style lang="less" scoped>
+.schools {
+  .school-item {
+    text-align: left;
+    font-size: 30rpx;
+    padding: 30rpx 30rpx;
+  }
+}
+</style>
+<template>
+  <screen-dialog :show="show" title="选择学校" @close="onClose">
+    <div slot="footer">
+      <searchbar placeholder="输入学校名称" v-model.trim="keyword" @input="onSearch" @cancel="onCancel"></searchbar>
+      <scroll-view
+        :scroll-y="true"
+        @scrolltolower="onScrolltolower"
+        style="height:calc(65vh - 96rpx);"
+      >
+        <div class="schools">
+          <div class="school-item" v-for="item in items" :key="item.id" @tap.stop="onSelect(item)">
+            <div class="content">
+                {{item.name}}
+            </div>
+          </div>
+        </div>
+      </scroll-view>
+    </div>
+  </screen-dialog>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { User } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: {
+    items: [],
+    keyword: '',
+    pageIndex: 1,
+    pageSize: 20,
+    isCanLoad: true
+  },
+  watch: {
+    async show(val) {
+      if (val) {
+        this.items = []
+        await this.loadData();
+      }
+    }
+  },
+  methods: {
+    async loadData() {
+      if (this.isCanLoad) {
+        const items = await User.searchSchool(this.keyword, this.pageIndex, this.pageSize);
+        for (const item of items) {
+          this.items.push(item);
+        }
+        if (items.length >= this.pageSize) {
+          this.pageIndex++;
+        } else {
+          this.isCanLoad = false;
+        }
+      }
+    },
+    onSelect(school) {
+      this.$emit('result', school);
+    },
+    async onSearch(e) {
+      const { value } = e.$wx.detail;
+      this.pageIndex = 1;
+      this.isCanLoad = true;
+      console.log(value);
+      
+      this.keyword = value
+      const items = await User.searchSchool(this.keyword, this.pageIndex, this.pageSize);
+      this.items = items;
+    },
+    async onCancel() {
+      this.items = [];
+      this.isCanLoad = true;
+      this.pageIndex = 1;
+      await this.loadData();
+    },
+    onClose() {
+      this.$emit('close');
+    },
+    async onScrolltolower() {
+      await this.loadData();
+    }
+  }
+});
+</script>
+<config>
+{
+    "usingComponents": {
+        "screen-dialog": "./half-screen-dialog/half-screen-dialog",
+        "searchbar": "./searchbar/searchbar",
+    }
+}
+</config>

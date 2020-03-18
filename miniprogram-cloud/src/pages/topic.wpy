@@ -1,0 +1,434 @@
+<style lang="less" scoped>
+.bar-ext {
+  .weui-navigation-bar__left {
+    padding-left: 16px;
+  }
+}
+.user-back {
+  display: flex;
+  align-items: center;
+  .btn-back {
+    width: 64rpx;
+    height: 72rpx;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E  %3Cpath fill='white' fill-opacity='.9' fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E");
+    background-position: 0% 50%;
+    background-size: 40%;
+    background-repeat: no-repeat;
+    &.btn-black {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24' viewBox='0 0 12 24'%3E  %3Cpath fill='black' fill-opacity='.9' fill-rule='evenodd' d='M10 19.438L8.955 20.5l-7.666-7.79a1.02 1.02 0 0 1 0-1.42L8.955 3.5 10 4.563 2.682 12 10 19.438z'/%3E%3C/svg%3E");
+    }
+  }
+  .title {
+    font-size: 30rpx;
+    font-weight: bold;
+    color: #000;
+  }
+}
+.shadow {
+  position: fixed;
+  width: 950rpx;
+  height: calc(100vh);
+  top: -200rpx;
+  left: -100rpx;
+  overflow: hidden;
+  z-index: -1;
+  .shadow-main {
+    width: 950rpx;
+    height: calc(100vh);
+    top: -100rpx;
+    left: -100rpx;
+    -webkit-filter: blur(100rpx) brightness(0.7);
+    filter: blur(100rpx) brightness(0.7);
+  }
+}
+.head {
+  color: #fff;
+  padding: 0rpx 30rpx;
+  .topic {
+    display: flex;
+    align-items: center;
+    padding: 30rpx 0rpx;
+    image {
+      width: 140rpx;
+      height: 140rpx;
+      border-radius: 20rpx;
+      flex-basis: 140rpx;
+      flex-shrink: 0;
+    }
+    .topic-info {
+      margin-left: 20rpx;
+      flex-grow: 1;
+      .title {
+        color: #fff;
+        font-size: 34rpx;
+        font-weight: bold;
+        margin-bottom: 20rpx;
+      }
+      .des {
+        font-size: 24rpx;
+        color: #fff;
+      }
+    }
+  }
+  .tool {
+    display: flex;
+    align-items: center;
+    .count {
+      text {
+        font-size: 26rpx;
+        margin-right: 10rpx;
+      }
+    }
+    .rank {
+      display: flex;
+      align-items: center;
+      padding-left: 10rpx;
+      flex-grow: 1;
+      .ic {
+        width: 56rpx;
+        height: 43rpx;
+      }
+      .rank-name {
+        font-size: 26rpx;
+      }
+      .imgs {
+        display: flex;
+        align-items: center;
+        margin-left: 20rpx;
+        image {
+          width: 36rpx;
+          height: 36rpx;
+          border-radius: 36rpx;
+          border: #ffffff solid 2rpx;
+          margin-right: -14rpx;
+        }
+      }
+      .icon {
+        font-weight: bold;
+        font-size: 30rpx;
+        margin-left: 8rpx;
+      }
+    }
+    .tool-action {
+      .btn {
+        font-size: 28rpx;
+        background: #fae37c;
+        padding: 10rpx 30rpx;
+        border-radius: 8rpx;
+        display: flex;
+        align-items: center;
+        line-height: normal;
+        &::after {
+          border: none;
+        }
+        &.has {
+          box-shadow: none;
+          background: #f8f8f8;
+          color: #b2b2b2;
+          font-size: 26rpx;
+        }
+      }
+    }
+  }
+}
+.main {
+  background: #ffffff;
+  border-top-left-radius: 20rpx;
+  border-top-right-radius: 20rpx;
+  position: relative;
+  width: 100%;
+  .tab-box {
+    width: 100%;
+    left: 0rpx;
+    top: 0rpx;
+    z-index: 1000;
+    .bar-ext {
+      text-align: left;
+    }
+  }
+  .list {
+    background: #fff;
+  }
+}
+</style>
+<template>
+  <div @touchmove="touchmove" @touchend="touchend">
+    <div class="shadow">
+      <div
+        class="shadow-main"
+        style=" background-image: url({{topic.bg}});background-repeat: no-repeat;background-size: 120% 120%;"
+      ></div>
+    </div>
+    <navigation-bar ext-class="bar-ext" :back="false" :background="background">
+      <div slot="left" class="user-back">
+        <div class="btn-back btn-black" @tap="goBack" v-if="opacity >= 1"></div>
+        <div class="btn-back" @tap="goBack" v-else></div>
+        <div class="title" style="opacity:{{opacity}};">校园生活</div>
+      </div>
+    </navigation-bar>
+    <div class="head">
+      <div class="topic">
+        <img :src="topic.iconSrc" />
+        <div class="topic-info">
+          <div class="title">{{topic.title}}</div>
+          <div class="des">{{topic.des}}</div>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="count">
+          <text>{{topic.followCount}}</text>
+          <text>{{topic.nickName}}</text>
+        </div>
+        <div class="rank">
+          <block>
+            <img src="../images/ic_rank.svg" class="ic" />
+            <div class="rank-name">大神榜</div>
+            <div class="imgs">
+              <img :src="img" v-for="(img, index) in topic.followers" :key="index" />
+            </div>
+            <div class="icon icon-arrow-right"></div>
+          </block>
+        </div>
+        <div class="tool-action">
+          <button class="btn {{topic.hasFollow ? 'has' : ''}}" @tap="onFollow">
+            <text class="icon icon-{{topic.hasFollow ? 'follow' : 'add'}}"></text>
+            <text>{{topic.hasFollow ? '已关注' : '关注'}}</text>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="main" style="top: {{top}}px;{{position}};transition: {{transition}};">
+      <div class="tab-box">
+        <tab-bar
+          :labels="tabs"
+          extClass="bar-ext"
+          :selectedIndex="tabIndex"
+          id="tab"
+          :auto="true"
+          @change="onTabChange"
+        />
+      </div>
+      <swiper
+        :current="current"
+        @change="onChange"
+        style="height: calc(100vh - {{top}}px - 90rpx);background:#f8f8f8;"
+      >
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="topicId"
+            :dataType="0"
+            :isInit="init0"
+            :refresherEnabled="!scrollY"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="topicId"
+            :dataType="1"
+            :isInit="init1"
+            :refresherEnabled="!scrollY"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="topicId"
+            :dataType="2"
+            :isInit="init2"
+            :refresherEnabled="!scrollY"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="topicId"
+            :dataType="3"
+            :isInit="init3"
+            :refresherEnabled="!scrollY"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+        <swiper-item>
+          <mp-list
+            :action="action"
+            :objId="topicId"
+            :dataType="4"
+            :isInit="init4"
+            :refresherEnabled="!scrollY"
+            :scrollY="scrollY"
+            @share="onShare"
+          />
+        </swiper-item>
+      </swiper>
+    </div>
+    <tool :topic="topic" />
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Topic } from '../common/api';
+import Share from '../mixins/share'
+wepy.page({
+  mixins: [Share],
+  data: {
+    tabs: [
+      {
+        title: '最新',
+        showDot: false
+      },
+      {
+        title: '热门',
+        showDot: false
+      },
+      {
+        title: '图文',
+        showDot: false
+      },
+      {
+        title: '文章',
+        showDot: false
+      },
+      {
+        title: '问答',
+        showDot: false
+      }
+    ],
+    action: 'listForTopic',
+    init0: false,
+    init1: false,
+    init2: false,
+    init3: false,
+    init4: false,
+    current: 0,
+    tabIndex: 0,
+    topic: null,
+    state: 0,
+    opacity: 0,
+    isSelf: false,
+    topicId: null,
+    type: 0,
+    background: 'transparent',
+    startY: 0,
+    top: 100,
+    baseTop: 0,
+    position: 'position:fixed',
+    bottom: 0,
+    scrollY: false,
+    refresherEnabled: false
+  },
+  async onLoad(q) {
+    const { id } = q;
+    this.topicId = id;
+    const { bottom, top, height } = wx.getMenuButtonBoundingClientRect();
+    this.bottom = this.$app.$options.navigationHeight();
+    this.$wx
+      .createSelectorQuery()
+      .select('.head')
+      .boundingClientRect(res => {
+        let _top = this.bottom + res.height + 20;
+        this.top = _top;
+        this.baseTop = _top;
+        this.position = 'position:fixed';
+      })
+      .exec();
+    this.topic = await Topic.getDetails(id);
+    if (this.topic.id === 10) {
+      this.tabs[2].title = '兼职'
+    }
+    Topic.topicAddTrack(this.topic);
+    this.init0 = true;
+  },
+  methods: {
+    async onTabChange(index) {
+      this.current = index;
+    },
+    touchmove(res) {
+      let _pageY = res.$wx.changedTouches[0].pageY;
+      if (this.startY === 0) {
+        this.startY = _pageY;
+      }
+      let offset = _pageY - this.startY;
+      if (offset < 0) {
+        if (this.top > this.bottom) {
+          this.startY = _pageY;
+          let _top = this.top + offset;
+          this.top = _top < this.bottom ? this.bottom : _top;
+        }
+      } else {
+        if (this.top < this.baseTop) {
+          this.startY = _pageY;
+          let _top = this.top + offset;
+          this.top = _top > this.baseTop ? this.baseTop : _top;
+        }
+      }
+    },
+    touchend(res) {
+      this.startY = 0;
+      this.$wx
+        .createSelectorQuery()
+        .select('.main')
+        .boundingClientRect(res => {
+          const { top } = wx.getMenuButtonBoundingClientRect();
+          if (res.top > (this.baseTop - top) / 2 + top) {
+            this.top = this.baseTop;
+            this.scrollY = false;
+          } else {
+            this.top = this.bottom;
+            this.scrollY = true;
+          }
+          this.transition = 'all 0.3s';
+          setTimeout(() => {
+            this.transition = 'none';
+          }, 300);
+        })
+        .exec();
+    },
+    onChange(res) {
+      const { current, source } = res.$wx.detail;
+      this.tabIndex = current;
+      if (!this[`init${current}`]) {
+        this[`init${current}`] = true;
+      }
+    },
+    goBack() {
+      wx.navigateBack();
+    },
+    goSend() {
+      wx.navigateTo({
+        url: `/pages/post-send?type=0&topicId=${this.topicId}&title=${encodeURI(
+          this.topic.title
+        )}`
+      });
+    },
+    async onFollow() {
+      if (this.topic.hasFollow) {
+        if (await Topic.cancel(this.topic.id)) {
+          this.topic.hasFollow = false;
+        }
+      } else {
+        this.topic.hasFollow = await Topic.follow(this.topic.id);
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    navigationStyle: 'custom',
+    "usingComponents": {
+      "navigation-bar": "../components/navigation-bar/navigation-bar",
+      "tool": "../components/action-tool",
+      "mp-list": "../components/page-list",
+      "tab-bar": "../components/tab-bar"
+    }
+}
+</config>

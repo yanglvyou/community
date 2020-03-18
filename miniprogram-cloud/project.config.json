@@ -1,0 +1,191 @@
+{
+	"description": "社区小程序",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": true,
+		"newFeature": true,
+		"coverView": true,
+		"autoAudits": false,
+		"showShadowRootInWxmlPanel": true,
+		"scopeDataCheck": false,
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		}
+	},
+	"compileType": "miniprogram",
+	"appid": "wxccfdb0fcf115d175",
+	"projectname": "community",
+	"miniprogramRoot": "weapp/",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"libVersion": "2.10.1",
+	"qqappid": "1110072555",
+	"cloudfunctionRoot": "cloud/",
+	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 0,
+			"list": [
+				{
+					"id": -1,
+					"name": "pages/home",
+					"pathName": "pages/home",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 1,
+					"name": "pages/post-details",
+					"pathName": "pages/post-details",
+					"query": "id=2",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "pages/post-comment",
+					"pathName": "pages/post-comment",
+					"query": "id=3",
+					"scene": null
+				},
+				{
+					"id": 3,
+					"name": "pages/user-home",
+					"pathName": "pages/user-home",
+					"query": "id=3",
+					"scene": null
+				},
+				{
+					"id": 4,
+					"name": "pages/topic",
+					"pathName": "pages/topic",
+					"query": "id=1",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/notice",
+					"pathName": "pages/notice",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/me",
+					"pathName": "pages/me",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/post-send",
+					"pathName": "pages/post-send",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/editor",
+					"pathName": "pages/editor",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/gender",
+					"pathName": "pages/gender",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/post-article",
+					"pathName": "pages/post-article",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/user-seting",
+					"pathName": "pages/user-seting",
+					"query": "id=3",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/post-answer",
+					"pathName": "pages/post-answer",
+					"query": "id=3",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/binding",
+					"pathName": "pages/binding",
+					"query": "id=15",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/user-auth",
+					"pathName": "pages/user-auth",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/post-share",
+					"pathName": "pages/post-share",
+					"query": "id=6",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/topic-maidan",
+					"pathName": "pages/topic-maidan",
+					"query": "id=3",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "plugin/plane/index",
+					"pathName": "plugin/plane/index",
+					"query": "id=1",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/topic-add",
+					"pathName": "pages/topic-add",
+					"query": "",
+					"scene": null
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,126 @@
+<style lang="less" scoped>
+.recommend {
+  margin-bottom: 30rpx;
+  .title {
+    padding: 20rpx 30rpx;
+    font-size: 26rpx;
+    color: #99a9bf;
+    text-align: left;
+  }
+  .list {
+    display: flex;
+    flex-direction: row;
+    padding: 0rpx 30rpx;
+    .item {
+      margin-right: 20rpx;
+      padding: 30rpx 20rpx;
+      flex-basis: 240rpx;
+      flex-shrink: 0;
+      border-radius: 20rpx;
+      background: #fff;
+      text-align: center;
+      &.item-space {
+        margin-right: 30rpx;
+        background: #f8f8f8;
+        flex-basis: 1rpx;
+      }
+      image {
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: 120rpx;
+      }
+      .item-title {
+        font-size: 28rpx;
+        font-weight: bold;
+        text-align: center;
+        margin: 10rpx 0rpx;
+        max-width: 240rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+      .item-des {
+        font-size: 24rpx;
+        color: #b2b2b2;
+        max-width: 240rpx;
+        height: 84rpx;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /*设置文本行数限制*/
+        -webkit-box-orient: vertical; /*设置文本排列方式*/
+      }
+      .item-action {
+        .btn {
+          width: 200rpx;
+          font-size: 28rpx;
+          background: #fae37c;
+          box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.5);
+          padding: 14rpx 20rpx;
+          border-radius: 60rpx;
+          display: flex;
+          align-items: center;
+          line-height: normal;
+          justify-content: center;
+          &::after {
+            border: none;
+          }
+          &.has {
+            box-shadow: none;
+            background: #f8f8f8;
+            color: #b2b2b2;
+            font-size: 26rpx;
+          }
+        }
+        .icon {
+          font-size: 32rpx;
+          margin-right: 6rpx;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+  <div class="recommend">
+    <div class="title">你可能感兴趣的同学</div>
+    <scroll-view :scroll-x="true">
+      <div class="list">
+        <div class="item" v-for="(item,index) in items" :key="item.id" @tap="goUser(item.id)">
+          <img :src="item.avtater" />
+          <div class="item-title">{{item.nick}}</div>
+          <div class="item-des">{{item.gender}}·{{item.school}}</div>
+          <div class="item-action">
+            <button
+              class="btn {{item.hasFollow ? 'has' : ''}}"
+              @tap.stop="onFollow(item.id, index)"
+            >
+              <text class="icon icon-{{item.hasFollow ? 'follow' : 'add'}}"></text>
+              <text>{{item.hasFollow ? '已关注' : '关注'}}</text>
+            </button>
+          </div>
+        </div>
+        <div class="item item-space"></div>
+      </div>
+    </scroll-view>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  data: {
+    items: []
+  },
+  async attached() {
+
+  },
+  methods: {
+  }
+});
+</script>

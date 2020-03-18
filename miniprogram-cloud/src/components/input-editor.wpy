@@ -1,0 +1,399 @@
+<style lang="less" scoped>
+.editor {
+  position: relative;
+  editor {
+    padding: 20rpx 40rpx;
+    color: #353535;
+    box-sizing: border-box;
+  }
+  .editor-tool {
+    background: #fff;
+    position: fixed;
+    left: 0rpx;
+    bottom: 0rpx;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &::after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      height: 1px;
+      border-top: 0.4px solid rgba(235, 237, 245, 0.8);
+      color: rgba(235, 237, 245, 0.8);
+    }
+    .list {
+      display: flex;
+      align-items: center;
+      flex-wrap: nowrap;
+      .item {
+        text-align: center;
+        padding: 20rpx;
+        &.icon {
+          font-size: 56rpx;
+          color: #969696;
+        }
+        &.ql-active {
+          color: #06c;
+        }
+      }
+      .a {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        transition: all 0.3s;
+        .icon {
+          font-size: 48rpx;
+          color: #969696;
+          padding: 20rpx;
+          &.ql-active {
+            color: #06c;
+          }
+        }
+        .item {
+          flex-grow: 1;
+          padding: 0rpx;
+        }
+      }
+      .color {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        transition: all 0.3s;
+        .item {
+          flex-grow: 1;
+          padding: 0rpx;
+          &.black {
+            color: #353535;
+          }
+          &.blue {
+            color: #1296db;
+          }
+          &.red {
+            color: #f0351c;
+          }
+          &.grey {
+            color: #bfbfbf;
+          }
+        }
+      }
+    }
+  }
+  .editor-action {
+    padding-right: 20rpx;
+    .btn-mini {
+      flex-basis: 200rpx;
+      text-align: center;
+      .btn-send {
+        display: inline-block;
+        background: #fae37c;
+        color: #000;
+        font-size: 30rpx;
+        font-weight: bold;
+        padding: 15rpx 30rpx;
+        border-radius: 10rpx;
+        line-height: normal;
+        &::after {
+          border: none;
+        }
+      }
+      .btn-disabled {
+        background: #f1f1f1;
+        color: #b2b2b2;
+      }
+    }
+  }
+}
+</style>
+<template>
+  <div class="editor">
+    <editor
+      id="editor"
+      :showImgToolbar="true"
+      :hold-keyboard="true"
+      :placeholder="placeholder"
+      @blur="onBlur"
+      @ready="onReady"
+      @statuschange="onStatuschange"
+      style="height: calc(100vh - {{navigationHeight}}px - 100rpx - {{offset}}rpx);"
+    />
+    <div class="editor-tool" style="bottom: {{isIOS ? boardHeight : 0}}px;">
+      <scroll-view
+        :scroll-x="true"
+        :scroll-with-animation="true"
+        style="width: calc(100% - 160rpx);"
+      >
+        <div class="list">
+          <div class="item icon icon-Aa" catchtouchend="isA = !isA" />
+          <div class="a" style="width: {{isA ? 750 : 0}}rpx;">
+            <div class="item" v-for="i in h" :key="i" v-show="isA">
+              <div
+                data-name="header"
+                data-value="{{'H' + i}}"
+                class="icon icon-h{{i}} {{formats.header === i ? 'ql-active' : ''}}"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+            </div>
+          </div>
+          <block v-if="!isA">
+            <div class="item icon icon-color" catchtouchend="isColor = !isColor" />
+            <div class="color" style="width: {{isColor ? 750 : 0}}rpx;">
+              <div
+                class="item icon black {{formats.color === '#353535' ? 'icon-color-radio-select' : 'icon-color-radio'}}"
+                v-show="isColor"
+                data-name="color"
+                data-value="#353535"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon blue {{formats.color === '#1296db' ? 'icon-color-radio-select' : 'icon-color-radio'}}"
+                v-show="isColor"
+                data-name="color"
+                data-value="#1296db"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon red {{formats.color === '#f0351c' ? 'icon-color-radio-select' : 'icon-color-radio'}}"
+                v-show="isColor"
+                data-name="color"
+                data-value="#f0351c"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon grey {{formats.color === '#bfbfbf' ? 'icon-color-radio-select' : 'icon-color-radio'}}"
+                v-show="isColor"
+                data-name="color"
+                data-value="#bfbfbf"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+            </div>
+            <block v-if="!isColor">
+              <div
+                class="item icon icon-B {{formats.bold ? 'ql-active' : ''}}"
+                data-name="bold"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon icon-center {{formats.align === 'center' ? 'ql-active' : ''}}"
+                data-name="align"
+                data-value="center"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div class="item icon icon-img" catchtouchend="format" @tap="chooseImage" />
+              <div
+                class="item icon icon-italic {{formats.italic ? 'ql-active' : ''}}"
+                data-name="italic"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon icon-underline {{formats.underline ? 'ql-active' : ''}}"
+                data-name="underline"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon icon-strike {{formats.strike ? 'ql-active' : ''}}"
+                data-name="strike"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon icon-list-bullet {{formats.list === 'bullet' ? 'ql-active' : ''}}"
+                data-name="list"
+                data-value="bullet"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+              <div
+                class="item icon icon-list-check {{formats.list === 'ordered' ? 'ql-active' : ''}}"
+                data-name="list"
+                data-value="check"
+                catchtouchend="format"
+                @tap="onFormat"
+              />
+            </block>
+          </block>
+        </div>
+      </scroll-view>
+      <div class="editor-action">
+        <div class="btn-mini">
+          <button class="btn-send {{disabled ? 'btn-disabled' : ''}}" :loading="loading" :disabled="disabled" @tap="submit">发布</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { Post } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    offset: {
+      type: Number,
+      default: 0
+    },
+    placeholder: {
+      type: String,
+      default: '正文'
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: {
+    formats: {},
+    isA: false,
+    isColor: false,
+    canUse: true,
+    editorCtx: null,
+    navigationHeight: 0,
+    boardHeight: 0,
+    timer: null,
+    isIOS: false,
+    h: [1, 2, 3, 4, 5, 6]
+  },
+  attached() {
+    console.log(wx.getSystemInfoSync());
+
+    const { SDKVersion, system } = wx.getSystemInfoSync();
+    this.isIOS = !!(system.toLowerCase().search('ios') + 1);
+    this.navigationHeight = this.$app.$options.navigationHeight();
+    if (!Post.isQQ()) {
+         if (this.compareVersion(SDKVersion, '2.7.0') >= 0) {
+      //
+    } else {
+      this.canUse = false;
+      // 如果希望用户在最新版本的客户端上体验您的小程序，可以这样子提示
+      wx.showModal({
+        title: '提示',
+        content:
+          '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
+      });
+    } 
+    }
+    wx.onKeyboardHeightChange(res => {
+      const { height } = res;
+      if (height) {
+        this.boardHeight = height;
+      }
+    });
+  },
+  detached() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  },
+  methods: {
+    compareVersion(v1, v2) {
+      v1 = v1.split('.');
+      v2 = v2.split('.');
+      var len = Math.max(v1.length, v2.length);
+
+      while (v1.length < len) {
+        v1.push('0');
+      }
+      while (v2.length < len) {
+        v2.push('0');
+      }
+
+      for (var i = 0; i < len; i++) {
+        var num1 = parseInt(v1[i]);
+        var num2 = parseInt(v2[i]);
+
+        if (num1 > num2) {
+          return 1;
+        } else if (num1 < num2) {
+          return -1;
+        }
+      }
+      return 0;
+    },
+    onBlur() {
+      this.boardHeight = 0;
+    },
+    submit() {
+      this.editorCtx.getContents({
+        success: async res => {
+          this.$emit('submit', res);
+        }
+      });
+    },
+    onReady() {
+      this.$wx
+        .createSelectorQuery()
+        .select('#editor')
+        .context(res => {
+          this.editorCtx = res.context;
+          if (this.editorCtx) {
+            const obj = wx.getStorageSync('editor');
+            if (obj) {
+              const { html, delta } = obj;
+              this.editorCtx.setContents({
+                html,
+                delta
+              });
+            }
+          }
+          this.timer = setInterval(() => {
+            if (this.editorCtx) {
+              this.editorCtx.getContents({
+                success: res => {
+                  const { html, delta } = res;
+                  wx.setStorageSync('editor', {
+                    html,
+                    delta
+                  });
+                }
+              });
+            }
+          }, 5 * 1000);
+        })
+        .exec();
+    },
+    onFormat(e) {
+      if (!this.canUse) return;
+      const { name, value } = e.target.dataset;
+      if (!name) return;
+      this.editorCtx.format(name, value);
+    },
+    format(e) {},
+    onStatuschange(e) {
+      this.formats = e.$wx.detail;
+      console.log(this.formats);
+    },
+    async chooseImage() {
+      const res = await wepy.wx.chooseImage({
+        count: 9,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      });
+      const { tempFilePaths } = res;
+      for (const file of tempFilePaths) {
+        this.editorCtx.insertImage({
+          src: file
+        });
+      }
+      this.focus = true;
+    }
+  }
+});
+</script>

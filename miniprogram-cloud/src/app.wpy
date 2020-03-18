@@ -1,0 +1,125 @@
+<style lang="less">
+@import "./font.wxss";
+page {
+  font-family: -apple-system-font, Helvetica, "Helvetica Neue", sans-serif;
+  background: #f8f8f8;
+  -webkit-overflow-scrolling: touch;
+  --primary: #fae37c;
+  --txt-primary: #000000;
+  --txt-second: #888888;
+  --txt-content: #353535;
+  --txt-third: #b2b2b2;
+}
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+.btn {
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 72rpx;
+  padding: 0rpx 64rpx;
+  display: inline-block;
+  background: #fae37c;
+  color: #13100e;
+  border: none;
+  box-shadow: 4rpx 8rpx 12rpx rgba(250, 227, 124, 0.3);
+  font-size: 34rpx;
+  &::after {
+    border: none;
+  }
+  &.btn-hover {
+    background: rgba(250, 227, 124, 0.5);
+  }
+}
+</style>
+
+<script>
+import wepy from "@wepy/core";
+import promisify from "@wepy/use-promisify";
+wepy.use(promisify);
+wepy.app({
+  globalData: {
+    userInfo: null
+  },
+  navigationHeight: function() {
+    const { statusBarHeight } = wx.getSystemInfoSync();
+    const { top, bottom } = wx.getMenuButtonBoundingClientRect();
+    return top - statusBarHeight + bottom;
+  },
+  onLaunch() {
+    //请配置自己的环境ID
+    wx.cloud.init({
+      env: "ybs-liubin1592"
+    });
+  }
+});
+</script>
+<config>
+{
+    pages: [
+      'pages/index',
+      'pages/home',
+      'pages/notice',
+      'pages/me',
+      'pages/post-details',
+      'pages/post-comment',
+      'pages/post-send',
+      'pages/post-article',
+      'pages/post-answer',
+      'pages/post-share',
+      'pages/user-home',
+      'pages/user-seting',
+      'pages/user-comments',
+      'pages/user-likes',
+      'pages/user-auth',
+      'pages/user-fans',
+      'pages/topic',
+      'pages/topic-maidan',
+      'pages/topic-add',
+      'pages/gender',
+      /**纸飞机 */
+      'plugin/plane/index',
+      /**打赏 */
+      'plugin/tip/assets',
+      'plugin/tip/transform',
+      'plugin/tip/monetize',
+      'plugin/tip/trade',
+    ],
+    debug: true,
+    tabBar: {
+      color: '#13100e',
+      selectedColor: '#13100e',
+      backgroundColor: '#ffffff',
+      borderStyle: 'white',
+      list: [
+				{
+          pagePath: 'pages/home',
+          text: '社区',
+          iconPath: 'images/ic_community_line.png',
+          selectedIconPath: 'images/ic_community_full.png'
+        }, 
+				{
+          pagePath: 'pages/notice',
+          text: '消息',
+          iconPath: 'images/ic_notice_line.png',
+          selectedIconPath: 'images/ic_notice_full.png'
+        }, 
+        {
+          pagePath: 'pages/me',
+          text: '我的',
+          iconPath: 'images/ic_me_line.png',
+          selectedIconPath: 'images/ic_me_full.png'
+        }
+      ]
+    },
+    window: {
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#f8f8f8',
+      backgroundColor: '#f8f8f8',
+      navigationBarTitleText: '玉帛书',
+      navigationBarTextStyle: 'black'
+    }
+}
+</config>

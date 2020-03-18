@@ -1,0 +1,160 @@
+<style lang="less" scoped>
+.item {
+  background: #fff;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  .item-content {
+    margin-left: 84rpx;
+    padding-right: 20rpx;
+  }
+  .item-txt {
+    margin: 20rpx 0rpx;
+    color: #000;
+    .txt-type {
+      color: #7a8299;
+      .icon {
+        margin-right: 8rpx;
+        font-size: 34rpx;
+        color: #7a8299;
+      }
+    }
+    text {
+      color: var(--txt-content);
+      font-size: 28rpx;
+      text-align: left;
+    }
+    .icon-mini-img {
+      width: 28rpx;
+      height: 28rpx;
+    }
+  }
+  .comment-imgs {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10rpx 0rpx;
+    .comment-img-item {
+      position: relative;
+      padding: 10rpx;
+      .img-des {
+        position: absolute;
+        right: 20rpx;
+        bottom: 20rpx;
+        background: rgba(0, 0, 0, 0.5);
+        color: #ffffff;
+        font-size: 22rpx;
+        padding: 6rpx 8rpx;
+        border-radius: 6rpx;
+      }
+      image {
+        width: 180rpx;
+        height: 180rpx;
+      }
+    }
+  }
+  .item-source {
+    display: flex;
+    background: #f1f1f1;
+    align-items: center;
+    border-radius: 10rpx;
+    padding: 20rpx;
+    image {
+      flex-shrink: 0;
+      width: 72rpx;
+      height: 72rpx;
+      border-radius: 10rpx;
+      margin-right: 20rpx;
+    }
+    .item-source-txt {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /*设置文本行数限制*/
+      -webkit-box-orient: vertical; /*设置文本排列方式*/
+      flex-grow: 1;
+      font-size: 26rpx;
+      color: #7a8299;
+    }
+  }
+  .item-date {
+    font-size: 24rpx;
+    color: #b2b2b2;
+    margin-top: 20rpx;
+  }
+}
+</style>
+<template>
+  <div class="item" @tap="goInfo">
+    <user-item :item="item.user" />
+    <div class="item-content">
+      <div class="item-txt">
+        <block v-for="obj in item.comment.content">
+          <text
+            class="{{showInfo ? 'simple' : ''}}"
+            v-if="obj.type === 0"
+            space="nbsp"
+          >{{obj.value}}</text>
+          <img v-else class="icon-mini-img" :src="obj.src" />
+        </block>
+      </div>
+      <div class="comment-imgs" v-if="item.comment.imgs">
+        <div class="comment-img-item" v-for="(img, index) in item.comment.imgs" :key="index">
+          <img
+            @tap.stop="onPreview(item.imgs, index)"
+            :src="img.path"
+            mode="aspectFill"
+            :lazy-load="true"
+          />
+          <div class="img-des" v-if="img.height > 1920">长图</div>
+        </div>
+      </div>
+      <div class="item-source" v-if="item.originComment">
+        <img
+          :src="item.originComment.imgs[0].path"
+          mode="aspectFill"
+          v-if="item.originComment && item.originComment.imgs && item.originComment.imgs.length"
+        />
+        <div class="item-source-txt">{{item.originComment.baseTxt}}</div>
+      </div>
+      <div class="item-source" v-else-if="item.post">
+        <img
+          :src="item.post.imgs[0].path"
+          mode="aspectFill"
+          v-if="item.post && item.post.imgs && item.post.imgs.length"
+        />
+        <div class="item-source-txt">{{item.post.content || item.post.introduction}}</div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+wepy.component({
+  options: {
+    multipleSlots: true,
+    addGlobalClass: true
+  },
+  props: {
+    item: Object
+  },
+  methods: {
+    goInfo() {
+      if (this.item.comment.commentId) {
+        wx.navigateTo({
+          url: `/pages/post-comment?id=${this.item.comment.commentId}`
+        });
+      } else {
+           wx.navigateTo({
+          url: `/pages/post-details?id=${this.item.comment.postId}`
+        });
+      }
+    }
+  }
+});
+</script>
+<config>
+{
+    "usingComponents": {
+      "user-item": "../components/item-user"
+    }
+}
+</config>

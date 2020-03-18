@@ -4,6 +4,7 @@ const {
 } = require('egg');
 const moment = require('moment');
 moment.locale('zh-cn');
+const schools = ['河南师范大学', '新乡学院', '新乡医学院', '河南科技学院', '河南工学院', '新乡医学院三全学院', '河南科技学院新科学院', '河南师范大学新联学院']
 class BaseController extends Controller {
   get user() {
     return this.ctx.user;
@@ -14,9 +15,9 @@ class BaseController extends Controller {
   get literal() {
     return this.ctx.app.Sequelize.literal
   }
-  async getUserId() {
+  async getUserId(gender = null, school = null) {
     if (this.user.userType === 1) {
-      const _user = await this.randomUser()
+      const _user = await this.randomUser(gender, school)
       if (_user) {
         return _user.id
       }
@@ -317,12 +318,15 @@ class BaseController extends Controller {
       return 0
     })
   }
-  async randomUser(gender = null) {
+  async randomUser(gender = null, school = null) {
     const where = {
       userType: 2
     }
     if (gender != null) {
       where.gender = gender
+    }
+    if (school && schools.indexOf(school) > 0) {
+      where.school = school
     }
     return await this.ctx.model.User.findOne({
       attributes: ['id'],

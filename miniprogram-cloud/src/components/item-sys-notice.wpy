@@ -1,0 +1,63 @@
+<style lang="less" scoped>
+.item {
+  margin: 20rpx 40rpx;
+  .time {
+    padding: 20rpx;
+    text-align: center;
+    font-size: 24rpx;
+    color: #b2b2b2;
+  }
+  .content {
+    background: #ffffff;
+    padding: 30rpx;
+    border-radius: 20rpx;
+    font-size: 32rpx;
+    line-height: 48rpx;
+    .tool {
+      text-align: right;
+      .btn-read {
+        font-size: 28rpx;
+        padding: 30rpx;
+        display: inline-block;
+        color: #409eff;
+        &.has-read {
+          color: #b2b2b2;
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+  <div class="item">
+    <div class="time">{{item.moment}}</div>
+    <div class="content">
+      <div>
+        <text space="nbsp" :decode="true">{{item.message.content}}</text>
+      </div>
+      <div class="tool">
+        <div
+          class="btn-read {{item.isRead ? 'has-read' : ''}}"
+          @tap="onRead"
+        >{{item.isRead ? '已读' : '标记已读'}}</div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import wepy from '@wepy/core';
+import { eventHub } from '../common/api';
+wepy.component({
+  options: {
+    addGlobalClass: true
+  },
+  props: {
+    item: Object
+  },
+  methods: {
+    onRead() {
+      eventHub.$emit('sysread', this.item);
+    }
+  }
+});
+</script>
